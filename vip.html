@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP Custom Services & Premium Course Packages | Sherwin Laoshi</title>
+    <meta name="robots" content="noindex, nofollow">
+    <style>
+        :root {
+            --primary: #8B1A1A;
+            --primary-light: #A52A2A;
+            --gold: #C9A84C;
+            --gold-light: #D4B96A;
+            --bg: #FDFCF8;
+            --bg-card: #FFFFFF;
+            --text: #2C2C2C;
+            --text-light: #5A5A5A;
+            --border: #E8E2D5;
+            --shadow: 0 2px 16px rgba(0,0,0,0.06);
+            --radius: 12px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Noto Sans", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.75;
+            -webkit-font-smoothing: antialiased;
+        }
+        header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        }
+        .header-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+        .logo span { color: var(--gold); }
+        .container { max-width: 900px; margin: 0 auto; padding: 60px 24px 80px; }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        .page-header .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #F5F0E8, #FDF4D0);
+            color: var(--primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 6px 18px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+        }
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        .page-header .sub {
+            font-size: 1rem;
+            color: var(--text-light);
+        }
+
+        .vip-card {
+            background: var(--bg-card);
+            border: 2px solid var(--gold);
+            border-radius: var(--radius);
+            padding: 40px;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 24px rgba(201,168,76,0.12);
+        }
+        .vip-card h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .vip-card .price-main {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 12px 0;
+        }
+        .vip-card .price-main small {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            font-weight: 400;
+        }
+        .vip-card p {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            line-height: 1.8;
+            margin-bottom: 12px;
+        }
+        .vip-card ul {
+            padding-left: 24px;
+            margin: 16px 0;
+        }
+        .vip-card li {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            padding: 5px 0;
+            line-height: 1.7;
+        }
+        .vip-card .package-prices {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin: 16px 0;
+        }
+        .vip-card .pkg-item {
+            background: #FDF8F0;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+        .vip-card .pkg-item .label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-bottom: 4px;
+        }
+        .vip-card .pkg-item .amount {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .perks-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 36px 40px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+        .perks-card h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+        .perks-card ul {
+            padding-left: 24px;
+        }
+        .perks-card li {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            padding: 6px 0;
+            line-height: 1.7;
+        }
+
+        .contact-cta {
+            text-align: center;
+            margin-top: 48px;
+        }
+        .contact-cta a {
+            display: inline-block;
+            padding: 14px 32px;
+            background: var(--primary);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .contact-cta a:hover { background: var(--primary-light); }
+
+        .reminder {
+            background: #FFF5F5;
+            border: 1px solid #F5D5D5;
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            margin-top: 24px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #8B1A1A;
+        }
+
+        footer {
+            background: #1A1A1A;
+            color: #AAA;
+            padding: 40px 24px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            .vip-card, .perks-card { padding: 24px 20px; }
+            .vip-card .package-prices { grid-template-columns: 1fr; }
+            .page-header h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-inner">
+        <a href="/" class="logo">Sherwin<span>.</span></a>
+    </div>
+</header>
+
+<main class="container">
+
+    <div class="page-header">
+        <div class="badge">Exclusive for VIP Clients</div>
+        <h1>VIP 定制服务与专属课包</h1>
+        <p class="sub">Premium Course Packages · Fully Customized Services</p>
+    </div>
+
+    <p style="text-align:center;color:var(--text-light);margin-bottom:40px;">
+        This page is exclusive for VIP clients. We provide one-to-one full customized services and exclusive lesson packages.<br>
+        本页面为高端 VIP 客户专属页面，提供一对一全定制服务及专属课包方案。
+    </p>
+
+    <!-- Industry Custom VIP -->
+    <div class="vip-card">
+        <h2>Industry Custom VIP Course · 行业定制 VIP 课程</h2>
+        <div class="price-main">¥460 <small>/ session · $71 USD</small></div>
+        <p>Fully customized courses based on industry characteristics, work scenarios and personal demands. Combines general business content with industry-specific professional terminology and hands-on practice.</p>
+        <div class="package-prices">
+            <div class="pkg-item">
+                <div class="label">10 Lessons</div>
+                <div class="amount">¥4,600</div>
+                <div style="font-size:0.8rem;color:var(--text-light);">$710 USD</div>
+            </div>
+            <div class="pkg-item">
+                <div class="label">20 Lessons</div>
+                <div class="amount">¥9,200</div>
+                <div style="font-size:0.8rem;color:var(--text-light);">$1,420 USD</div>
+            </div>
+            <div class="pkg-item">
+                <div class="label">40 Lessons</div>
+                <div class="amount">¥18,400</div>
+                <div style="font-size:0.8rem;color:var(--text-light);">$2,840 USD</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium Ultimate VIP -->
+    <div class="vip-card" style="border-color: var(--primary); box-shadow: 0 4px 24px rgba(139,26,26,0.12);">
+        <h2>Premium Ultimate VIP Course · 全维度尊享 VIP 课程</h2>
+        <div class="price-main">¥500 <small>/ session · $77 USD</small></div>
+        <p>The most comprehensive training package. Advanced negotiation, public speaking, contract interpretation and premium business etiquette. Designed for executives, founders and senior professionals.</p>
+        <div class="package-prices">
+            <div class="pkg-item">
+                <div class="label">10 Lessons</div>
+                <div class="amount">¥5,000</div>
+                <div style="font-size:0.8rem;color:var(--text-light);">$770 USD</div>
+            </div>
+            <div class="pkg-item">
+                <div class="label">20 Lessons</div>
+                <div class="amount">¥10,000</div>
+                <div style="font-size:0.8rem;color:var(--text-light);">$1,540 USD</div>
+            </div>
+            <div class="pkg-item">
+                <div class="label">40 Lessons</div>
+                <div class="amount">¥20,000</div>
+                <div style="font-size:0.8rem;color:var(--text-light);">$3,080 USD</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIP Exclusive Benefits -->
+    <div class="perks-card">
+        <h2>Exclusive VIP Services · VIP 专属权益</h2>
+        <ul>
+            <li>Fully customized courses based on industry characteristics, work scenarios and personal demands</li>
+            <li>Priority in class time arrangement and lesson adjustment</li>
+            <li>Supplementary learning materials and exclusive exercise resources are provided free of charge</li>
+            <li>Long-term learning tracking and regular learning effect feedback</li>
+            <li>结合所属行业、工作场景、个人诉求，打造完全定制化课程</li>
+            <li>上课时间、课时调整享有优先安排权限</li>
+            <li>免费配套专属学习资料与课后练习资源</li>
+            <li>长期跟进学习进度，定期反馈学习效果</li>
+        </ul>
+    </div>
+
+    <div class="reminder">
+        <strong>Remarks · 备注：</strong>For personalized exclusive customization requirements, please send an email to communicate the details.<br>
+        如有个性化深度定制需求，可通过邮箱沟通详细方案。
+    </div>
+
+    <div class="contact-cta">
+        <a href="mailto:sherwinlaoshi@outlook.com">Contact for VIP Service · 联系 VIP 服务</a>
+    </div>
+
+</main>
+
+<footer>
+    <p>&copy; 2026 Sherwin Laoshi. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

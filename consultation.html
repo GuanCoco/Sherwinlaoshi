@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>30-Minute Consultation | Trial Chinese Lesson - Pay What You Want</title>
+    <meta name="description" content="Book a 30-minute 1-on-1 consultation and trial Chinese lesson. Get your Chinese level assessed, discuss your learning goals, and receive a customized study plan. Pay what you want after the session.">
+    <meta name="keywords" content="Chinese trial lesson, Mandarin consultation, Chinese level assessment, free trial Chinese, pay what you want Chinese lesson, 中文试听课, 汉语咨询课">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://sherwinlaoshi.com/consultation.html">
+    <meta property="og:title" content="30-Minute Consultation | Trial Chinese Lesson">
+    <meta property="og:description" content="Book a 30-minute consultation. Get your Chinese level assessed and receive a customized study plan. Pay what you want.">
+    <meta property="og:url" content="https://sherwinlaoshi.com/consultation.html">
+    <style>
+        :root {
+            --primary: #8B1A1A;
+            --primary-light: #A52A2A;
+            --gold: #C9A84C;
+            --bg: #FDFCF8;
+            --bg-card: #FFFFFF;
+            --text: #2C2C2C;
+            --text-light: #5A5A5A;
+            --border: #E8E2D5;
+            --shadow: 0 2px 16px rgba(0,0,0,0.06);
+            --radius: 12px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Noto Sans", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.75;
+            -webkit-font-smoothing: antialiased;
+        }
+        header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        }
+        .header-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+        .logo span { color: var(--gold); }
+        nav { display: flex; gap: 8px; align-items: center; }
+        nav a {
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 8px 14px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        nav a:hover { background: #F5F0E8; color: var(--primary); }
+        nav a.active { color: var(--primary); font-weight: 700; }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 60px 24px 80px; }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        .page-header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        .page-header .sub {
+            font-size: 1rem;
+            color: var(--text-light);
+        }
+
+        .highlight-card {
+            background: linear-gradient(135deg, #FFF8E8 0%, #FFFDF5 100%);
+            border: 2px solid var(--gold);
+            border-radius: var(--radius);
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .highlight-card .icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+        .highlight-card h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+        .highlight-card .tagline {
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .highlight-card p {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .content-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 36px 40px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+        .content-card h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+        .content-card p {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+        .content-card ul {
+            padding-left: 24px;
+        }
+        .content-card li {
+            padding: 6px 0;
+            font-size: 0.95rem;
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        .cta-section {
+            text-align: center;
+            margin: 48px 0;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 36px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.25s;
+            cursor: pointer;
+            border: none;
+            background: var(--primary);
+            color: #fff;
+        }
+        .btn:hover { background: var(--primary-light); transform: translateY(-1px); }
+
+        .divider {
+            text-align: center;
+            margin: 48px 0;
+            position: relative;
+        }
+        .divider::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            height: 1px;
+            background: var(--border);
+        }
+        .divider span {
+            position: relative;
+            background: var(--bg);
+            padding: 0 20px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        footer {
+            background: #1A1A1A;
+            color: #AAA;
+            padding: 40px 24px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            .content-card, .highlight-card { padding: 24px 20px; }
+            nav { display: none; }
+            .header-inner { justify-content: center; }
+            .page-header h1 { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-inner">
+        <a href="/" class="logo">Sherwin<span>.</span></a>
+        <nav>
+            <a href="about.html">About</a>
+            <a href="courses.html">Courses</a>
+            <a href="group-class.html">Group Class</a>
+            <a href="consultation.html" class="active">Consultation</a>
+            <a href="rules.html">Rules</a>
+            <a href="contact.html">Contact</a>
+            <a href="exclusive.html" style="color:var(--gold);font-weight:600;">Exclusive</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+
+    <div class="page-header">
+        <h1>30-Minute Consultation Session</h1>
+        <p class="sub">Get started with a personalized Chinese learning assessment</p>
+    </div>
+
+    <!-- English -->
+    <div class="highlight-card">
+        <div class="icon">🎯</div>
+        <h2>Try Before You Commit</h2>
+        <p class="tagline">Pay What You Want</p>
+        <p>If you are new to learning Chinese and not sure which course fits your needs best, you are welcome to book a 30-minute one-on-one consultation session. This session uses a pay-what-you-want model — after the session, you decide the amount based on your experience.</p>
+    </div>
+
+    <div class="content-card">
+        <h2>What You Will Get</h2>
+        <ul>
+            <li>A thorough assessment of your current Chinese proficiency level</li>
+            <li>Discussion about your learning goals and available study time</li>
+            <li>A customized learning plan tailored to your specific needs</li>
+            <li>Course recommendations that match your objectives</li>
+            <li>Answers to any questions about the teaching approach and curriculum</li>
+        </ul>
+    </div>
+
+    <div class="content-card">
+        <h2>How It Works</h2>
+        <p><strong>Step 1:</strong> Contact me via email to schedule your consultation session.</p>
+        <p><strong>Step 2:</strong> Join the 30-minute online session via Tencent Meeting or Zoom.</p>
+        <p><strong>Step 3:</strong> After the session, pay any amount you feel is fair based on your experience.</p>
+        <p><strong>Step 4:</strong> If you decide to continue, we will arrange your regular course schedule.</p>
+    </div>
+
+    <div class="divider"><span>中文版 · Chinese Version</span></div>
+
+    <div class="highlight-card">
+        <div class="icon">🎯</div>
+        <h2>30 分钟咨询沟通课</h2>
+        <p class="tagline">随心付费模式</p>
+        <p>如果你刚开始学习中文，不确定哪类课程更贴合自身需求，欢迎预约 30 分钟一对一咨询沟通课。课程期间，我会为你测评当前中文水平，沟通学习目标与可用学习时间，共同定制专属学习方案。本咨询服务采用随心付费模式，课程结束后你可根据体验自主支付任意金额。</p>
+    </div>
+
+    <div class="content-card">
+        <h2>课程内容</h2>
+        <ul>
+            <li>全面评估你当前的中文水平</li>
+            <li>深入了解你的学习目标和可用学习时间</li>
+            <li>根据你的需求定制专属学习方案</li>
+            <li>推荐最适合你的课程类型</li>
+            <li>解答关于教学方法和课程体系的任何疑问</li>
+        </ul>
+    </div>
+
+    <div class="content-card">
+        <h2>预约流程</h2>
+        <p><strong>第一步：</strong>通过邮件与我联系，预约咨询课时间。</p>
+        <p><strong>第二步：</strong>通过腾讯会议或 Zoom 参加 30 分钟在线课程。</p>
+        <p><strong>第三步：</strong>课程结束后，根据你的体验自主支付任意金额。</p>
+        <p><strong>第四步：</strong>如决定继续学习，我们将安排你的常规课程时间。</p>
+    </div>
+
+    <div class="cta-section">
+        <a href="contact.html" class="btn">Book Your Consultation Now</a>
+    </div>
+
+</main>
+
+<footer>
+    <p>&copy; 2026 Sherwin Laoshi. All rights reserved. | <a href="/" style="color:var(--gold);text-decoration:none;">sherwinlaoshi.com</a></p>
+</footer>
+
+</body>
+</html>

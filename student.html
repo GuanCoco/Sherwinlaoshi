@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Returning Students | Exclusive Course Packages</title>
+    <meta name="robots" content="noindex, nofollow">
+    <style>
+        :root {
+            --primary: #8B1A1A;
+            --primary-light: #A52A2A;
+            --gold: #C9A84C;
+            --bg: #FDFCF8;
+            --bg-card: #FFFFFF;
+            --text: #2C2C2C;
+            --text-light: #5A5A5A;
+            --border: #E8E2D5;
+            --shadow: 0 2px 16px rgba(0,0,0,0.06);
+            --radius: 12px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Noto Sans", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.75;
+            -webkit-font-smoothing: antialiased;
+        }
+        header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        }
+        .header-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+        .logo span { color: var(--gold); }
+        .container { max-width: 900px; margin: 0 auto; padding: 60px 24px 80px; }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        .page-header .badge {
+            display: inline-block;
+            background: #F5F0E8;
+            color: var(--primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 6px 18px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+        }
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        .page-header .sub {
+            font-size: 1rem;
+            color: var(--text-light);
+        }
+
+        .course-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 36px 40px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+        .course-card h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+        .course-card .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #F0EDE5;
+            font-size: 0.95rem;
+        }
+        .course-card .price-row:last-child { border-bottom: none; }
+        .course-card .price-row .label { color: var(--text); font-weight: 500; }
+        .course-card .price-row .val { font-weight: 700; color: var(--primary); text-align: right; }
+        .course-card .price-row .val small { font-weight: 400; color: var(--text-light); font-size: 0.8rem; display: block; }
+        .course-card .note {
+            margin-top: 16px;
+            padding: 14px 18px;
+            background: #FFF8E8;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #6B5A20;
+            line-height: 1.6;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 48px 0;
+            position: relative;
+        }
+        .divider::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            height: 1px;
+            background: var(--border);
+        }
+        .divider span {
+            position: relative;
+            background: var(--bg);
+            padding: 0 20px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .contact-cta {
+            text-align: center;
+            margin-top: 48px;
+        }
+        .contact-cta a {
+            display: inline-block;
+            padding: 14px 32px;
+            background: var(--primary);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .contact-cta a:hover { background: var(--primary-light); }
+
+        footer {
+            background: #1A1A1A;
+            color: #AAA;
+            padding: 40px 24px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            .course-card { padding: 24px 20px; }
+            .page-header h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-inner">
+        <a href="/" class="logo">Sherwin<span>.</span></a>
+    </div>
+</header>
+
+<main class="container">
+
+    <div class="page-header">
+        <div class="badge">Exclusive for Returning Students</div>
+        <h1>老学员专属课包 · Returning Student Packages</h1>
+        <p class="sub">Special pricing for our valued continuing students</p>
+    </div>
+
+    <!-- Regular General Course -->
+    <div class="course-card">
+        <h2>Regular General Course · 常规通用课程</h2>
+        <div class="price-row">
+            <span class="label">10 Lessons</span>
+            <span class="val">¥2,800 <small>$420 USD</small></span>
+        </div>
+        <div class="price-row">
+            <span class="label">20 Lessons</span>
+            <span class="val">¥5,600 <small>$840 USD</small></span>
+        </div>
+        <div class="price-row">
+            <span class="label">40 Lessons</span>
+            <span class="val">¥11,200 <small>$1,680 USD</small></span>
+        </div>
+        <div class="note">Daily conversation, travel expressions, basic HSK. Standard package pricing for returning students.</div>
+    </div>
+
+    <!-- HSK Preparation -->
+    <div class="course-card">
+        <h2>HSK Exam Preparation · HSK 考试辅导</h2>
+        <div class="price-row">
+            <span class="label">10 Lessons</span>
+            <span class="val">¥3,150 <small>$486 USD</small></span>
+        </div>
+        <div class="price-row">
+            <span class="label">20 Lessons</span>
+            <span class="val">¥6,300 <small>$972 USD</small></span>
+        </div>
+        <div class="price-row">
+            <span class="label">40 Lessons</span>
+            <span class="val">¥12,600 <small>$1,944 USD</small></span>
+        </div>
+        <div class="note">Targeted HSK 1-6 preparation. Includes mock tests and exam strategies.</div>
+    </div>
+
+    <!-- Advanced Business -->
+    <div class="course-card">
+        <h2>Advanced Business Course · 高阶商务课程</h2>
+        <div class="price-row">
+            <span class="label">10 Lessons</span>
+            <span class="val">¥3,780 <small>$585 USD</small></span>
+        </div>
+        <div class="price-row">
+            <span class="label">20 Lessons</span>
+            <span class="val">¥7,560 <small>$1,170 USD</small></span>
+        </div>
+        <div class="price-row">
+            <span class="label">40 Lessons</span>
+            <span class="val">¥15,120 <small>$2,340 USD</small></span>
+        </div>
+        <div class="note">Business dialogue, email writing, inquiry and order negotiation. For international trade professionals.</div>
+    </div>
+
+    <div class="divider"><span>中文版 · Chinese Version</span></div>
+
+    <div class="page-header" style="margin-bottom:32px;">
+        <h2 style="font-size:1.3rem;">老学员专属课程套餐</h2>
+        <p class="sub">以下价格为老学员专属课包价格，含专属学习资料与课后练习资源</p>
+    </div>
+
+    <div class="course-card">
+        <h2>常规通用课程</h2>
+        <div class="price-row"><span class="label">10 节课</span><span class="val">¥2,800 <small>$420 USD</small></span></div>
+        <div class="price-row"><span class="label">20 节课</span><span class="val">¥5,600 <small>$840 USD</small></span></div>
+        <div class="price-row"><span class="label">40 节课</span><span class="val">¥11,200 <small>$1,680 USD</small></span></div>
+    </div>
+
+    <div class="course-card">
+        <h2>HSK 考试辅导课程</h2>
+        <div class="price-row"><span class="label">10 节课</span><span class="val">¥3,150 <small>$486 USD</small></span></div>
+        <div class="price-row"><span class="label">20 节课</span><span class="val">¥6,300 <small>$972 USD</small></span></div>
+        <div class="price-row"><span class="label">40 节课</span><span class="val">¥12,600 <small>$1,944 USD</small></span></div>
+    </div>
+
+    <div class="course-card">
+        <h2>高阶商务课程</h2>
+        <div class="price-row"><span class="label">10 节课</span><span class="val">¥3,780 <small>$585 USD</small></span></div>
+        <div class="price-row"><span class="label">20 节课</span><span class="val">¥7,560 <small>$1,170 USD</small></span></div>
+        <div class="price-row"><span class="label">40 节课</span><span class="val">¥15,120 <small>$2,340 USD</small></span></div>
+    </div>
+
+    <div class="contact-cta">
+        <a href="mailto:sherwinlaoshi@outlook.com">Contact for Booking · 联系预约</a>
+    </div>
+
+</main>
+
+<footer>
+    <p>&copy; 2026 Sherwin Laoshi. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

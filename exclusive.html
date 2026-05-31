@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exclusive Content Access | Sherwin Laoshi</title>
+    <meta name="description" content="Exclusive content access for returning students, agents and VIP clients of Sherwin Chinese Teacher.">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="canonical" href="https://sherwinlaoshi.com/exclusive.html">
+    <style>
+        :root {
+            --primary: #8B1A1A;
+            --primary-light: #A52A2A;
+            --gold: #C9A84C;
+            --bg: #FDFCF8;
+            --bg-card: #FFFFFF;
+            --text: #2C2C2C;
+            --text-light: #5A5A5A;
+            --border: #E8E2D5;
+            --shadow: 0 2px 16px rgba(0,0,0,0.06);
+            --radius: 12px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Noto Sans", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.75;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        }
+        .header-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+        .logo span { color: var(--gold); }
+        nav { display: flex; gap: 8px; align-items: center; }
+        nav a {
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 8px 14px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        nav a:hover { background: #F5F0E8; color: var(--primary); }
+        nav a.active { color: var(--gold); font-weight: 700; }
+
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 24px;
+        }
+        .access-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 48px 40px;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        .access-box .icon {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+        .access-box h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        .access-box > p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 28px;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .input-group input {
+            flex: 1;
+            padding: 14px 18px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .input-group input:focus {
+            border-color: var(--gold);
+        }
+        .input-group button {
+            padding: 14px 24px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+        .input-group button:hover {
+            background: var(--primary-light);
+        }
+        .hint {
+            background: #FDF8F0;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            text-align: left;
+            margin-top: 24px;
+        }
+        .hint h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        .hint p {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+        #tipMsg {
+            color: var(--primary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            min-height: 24px;
+            margin-top: 8px;
+        }
+
+        footer {
+            background: #1A1A1A;
+            color: #AAA;
+            padding: 40px 24px;
+            text-align: center;
+            font-size: 0.85rem;
+            margin-top: auto;
+        }
+
+        @media (max-width: 768px) {
+            .access-box { padding: 32px 24px; }
+            .input-group { flex-direction: column; }
+            nav { display: none; }
+            .header-inner { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-inner">
+        <a href="/" class="logo">Sherwin<span>.</span></a>
+        <nav>
+            <a href="about.html">About</a>
+            <a href="courses.html">Courses</a>
+            <a href="group-class.html">Group Class</a>
+            <a href="consultation.html">Consultation</a>
+            <a href="rules.html">Rules</a>
+            <a href="contact.html">Contact</a>
+            <a href="exclusive.html" class="active">Exclusive</a>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <div class="access-box">
+        <div class="icon">🔐</div>
+        <h2>Exclusive Content Access</h2>
+        <p>Please enter your exclusive access password below to view the corresponding content.</p>
+
+        <div class="input-group">
+            <input type="text" id="pwdInput" placeholder="Enter Password" autocomplete="off">
+            <button onclick="checkPassword()">Submit</button>
+        </div>
+        <p id="tipMsg"></p>
+
+        <div class="hint">
+            <h4>Password Tips:</h4>
+            <p>Returning Students: <strong>OLD2026</strong><br>
+            Agents & Cooperation Partners: <strong>AGENT88</strong><br>
+            VIP Clients: <strong>VIP777</strong></p>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2026 Sherwin Laoshi. All rights reserved. | <a href="/" style="color:var(--gold);text-decoration:none;">sherwinlaoshi.com</a></p>
+</footer>
+
+<script>
+function checkPassword() {
+    var pwd = document.getElementById("pwdInput").value.trim();
+    var msg = document.getElementById("tipMsg");
+    switch(pwd) {
+        case "OLD2026":
+            window.location.href = "student.html";
+            break;
+        case "AGENT88":
+            window.location.href = "agent.html";
+            break;
+        case "VIP777":
+            window.location.href = "vip.html";
+            break;
+        default:
+            msg.innerText = "Invalid password, please try again.";
+    }
+}
+document.getElementById("pwdInput").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") { checkPassword(); }
+});
+</script>
+
+</body>
+</html>
