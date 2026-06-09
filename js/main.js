@@ -484,15 +484,30 @@ function hidePop() {
    PRONUNCIATION
    ================================================================ */
 function speak() {
-    if (!('speechSynthesis' in window)) return;
     const w = E.pw.textContent;
     if (!w) return;
-    speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(w);
-    u.lang = 'zh-CN'; u.rate = 0.85;
     E.pSpk.classList.add('spk');
-    u.onend = u.onerror = () => E.pSpk.classList.remove('spk');
-    speechSynthesis.speak(u);
+
+    // Check if a zh voice is available (iOS / Windows usually have one,
+    // Android often does NOT — fall back to Google TTS in that case).
+    if ('speechSynthesis' in window) {
+        const voices = speechSynthesis.getVoices();
+        const hasZh = voices.some(v => v.lang.startsWith('zh'));
+        if (hasZh) {
+            speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(w);
+            u.lang = 'zh-CN'; u.rate = 0.85;
+            u.onend = u.onerror = () => { E.pSpk.classList.remove('spk'); };
+            speechSynthesis.speak(u);
+            return;
+        }
+    }
+
+    // Fallback: Google Translate TTS (works on all browsers including Android)
+    const url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=zh-CN&q=' + encodeURIComponent(w);
+    const a = new Audio(url);
+    a.onended = a.onerror = () => { E.pSpk.classList.remove('spk'); };
+    a.play();
 }
 
 /* ================================================================
