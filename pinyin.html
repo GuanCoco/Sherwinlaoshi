@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Chinese Pinyin Annotator — add pinyin to Chinese text with CC-CEDICT dictionary lookup">
-    <title>Chinese Pinyin Annotator · 中文注音</title>
+    <meta name="description" content="Chinese Pinyin Annotator">
+    <title>Chinese Pinyin Annotator</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <div class="app">
 
-    <!-- Header -->
     <header class="hd">
         <h1 class="tt">
             <span class="cn">中文注音工具</span>
@@ -46,7 +45,7 @@
             </div>
         </section>
 
-        <!-- Dict status with progress bar -->
+        <!-- Dict status -->
         <div class="ds" id="dictStatus">
             <div class="ds-bar"><div class="ds-fill" id="dictPct" style="width:0"></div></div>
             <span class="ds-msg" id="dictMsg">Initializing…</span>
@@ -57,28 +56,29 @@
             <div class="out-hd">
                 <h2 class="lbl">Annotated Text</h2>
                 <div class="acts">
-                    <!-- Font size -->
+                    <!-- Font slider -->
                     <div class="fs">
-                        <button class="bt bi sm" id="btnFontMinus" title="Smaller" disabled>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                        </button>
-                        <span class="fsl" id="fontSizeLabel">115%</span>
-                        <button class="bt bi sm" id="btnFontPlus" title="Larger">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                        </button>
+                        <span class="fsl">A</span>
+                        <input type="range" class="fsr" id="fontSlider" min="100" max="250" value="100" step="5">
+                        <span class="fsl fsl-lg">A</span>
+                        <span class="fsv" id="fontSliderVal">100%</span>
                     </div>
+                    <!-- Tone color toggle -->
+                    <label class="tct" title="Disable tone colors">
+                        <input type="checkbox" id="toneToggle">
+                        <span>Colors</span>
+                    </label>
                     <!-- Tone legend -->
                     <span class="tl">
-                        <i class="td t1"></i>1
-                        <i class="td t2"></i>2
-                        <i class="td t3"></i>3
-                        <i class="td t4"></i>4
-                        <i class="td t5"></i>5
+                        <i class="td t1"></i>1st
+                        <i class="td t2"></i>2nd
+                        <i class="td t3"></i>3rd
+                        <i class="td t4"></i>4th
+                        <i class="td t5"></i>neutral
                     </span>
-                    <button class="bt bo sm" id="btnCopy" title="Copy">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-                        Copy
-                    </button>
+                    <!-- Copy buttons -->
+                    <button class="bt bo sm" id="btnCopyPinyin" title="Copy pinyin only">Copy Pinyin</button>
+                    <button class="bt bo sm" id="btnCopyHanzi" title="Copy full text">Copy Text</button>
                 </div>
             </div>
             <div class="at" id="annotatedText"></div>
@@ -96,14 +96,9 @@
         </section>
 
     </main>
-
-    <footer class="ft">
-        Powered by <a href="https://github.com/zh-lx/pinyin-pro" target="_blank" rel="noopener">pinyin-pro</a>
-        &amp; <a href="https://cc-cedict.org/wiki/" target="_blank" rel="noopener">CC-CEDICT</a>
-    </footer>
 </div>
 
-<!-- Definition Popover -->
+<!-- Popover -->
 <div class="pop" id="popover" role="tooltip">
     <div class="ph">
         <span class="pw" id="popoverWord"></span>

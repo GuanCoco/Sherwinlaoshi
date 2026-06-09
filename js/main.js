@@ -1,12 +1,6 @@
 /**
  * Chinese Pinyin Annotator
- * ========================
- * - Sharded CC-CEDICT dictionary (22 files, on-demand loading)
- * - Pinyin annotation via pinyin-pro (CDN)
- * - Word segmentation via FMM + dictionary
- * - Click → definition popover + pronunciation (Web Speech API)
- * - Font size controls
- * - Fully static, GitHub Pages ready
+ * Sharded CC-CEDICT + IndexedDB cache + font slider + tone toggle
  */
 
 /* ================================================================
@@ -20,21 +14,26 @@ const CFG = Object.freeze({
     CHINESE_RE: /[\u4e00-\u9fff\u3400-\u4dbf]/,
     POPOVER_W: 380,
     POPOVER_GAP: 8,
-    FONT_SIZES: [0.85, 1, 1.15, 1.35, 1.55],
-    FONT_DEFAULT: 2,
+    DB_NAME: 'pinyin_dict',
+    DB_VERSION: 1,
+    DB_STORE: 'shards',
+    FONT_MIN: 100,
+    FONT_MAX: 250,
+    FONT_DEFAULT: 100,
 });
 
 /* ================================================================
    STATE
    ================================================================ */
 const S = {
-    dict: new Map(),          // merged dictionary
-    loaded: new Set(),        // bucket names already loaded
-    bucketList: [],           // list of bucket names from index
+    dict: new Map(),
+    loaded: new Set(),
+    bucketList: [],
     maxWordLen: 0,
     ready: false,
     active: null,
     fontSize: CFG.FONT_DEFAULT,
+    toneColor: true,
 };
 
 /* ================================================================
@@ -51,7 +50,8 @@ window.addEventListener('DOMContentLoaded', () => {
     E.btnDo      = byId('btnAnnotate');
     E.btnClr     = byId('btnClear');
     E.btnEx      = byId('btnExample');
-    E.btnCp      = byId('btnCopy');
+    E.btnCpPy    = byId('btnCopyPinyin');
+    E.btnCpHan    = byId('btnCopyHanzi');
     E.charCnt    = byId('charCount');
     E.dictBar    = byId('dictStatus');
     E.dictMsg    = byId('dictMsg');
@@ -66,13 +66,13 @@ window.addEventListener('DOMContentLoaded', () => {
     E.pSpk       = byId('popoverSpeak');
     E.pCls       = byId('popoverClose');
     E.pBd        = byId('popoverBackdrop');
-    E.btnFm      = byId('btnFontMinus');
-    E.btnFp      = byId('btnFontPlus');
-    E.fsLabel    = byId('fontSizeLabel');
+    E.slider     = byId('fontSlider');
+    E.slVal      = byId('fontSliderVal');
+    E.toneToggle = byId('toneToggle');
 
     bind();
-    changeFont(0);
-    loadIndex().then(() => E.ann && changeFont(0));
+    initSlider();
+    loadDict();
 });
 
 /* ================================================================
@@ -83,72 +83,137 @@ function bind() {
     E.btnDo.addEventListener('click', annotate);
     E.btnClr.addEventListener('click', clearAll);
     E.btnEx.addEventListener('click', loadEx);
-    E.btnCp.addEventListener('click', copyOut);
+    E.btnCpPy.addEventListener('click', () => copyPinyin());
+    E.btnCpHan.addEventListener('click', () => copyHanzi());
     E.pSpk.addEventListener('click', e => { e.stopPropagation(); speak(); });
     E.pCls.addEventListener('click', hidePop);
     E.pBd.addEventListener('click', hidePop);
-    E.btnFm.addEventListener('click', () => changeFont(-1));
-    E.btnFp.addEventListener('click', () => changeFont(1));
+    E.toneToggle.addEventListener('change', onToneToggle);
     document.addEventListener('keydown', e => { if (e.key === 'Escape') hidePop(); });
     document.addEventListener('click', e => {
-        if (E.pop.classList.contains('on') &&
+        if (E.pop && E.pop.classList.contains('on') &&
             !e.target.closest('.wg') &&
             !e.target.closest('#popover'))
             hidePop();
     });
     window.addEventListener('resize', () => {
-        if (E.pop.classList.contains('on') && S.active) placePop(S.active);
+        if (E.pop && E.pop.classList.contains('on') && S.active) placePop(S.active);
     });
 }
 
 /* ================================================================
-   DICTIONARY LOADING  (index → shards on demand)
+   INDEXEDDB CACHE
    ================================================================ */
-function setDict(text, pct) {
-    E.dictMsg.textContent = text;
+function openDB() {
+    return new Promise((resolve, reject) => {
+        const req = indexedDB.open(CFG.DB_NAME, CFG.DB_VERSION);
+        req.onupgradeneeded = () => {
+            req.result.createObjectStore(CFG.DB_STORE);
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+    });
+}
+
+async function cacheGet(key) {
+    try {
+        const db = await openDB();
+        return new Promise(resolve => {
+            const tx = db.transaction(CFG.DB_STORE, 'readonly');
+            const req = tx.objectStore(CFG.DB_STORE).get(key);
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => resolve(null);
+        });
+    } catch { return null; }
+}
+
+async function cacheSet(key, data) {
+    try {
+        const db = await openDB();
+        return new Promise(resolve => {
+            const tx = db.transaction(CFG.DB_STORE, 'readwrite');
+            tx.objectStore(CFG.DB_STORE).put(data, key);
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => resolve();
+        });
+    } catch {}
+}
+
+async function cacheDel(key) {
+    try {
+        const db = await openDB();
+        return new Promise(resolve => {
+            const tx = db.transaction(CFG.DB_STORE, 'readwrite');
+            tx.objectStore(CFG.DB_STORE).delete(key);
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => resolve();
+        });
+    } catch {}
+}
+
+/* ================================================================
+   DICTIONARY LOADING
+   ================================================================ */
+function setDict(msg, pct) {
+    if (!E.dictMsg) return;
+    E.dictMsg.textContent = msg;
     if (pct === null) {
-        E.dictPct.textContent = '';
-        E.dictBar.style.width = '100%';
+        E.dictPct.style.width = '100%';
     } else {
-        E.dictPct.textContent = pct + '%';
-        E.dictBar.style.width = pct + '%';
+        E.dictPct.style.width = pct + '%';
     }
 }
 
-async function loadIndex() {
+async function loadDict() {
     setDict('Loading index…', null);
+
+    let index;
     try {
         const r = await fetch(CFG.INDEX);
         if (!r.ok) throw new Error('HTTP ' + r.status);
-        const idx = await r.json();
-        S.bucketList = idx.present; // e.g. ['00','01',…,'other']
-        setDict('Ready — enter text to load needed shards', null);
+        index = await r.json();
     } catch (e) {
         console.error(e);
-        setDict('Index not found. Run build_dict.py first.', null);
+        setDict('Index not found. Run build_dict.py.', null);
+        return;
+    }
+
+    S.bucketList = index.present;
+
+    // Check IndexedDB for previously cached shards
+    let cachedCount = 0;
+    for (const bname of S.bucketList) {
+        const cached = await cacheGet('shard_' + bname);
+        if (cached) {
+            mergeShard(cached);
+            S.loaded.add(bname);
+            cachedCount++;
+        }
+    }
+
+    if (cachedCount > 0) {
+        setDict('Ready · ' + S.dict.size.toLocaleString() + ' words (cached)', null);
+    } else {
+        setDict('Ready — enter text to load needed shards', null);
     }
 }
 
-/** Return bucket name for a character */
 function bucketOf(ch) {
     const cp = ch.codePointAt(0);
     if (cp >= CFG.CJK_BASE && cp <= 0x9FFF) {
         return String(Math.floor((cp - CFG.CJK_BASE) / CFG.CJK_BUCKET)).padStart(2, '0');
     }
-    // Check CJK Extension A
     if (cp >= 0x3400 && cp <= 0x4DBF) {
         return String(21 + Math.floor((cp - 0x3400) / CFG.CJK_BUCKET)).padStart(2, '0');
     }
     return 'other';
 }
 
-/** Load all buckets needed for the given text */
 async function loadNeeded(text) {
     const needed = new Set();
     for (const ch of text) {
         if (CFG.CHINESE_RE.test(ch)) needed.add(bucketOf(ch));
     }
-    // Also always load 'other' for Latin entries
     needed.add('other');
 
     const toLoad = [...needed].filter(b => !S.loaded.has(b) && S.bucketList.includes(b));
@@ -156,27 +221,27 @@ async function loadNeeded(text) {
 
     const total = toLoad.length;
     let done = 0;
-    setDict(`Loading ${total} shard${total>1?'s':''}…`, 0);
+    setDict('Loading ' + total + ' shard' + (total > 1 ? 's' : '') + '…', 0);
 
-    // Load in parallel
     await Promise.all(toLoad.map(async bname => {
         try {
-            const r = await fetch(`${CFG.DICT_DIR}/${bname}.json`);
+            const r = await fetch(CFG.DICT_DIR + '/' + bname + '.json');
             if (!r.ok) throw new Error('HTTP ' + r.status);
             const data = await r.json();
             mergeShard(data);
             S.loaded.add(bname);
+            // Cache in IndexedDB for next visit
+            cacheSet('shard_' + bname, data);
             done++;
-            setDict(`Loading shards…`, Math.round(done / total * 100));
+            setDict('Loading…', Math.round(done / total * 100));
         } catch (e) {
             console.warn('Shard ' + bname + ':', e.message);
         }
     }));
 
-    setDict(`Ready · ${S.dict.size.toLocaleString()} words`, null);
+    setDict('Ready · ' + S.dict.size.toLocaleString() + ' words', null);
 }
 
-/** Merge a shard's entries into S.dict */
 function mergeShard(shard) {
     for (const [word, items] of Object.entries(shard)) {
         const entries = items.map(([py, defs, trad]) => ({
@@ -199,7 +264,7 @@ function mergeShard(shard) {
 function onInput() {
     const t = E.textIn.value;
     const cn = (t.match(CFG.CHINESE_RE) || []).length;
-    E.charCnt.textContent = cn ? `${cn} Chinese (${t.length} total)` : `${t.length} chars`;
+    E.charCnt.textContent = cn ? cn + ' Chinese (' + t.length + ' total)' : t.length + ' chars';
     if (E.outSec.style.display !== 'none') {
         E.outSec.style.display = 'none';
         E.empty.style.display = '';
@@ -233,17 +298,15 @@ function loadEx() {
 }
 
 /* ================================================================
-   ANNOTATION PIPELINE
+   ANNOTATION
    ================================================================ */
 async function annotate() {
     const text = E.textIn.value.trim();
     if (!text) return E.textIn.focus();
     hidePop();
 
-    // Load needed dictionary shards
     await loadNeeded(text);
 
-    // character-level pinyin
     let cpy = null;
     if (typeof pinyinPro !== 'undefined') {
         try {
@@ -257,9 +320,6 @@ async function annotate() {
     E.empty.style.display = 'none';
 }
 
-/* ================================================================
-   WORD SEGMENTATION  (FMM)
-   ================================================================ */
 function segment(text) {
     const out = [];
     let i = 0;
@@ -276,7 +336,6 @@ function segment(text) {
             i = j;
             continue;
         }
-        // Forward Maximum Matching
         let hit = null;
         const lim = Math.min(S.maxWordLen || 6, text.length - i);
         for (let len = lim; len >= 1; len--) {
@@ -319,12 +378,11 @@ function buildGroup(seg, cpy, start) {
     const g = d('span', 'wg');
     g.dataset.word = seg.t;
 
-    // pinyin row
     const ps = d('span', 'pinyin');
     if (cpy && cpy.length > start) {
         for (let i = 0; i < seg.t.length; i++) {
             const py = cpy[start + i] || seg.t[i];
-            const s = d('span', 't' + toneOf(py));
+            const s = d('span', S.toneColor ? 't' + toneOf(py) : 'tn');
             s.textContent = py;
             if (i > 0) ps.append(' ');
             ps.appendChild(s);
@@ -335,7 +393,6 @@ function buildGroup(seg, cpy, start) {
         ps.innerHTML = '&nbsp;';
     }
 
-    // hanzi row
     const hs = d('span', 'hanzi');
     hs.textContent = seg.t;
 
@@ -377,7 +434,7 @@ function showPop(el, word, entries) {
         E.pd.appendChild(h);
         if (entry.t) {
             const td = d('div', 'di');
-            td.textContent = '繁体: ' + entry.t;
+            td.textContent = 'Traditional: ' + entry.t;
             E.pd.appendChild(td);
         }
         entry.d.forEach(def => {
@@ -395,6 +452,7 @@ function showPop(el, word, entries) {
 }
 
 function placePop(el) {
+    if (!el) return;
     const r = el.getBoundingClientRect();
     const pr = E.pop.getBoundingClientRect();
     const vw = window.innerWidth, vh = window.innerHeight;
@@ -411,18 +469,20 @@ function placePop(el) {
     if (t < 10) t = r.bottom + CFG.POPOVER_GAP;
     if (t + pr.height > vh - 10) t = vh - pr.height - 10;
 
-    E.pop.style.cssText = `left:${l}px;top:${t}px;bottom:auto;right:auto;max-width:${CFG.POPOVER_W}px;border-radius:14px;`;
+    E.pop.style.cssText = 'left:' + l + 'px;top:' + t + 'px;bottom:auto;right:auto;max-width:' + CFG.POPOVER_W + 'px;border-radius:14px;';
 }
 
 function hidePop() {
-    E.pop.classList.remove('on');
-    E.pBd.style.display = 'none';
-    setTimeout(() => { if (!E.pop.classList.contains('on')) E.pop.style.display = 'none'; }, 260);
+    if (E.pop) E.pop.classList.remove('on');
+    if (E.pBd) E.pBd.style.display = 'none';
+    setTimeout(() => {
+        if (E.pop && !E.pop.classList.contains('on')) E.pop.style.display = 'none';
+    }, 260);
     if (S.active) { S.active.classList.remove('on'); S.active = null; }
 }
 
 /* ================================================================
-   PRONUNCIATION  (Web Speech API)
+   PRONUNCIATION
    ================================================================ */
 function speak() {
     if (!('speechSynthesis' in window)) return;
@@ -437,32 +497,58 @@ function speak() {
 }
 
 /* ================================================================
-   FONT SIZE
+   FONT SLIDER
    ================================================================ */
-function changeFont(dir) {
-    S.fontSize = Math.max(0, Math.min(CFG.FONT_SIZES.length - 1, S.fontSize + dir));
-    const sz = CFG.FONT_SIZES[S.fontSize];
-    if (E.ann) E.ann.style.fontSize = sz + 'rem';
-    if (E.fsLabel) E.fsLabel.textContent = Math.round(sz * 100) + '%';
-    if (E.btnFm) E.btnFm.disabled = S.fontSize === 0;
-    if (E.btnFp) E.btnFp.disabled = S.fontSize === CFG.FONT_SIZES.length - 1;
+function initSlider() {
+    E.slider.value = S.fontSize;
+    E.slVal.textContent = S.fontSize + '%';
+    if (E.ann) E.ann.style.fontSize = (S.fontSize / 100) + 'rem';
+    E.slider.addEventListener('input', () => {
+        S.fontSize = parseInt(E.slider.value);
+        E.slVal.textContent = S.fontSize + '%';
+        if (E.ann) E.ann.style.fontSize = (S.fontSize / 100) + 'rem';
+    });
+}
+
+/* ================================================================
+   TONE COLOR TOGGLE
+   ================================================================ */
+function onToneToggle() {
+    S.toneColor = !E.toneToggle.checked;
+    // Re-render if output is visible
+    if (E.outSec.style.display !== 'none' && E.textIn.value.trim()) {
+        annotate();
+    }
 }
 
 /* ================================================================
    COPY
    ================================================================ */
-function copyOut() {
-    const t = E.ann.innerText;
-    if (!t.trim()) return;
-    navigator.clipboard.writeText(t).then(() => {
-        const o = E.btnCp.innerHTML;
-        E.btnCp.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
-        setTimeout(() => { E.btnCp.innerHTML = o; }, 1800);
-    }).catch(() => {
-        const r = document.createRange(); r.selectNodeContents(E.ann);
-        const s = getSelection(); s.removeAllRanges(); s.addRange(r);
-        document.execCommand('copy'); s.removeAllRanges();
+function copyPinyin() {
+    // Collect just the pinyin text
+    let parts = [];
+    const groups = E.ann.querySelectorAll('.wg');
+    groups.forEach(g => {
+        const py = g.querySelector('.pinyin');
+        if (py) parts.push(py.textContent.trim());
     });
+    const text = parts.join(' ');
+    if (!text) return;
+
+    navigator.clipboard.writeText(text).then(() => flashBtn(E.btnCpPy));
+}
+
+function copyHanzi() {
+    const text = E.ann.innerText;
+    if (!text.trim()) return;
+    navigator.clipboard.writeText(text).then(() => flashBtn(E.btnCpHan));
+}
+
+function flashBtn(btn) {
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.style.color = '#22c55e';
+    setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 1500);
 }
 
 /* ================================================================

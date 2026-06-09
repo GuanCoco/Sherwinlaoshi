@@ -1,6 +1,5 @@
 /* ================================================================
    Chinese Pinyin Annotator · Styles
-   Modern, responsive, clean design
    ================================================================ */
 
 :root {
@@ -44,47 +43,33 @@ body {
     min-height: 100vh;
 }
 
-/* ── Layout ─────────────────────────────────────────── */
-.app {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 20px 16px 40px;
-}
+/* Layout */
+.app { max-width: 900px; margin: 0 auto; padding: 20px 16px 40px; }
 
-/* ── Header ─────────────────────────────────────────── */
+/* Header */
 .hd { text-align: center; padding: 32px 0 24px; }
 .tt { display: flex; flex-direction: column; gap: 4px; align-items: center; }
 .tt .cn { font-size: 1.9rem; font-weight: 700; letter-spacing: .04em; }
 .tt .en { font-size: .85rem; font-weight: 400; color: var(--text2); text-transform: uppercase; letter-spacing: .02em; }
 .sub { margin-top: 10px; font-size: .92rem; color: var(--text3); max-width: 520px; margin-left: auto; margin-right: auto; }
 
-/* ── Card ───────────────────────────────────────────── */
+/* Card */
 .card {
-    background: var(--surface);
-    border-radius: var(--r-lg);
-    box-shadow: var(--sh);
-    padding: 20px 22px;
-    border: 1px solid var(--border2);
-    transition: box-shadow var(--tr);
+    background: var(--surface); border-radius: var(--r-lg);
+    box-shadow: var(--sh); padding: 20px 22px;
+    border: 1px solid var(--border2); transition: box-shadow var(--tr);
 }
 .card:hover { box-shadow: 0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.06); }
 .lbl { font-size: .95rem; font-weight: 600; }
 
-/* ── Input ──────────────────────────────────────────── */
+/* Input */
 .in-card { margin-bottom: 8px; }
 .in-hd { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .ta {
-    width: 100%;
-    border: 1.5px solid var(--border);
-    border-radius: var(--r);
-    padding: 14px 16px;
-    font-size: 1.05rem;
-    font-family: inherit;
-    line-height: 1.7;
-    color: var(--text);
-    background: #f8f9fb;
-    resize: vertical;
-    min-height: 120px;
+    width: 100%; border: 1.5px solid var(--border); border-radius: var(--r);
+    padding: 14px 16px; font-size: 1.05rem; font-family: inherit;
+    line-height: 1.7; color: var(--text); background: #f8f9fb;
+    resize: vertical; min-height: 120px;
     transition: border-color var(--tr), box-shadow var(--tr);
 }
 .ta:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-l); background: var(--surface); }
@@ -92,7 +77,7 @@ body {
 .in-ft { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
 .cc { font-size: .82rem; color: var(--text3); }
 
-/* ── Buttons ────────────────────────────────────────── */
+/* Buttons */
 .bt {
     display: inline-flex; align-items: center; gap: 5px;
     padding: 9px 18px; border: none; border-radius: var(--r);
@@ -105,110 +90,101 @@ body {
 .bp:hover { background: var(--primary-h); box-shadow: 0 4px 8px rgba(79,70,229,.35); }
 .bo { background: transparent; color: var(--text2); border: 1.5px solid var(--border); }
 .bo:hover { background: #f8f9fb; border-color: var(--text3); color: var(--text); }
-.bi {
-    width: 28px; height: 28px; padding: 0;
-    display: flex; align-items: center; justify-content: center;
-    border-radius: 50%;
-}
-.bi:disabled { opacity: .35; cursor: not-allowed; }
 .sm { padding: 5px 11px; font-size: .8rem; border-radius: var(--r-sm); }
 .acts { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 
-/* ── Dict status / progress bar ─────────────────────── */
-.ds {
-    display: flex; align-items: center; gap: 10px;
-    padding: 6px 4px 12px; font-size: .82rem; color: var(--text2);
-}
-.ds-bar {
-    flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;
-}
-.ds-fill {
-    height: 100%; background: var(--prog); border-radius: 3px;
-    transition: width .3s ease;
-}
+/* Dict status */
+.ds { display: flex; align-items: center; gap: 10px; padding: 6px 4px 12px; font-size: .82rem; color: var(--text2); }
+.ds-bar { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.ds-fill { height: 100%; background: var(--prog); border-radius: 3px; transition: width .3s ease; }
 .ds-msg { flex-shrink: 0; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* ── Font size ──────────────────────────────────────── */
-.fs { display: flex; align-items: center; gap: 1px; margin-right: 6px; }
-.fsl { font-size: .78rem; font-weight: 600; min-width: 36px; text-align: center; user-select: none; }
+/* Font slider */
+.fs { display: flex; align-items: center; gap: 6px; margin-right: 6px; }
+.fsl { font-size: .72rem; color: var(--text3); font-weight: 600; }
+.fsl-lg { font-size: .92rem; }
+.fsr {
+    -webkit-appearance: none; appearance: none;
+    width: 80px; height: 5px; background: var(--border);
+    border-radius: 3px; outline: none; cursor: pointer;
+}
+.fsr::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--primary); cursor: pointer;
+    box-shadow: 0 1px 3px rgba(79,70,229,.3);
+    transition: transform var(--tr-f);
+}
+.fsr::-webkit-slider-thumb:hover { transform: scale(1.2); }
+.fsr::-moz-range-thumb {
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--primary); cursor: pointer; border: none;
+}
+.fsv { font-size: .78rem; font-weight: 600; min-width: 38px; text-align: center; user-select: none; }
 
-/* ── Tone legend ────────────────────────────────────── */
+/* Tone color toggle */
+.tct {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: .78rem; color: var(--text2); cursor: pointer; user-select: none;
+    margin-right: 4px;
+}
+.tct input { cursor: pointer; }
+
+/* Tone legend */
 .tl { font-size: .75rem; color: var(--text3); display: flex; align-items: center; gap: 2px; }
 .td { display: inline-block; width: 9px; height: 9px; border-radius: 2px; }
 .td.t1 { background: var(--t1); } .td.t2 { background: var(--t2); }
 .td.t3 { background: var(--t3); } .td.t4 { background: var(--t4); } .td.t5 { background: var(--t5); }
 
-/* ── Output ──────────────────────────────────────────── */
+/* Output */
 .out-card { margin-bottom: 20px; }
 .out-hd { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
 
-/* ── Annotated text ─────────────────────────────────── */
+/* Annotated text */
 .at {
-    padding: 16px 6px;
-    font-size: 1.15rem;
-    line-height: 2.6;
-    letter-spacing: .03em;
-    color: var(--text);
-    overflow-wrap: break-word;
+    padding: 16px 6px; font-size: 1rem; line-height: 2.6;
+    letter-spacing: .03em; color: var(--text); overflow-wrap: break-word;
 }
 
-/* word group */
+/* Word group */
 .wg {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    vertical-align: top;
-    margin: 0 1px;
-    cursor: pointer;
-    position: relative;
-    border-radius: var(--r-sm);
-    padding: 1px 3px;
-    transition: background var(--tr-f);
-    user-select: none;
+    display: inline-flex; flex-direction: column; align-items: center;
+    vertical-align: top; margin: 0 1px; cursor: pointer;
+    position: relative; border-radius: var(--r-sm);
+    padding: 1px 3px; transition: background var(--tr-f); user-select: none;
 }
 .wg:hover { background: var(--primary-l); }
 .wg.on { background: #dbeafe; box-shadow: 0 0 0 2px var(--primary); }
 
-.wg .pinyin {
-    font-size: .56em;
-    line-height: 1.3;
-    color: var(--text3);
-    white-space: nowrap;
-    letter-spacing: .02em;
-    font-weight: 400;
-}
+.wg .pinyin { font-size: .56em; line-height: 1.3; color: var(--text3); white-space: nowrap; letter-spacing: .02em; font-weight: 400; }
 .wg .hanzi { font-size: 1em; line-height: 1.3; font-weight: 500; }
 
+/* Tone-colored pinyin */
 .wg .pinyin .t1 { color: var(--t1); }
 .wg .pinyin .t2 { color: var(--t2); }
 .wg .pinyin .t3 { color: var(--t3); }
 .wg .pinyin .t4 { color: var(--t4); }
 .wg .pinyin .t5 { color: var(--t5); }
 
+/* Neutral (no color) pinyin */
+.wg .pinyin .tn { color: var(--text); }
+
 .oc { font-size: 1em; color: var(--text3); }
 .oc.sp { display: inline; }
 
-/* ── Empty state ────────────────────────────────────── */
+/* Empty state */
 .es { text-align: center; padding: 50px 20px; color: var(--text3); }
 .es p { font-size: .95rem; margin-top: 12px; }
 .es .eh { font-size: .8rem; opacity: .7; }
 
-/* ── Popover ────────────────────────────────────────── */
+/* Popover */
 .pop {
-    position: fixed; z-index: 1000;
-    background: var(--surface);
-    border-radius: var(--r-lg);
-    box-shadow: var(--sh-xl);
-    border: 1px solid var(--border);
-    padding: 16px 18px;
-    min-width: 200px;
-    max-width: 380px;
-    max-height: 70vh;
-    overflow-y: auto;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity var(--tr), transform var(--tr);
-    pointer-events: none;
+    position: fixed; z-index: 1000; background: var(--surface);
+    border-radius: var(--r-lg); box-shadow: var(--sh-xl);
+    border: 1px solid var(--border); padding: 16px 18px;
+    min-width: 200px; max-width: 380px; max-height: 70vh;
+    overflow-y: auto; opacity: 0; transform: translateY(8px);
+    transition: opacity var(--tr), transform var(--tr); pointer-events: none;
 }
 .pop.on { opacity: 1; transform: translateY(0); pointer-events: auto; }
 
@@ -220,12 +196,9 @@ body {
     width: 32px; height: 32px; display: flex;
     align-items: center; justify-content: center;
     border: none; background: transparent;
-    border-radius: 50%; cursor: pointer;
-    transition: all var(--tr-f);
+    border-radius: 50%; cursor: pointer; transition: all var(--tr-f);
 }
-.ps {
-    color: var(--primary); background: var(--primary-l);
-}
+.ps { color: var(--primary); background: var(--primary-l); }
 .ps:hover { background: #dbeafe; color: var(--primary-h); transform: scale(1.1); }
 .ps.spk { color: #fff; background: var(--primary); animation: sp .8s ease-in-out infinite; }
 @keyframes sp { 0%,100% { box-shadow:0 0 0 0 rgba(79,70,229,.4); } 50% { box-shadow:0 0 0 8px rgba(79,70,229,0); } }
@@ -237,20 +210,12 @@ body {
 .pd { height: 1px; background: var(--border2); margin: 10px 0; }
 .defs { list-style: none; }
 
-.di {
-    padding: 2px 0; font-size: .87rem;
-    color: var(--text2); line-height: 1.5;
-}
+.di { padding: 2px 0; font-size: .87rem; color: var(--text2); line-height: 1.5; }
 .di::before { content: "•"; color: var(--primary); margin-right: 7px; font-weight: bold; }
 .di.pl { font-weight: 600; color: var(--primary); }
 .di.pl::before { content: none; }
 
 .pbd { position: fixed; inset: 0; z-index: 999; background: transparent; }
-
-/* ── Footer ─────────────────────────────────────────── */
-.ft { text-align: center; padding: 28px; font-size: .8rem; color: var(--text3); }
-.ft a { color: var(--primary); text-decoration: none; }
-.ft a:hover { color: var(--primary-h); text-decoration: underline; }
 
 /* ================================================================
    RESPONSIVE
@@ -261,12 +226,13 @@ body {
     .tt .cn { font-size: 1.5rem; }
     .card { padding: 16px 14px; }
     .ta { font-size: 1rem; min-height: 100px; }
-    .at { font-size: 1.1rem; line-height: 2.4; padding: 12px 2px; }
+    .at { font-size: 1rem; line-height: 2.4; padding: 12px 2px; }
     .wg .pinyin { font-size: .53em; }
     .in-ft { flex-direction: column; gap: 8px; align-items: stretch; }
     .in-ft .bt { justify-content: center; }
     .out-hd { flex-direction: column; align-items: flex-start; }
     .pop { max-width: calc(100vw - 24px); left: 12px !important; right: 12px !important; }
+    .fsr { width: 60px; }
 }
 
 @media (max-width: 480px) {
@@ -275,7 +241,7 @@ body {
     .tt .cn { font-size: 1.25rem; }
     .card { padding: 12px 10px; border-radius: var(--r); }
     .ta { font-size: .92rem; padding: 10px 12px; min-height: 80px; }
-    .at { font-size: 1.05rem; line-height: 2.2; }
+    .at { font-size: .95rem; line-height: 2.2; }
     .wg { margin: 0; padding: 1px 2px; }
     .wg .pinyin { font-size: .5em; }
     .bt { padding: 7px 14px; font-size: .82rem; }
