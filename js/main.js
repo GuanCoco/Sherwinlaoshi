@@ -34,6 +34,7 @@ const S = {
     active: null,
     fontSize: CFG.FONT_DEFAULT,
     toneColor: true,
+    hasNativeVoice: false,  // preloaded on init
 };
 
 /* ================================================================
@@ -72,6 +73,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     bind();
     initSlider();
+    loadVoices();  // preload for China (no VPN needed)
     loadDict();
 });
 
@@ -483,6 +485,29 @@ function hidePop() {
 /* ================================================================
    PRONUNCIATION
    ================================================================ */
+/* ================================================================
+   Voice preloading  (Web Speech API — no network, works in China)
+   ================================================================ */
+function loadVoices() {
+    if (!('speechSynthesis' in window)) return;
+    // Chrome loads voices async — listen for the event + poll
+    const check = function() {
+        const v = speechSynthesis.getVoices();
+        if (v.length > 0 && v.some(function(x) { return x.lang.startsWith('zh'); })) {
+            S.hasNativeVoice = true;
+        }
+    };
+    check();
+    speechSynthesis.onvoiceschanged = check;
+    // Some browsers need a first speak() to trigger voice loading
+    var u = new SpeechSynthesisUtterance('');
+    u.volume = 0;
+    speechSynthesis.speak(u);
+}
+
+/* ================================================================
+   PRONUNCIATION
+   ================================================================ */
 function speak() {
     const w = E.pw.textContent;
     if (!w) return;
@@ -490,21 +515,45 @@ function speak() {
 
     const done = function() { E.pSpk.classList.remove('spk'); };
 
-    // Tier 1: Google TTS — most reliable cross-platform, always works
-    const url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=zh-CN&q=' + encodeURIComponent(w);
-    const a = new Audio(url);
-    a.onended = done;
-    a.onerror = function() {
-        // Google TTS failed — try Web Speech as last resort
-        done();
-        if ('speechSynthesis' in window) {
+    // Tier 1: Web Speech (runs locally, no network, works in China)
+    if (('speechSynthesis' in window) && S.hasNativeVoice) {
+        speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(w);
+        u.lang = 'zh-CN'; u.rate = 0.85;
+        u.onend = done;
+        u.onerror = function() {
+            done();
+            // Fall back to Google TTS (works outside China)
+            tryGoogle(w, done);
+        };
+        speechSynthesis.speak(u);
+        return;
+    }
+
+    // Even if voice check failed, retry — voices may have loaded late
+    if ('speechSynthesis' in window) {
+        const v = speechSynthesis.getVoices();
+        S.hasNativeVoice = v.some(function(x) { return x.lang.startsWith('zh'); });
+        if (S.hasNativeVoice) {
             speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(w);
             u.lang = 'zh-CN'; u.rate = 0.85;
-            u.onend = u.onerror = function() {};
+            u.onend = done;
+            u.onerror = function() { done(); tryGoogle(w, done); };
             speechSynthesis.speak(u);
+            return;
         }
-    };
+    }
+
+    // Tier 2: Google TTS
+    tryGoogle(w, done);
+}
+
+function tryGoogle(w, done) {
+    const url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=zh-CN&q=' + encodeURIComponent(w);
+    const a = new Audio(url);
+    a.onended = done;
+    a.onerror = done;  // in China, this will fail — silently OK, voice was our primary
     a.play();
 }
 
