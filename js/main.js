@@ -486,75 +486,59 @@ function hidePop() {
    PRONUNCIATION
    ================================================================ */
 /* ================================================================
-   Voice preloading  (Web Speech API — no network, works in China)
+   PRONUNCIATION  (Microsoft Edge TTS — free, works in China & abroad)
    ================================================================ */
-function loadVoices() {
-    if (!('speechSynthesis' in window)) return;
-    // Chrome loads voices async — listen for the event + poll
-    const check = function() {
-        const v = speechSynthesis.getVoices();
-        if (v.length > 0 && v.some(function(x) { return x.lang.startsWith('zh'); })) {
-            S.hasNativeVoice = true;
-        }
-    };
-    check();
-    speechSynthesis.onvoiceschanged = check;
-    // Some browsers need a first speak() to trigger voice loading
-    var u = new SpeechSynthesisUtterance('');
-    u.volume = 0;
-    speechSynthesis.speak(u);
+const MS_TTS_URL = 'https://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1';
+const MS_TOKEN = '6A5AA1D4EAFF4E9FB37E23D68491D6F4';
+
+async function msTTS(text) {
+    const ssml = `<speak version='1.0' xml:lang='zh-CN'>` +
+        `<voice name='zh-CN-XiaoxiaoNeural'>${text}</voice>` +
+        `</speak>`;
+    const url = `${MS_TTS_URL}?TrustedClientToken=${MS_TOKEN}`;
+    try {
+        const r = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/ssml+xml',
+                'X-Microsoft-OutputFormat': 'audio-16khz-32kbitrate-mono-mp3',
+            },
+            body: ssml,
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const blob = await r.blob();
+        return URL.createObjectURL(blob);
+    } catch (_) { return null; }
 }
 
-/* ================================================================
-   PRONUNCIATION
-   ================================================================ */
+function loadVoices() {
+    // Stub — not needed with MS Edge TTS
+    S.hasNativeVoice = false;
+}
+
 function speak() {
     const w = E.pw.textContent;
     if (!w) return;
     E.pSpk.classList.add('spk');
+    const done = () => E.pSpk.classList.remove('spk');
 
-    const done = function() { E.pSpk.classList.remove('spk'); };
-
-    // Tier 1: Web Speech (runs locally, no network, works in China)
-    if (('speechSynthesis' in window) && S.hasNativeVoice) {
-        speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(w);
-        u.lang = 'zh-CN'; u.rate = 0.85;
-        u.onend = done;
-        u.onerror = function() {
-            done();
-            // Fall back to Google TTS (works outside China)
-            tryGoogle(w, done);
-        };
-        speechSynthesis.speak(u);
-        return;
-    }
-
-    // Even if voice check failed, retry — voices may have loaded late
-    if ('speechSynthesis' in window) {
-        const v = speechSynthesis.getVoices();
-        S.hasNativeVoice = v.some(function(x) { return x.lang.startsWith('zh'); });
-        if (S.hasNativeVoice) {
-            speechSynthesis.cancel();
-            const u = new SpeechSynthesisUtterance(w);
-            u.lang = 'zh-CN'; u.rate = 0.85;
-            u.onend = done;
-            u.onerror = function() { done(); tryGoogle(w, done); };
-            speechSynthesis.speak(u);
-            return;
+    msTTS(w).then(url => {
+        if (url) {
+            const a = new Audio(url);
+            a.onended = done;
+            a.onerror = () => { done(); URL.revokeObjectURL(url); };
+            a.play();
+        } else {
+            // All online TTS failed — try Web Speech as last resort
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(w);
+                u.lang = 'zh-CN'; u.rate = 0.85;
+                u.onend = u.onerror = done;
+                speechSynthesis.speak(u);
+            } else { done(); }
         }
-    }
-
-    // Tier 2: Google TTS
-    tryGoogle(w, done);
-}
-
-function tryGoogle(w, done) {
-    const url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=zh-CN&q=' + encodeURIComponent(w);
-    const a = new Audio(url);
-    a.onended = done;
-    a.onerror = done;  // in China, this will fail — silently OK, voice was our primary
-    a.play();
+    });
 }
 
 /* ================================================================

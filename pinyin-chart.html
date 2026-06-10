@@ -689,7 +689,29 @@ var CHAR = {
 };
 
 var _playing = null;
-var _useWebSpeech = false;
+
+/* ── Microsoft Edge TTS (free, works globally including China) ── */
+var MS_TTS = 'https://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1';
+var MS_TOK = '6A5AA1D4EAFF4E9FB37E23D68491D6F4';
+
+function ttsFetch(text, cb) {
+    var ssml = '<speak version="1.0" xml:lang="zh-CN"><voice name="zh-CN-XiaoxiaoNeural">' + text + '</voice></speak>';
+    fetch(MS_TTS + '?TrustedClientToken=' + MS_TOK, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/ssml+xml',
+            'X-Microsoft-OutputFormat': 'audio-16khz-32kbitrate-mono-mp3'
+        },
+        body: ssml
+    }).then(function(r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.blob();
+    }).then(function(blob) {
+        cb(URL.createObjectURL(blob));
+    }).catch(function() {
+        cb(null);
+    });
+}
 
 function onCellClick(e) {
     var td = e.currentTarget;
@@ -703,53 +725,18 @@ function onCellClick(e) {
 
     var query = CHAR[syl] || syl;
 
-    // Tier 1: Web Speech (runs locally, no network, works in China)
-    if (_useWebSpeech && 'speechSynthesis' in window) {
-        speechSynthesis.cancel();
-        var u = new SpeechSynthesisUtterance(query);
-        u.lang = 'zh-CN'; u.rate = 0.8;
-        u.onerror = function() { playGoogle(query); };
-        speechSynthesis.speak(u);
-        return;
-    }
-
-    // Re-check voices (may have loaded late)
-    if ('speechSynthesis' in window) {
-        var vv = speechSynthesis.getVoices();
-        _useWebSpeech = vv.some(function(x) { return x.lang.startsWith('zh'); });
-        if (_useWebSpeech) {
+    ttsFetch(query, function(audioUrl) {
+        if (audioUrl) {
+            var a = new Audio(audioUrl);
+            a.play();
+        } else if ('speechSynthesis' in window) {
             speechSynthesis.cancel();
-            var uu = new SpeechSynthesisUtterance(query);
-            uu.lang = 'zh-CN'; uu.rate = 0.8;
-            uu.onerror = function() { playGoogle(query); };
-            speechSynthesis.speak(uu);
-            return;
+            var u = new SpeechSynthesisUtterance(query);
+            u.lang = 'zh-CN'; u.rate = 0.8;
+            speechSynthesis.speak(u);
         }
-    }
-
-    // Tier 2: Google TTS
-    playGoogle(query);
+    });
 }
-
-function playGoogle(query) {
-    var url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=zh-CN&q=' + encodeURIComponent(query);
-    var a = new Audio(url);
-    a.play();
-}
-
-// Preload voices on page load
-(function preloadVoices() {
-    if (!('speechSynthesis' in window)) return;
-    var check = function() {
-        var v = speechSynthesis.getVoices();
-        _useWebSpeech = v.length > 0 && v.some(function(x) { return x.lang.startsWith('zh'); });
-    };
-    check();
-    speechSynthesis.onvoiceschanged = check;
-    var dummy = new SpeechSynthesisUtterance('');
-    dummy.volume = 0;
-    speechSynthesis.speak(dummy);
-})();
 
 /* ================================================================
    Init
