@@ -483,38 +483,9 @@ function hidePop() {
 }
 
 /* ================================================================
-   PRONUNCIATION
+   PRONUNCIATION  (multi-engine: MS Edge → Google → Web Speech)
    ================================================================ */
-/* ================================================================
-   PRONUNCIATION  (Microsoft Edge TTS — free, works in China & abroad)
-   ================================================================ */
-const MS_TTS_URL = 'https://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1';
-const MS_TOKEN = '6A5AA1D4EAFF4E9FB37E23D68491D6F4';
-
-async function msTTS(text) {
-    const ssml = `<speak version='1.0' xml:lang='zh-CN'>` +
-        `<voice name='zh-CN-XiaoxiaoNeural'>${text}</voice>` +
-        `</speak>`;
-    const url = `${MS_TTS_URL}?TrustedClientToken=${MS_TOKEN}`;
-    try {
-        const r = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/ssml+xml',
-                'X-Microsoft-OutputFormat': 'audio-16khz-32kbitrate-mono-mp3',
-            },
-            body: ssml,
-        });
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        const blob = await r.blob();
-        return URL.createObjectURL(blob);
-    } catch (_) { return null; }
-}
-
-function loadVoices() {
-    // Stub — not needed with MS Edge TTS
-    S.hasNativeVoice = false;
-}
+function loadVoices() { /* unused */ }
 
 function speak() {
     const w = E.pw.textContent;
@@ -522,23 +493,49 @@ function speak() {
     E.pSpk.classList.add('spk');
     const done = () => E.pSpk.classList.remove('spk');
 
-    msTTS(w).then(url => {
-        if (url) {
-            const a = new Audio(url);
-            a.onended = done;
-            a.onerror = () => { done(); URL.revokeObjectURL(url); };
-            a.play();
+    // Pre-create Audio inside the user-gesture so Android allows playback
+    const audio = new Audio();
+    audio.preload = 'auto';
+    audio.onended = done;
+    audio.onerror = () => { done(); tryWebTTS(w, done); };
+
+    // Engine 1: Microsoft Edge TTS (blob URL)
+    edgeTTS(w).then(blobUrl => {
+        if (blobUrl) {
+            audio.src = blobUrl;
+            audio.play().catch(() => { done(); tryWebTTS(w, done); });
         } else {
-            // All online TTS failed — try Web Speech as last resort
-            if ('speechSynthesis' in window) {
-                speechSynthesis.cancel();
-                const u = new SpeechSynthesisUtterance(w);
-                u.lang = 'zh-CN'; u.rate = 0.85;
-                u.onend = u.onerror = done;
-                speechSynthesis.speak(u);
-            } else { done(); }
+            // Engine 2: Google TTS direct URL (works with VPN on Android)
+            tryGoogleURL(w, audio, done);
         }
     });
+}
+
+function edgeTTS(text) {
+    const ssml = '<speak version="1.0" xml:lang="zh-CN"><voice name="zh-CN-XiaoxiaoNeural">' + text + '</voice></speak>';
+    return fetch('https://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=6A5AA1D4EAFF4E9FB37E23D68491D6F4', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/ssml+xml',
+            'X-Microsoft-OutputFormat': 'audio-16khz-32kbitrate-mono-mp3',
+        },
+        body: ssml,
+    }).then(r => r.ok ? r.blob().then(b => URL.createObjectURL(b)) : null).catch(() => null);
+}
+
+function tryGoogleURL(text, audio, done) {
+    audio.src = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=zh-CN&q=' + encodeURIComponent(text);
+    audio.play().catch(() => { done(); tryWebTTS(text, done); });
+}
+
+function tryWebTTS(text, done) {
+    if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'zh-CN'; u.rate = 0.85;
+        u.onend = u.onerror = done;
+        speechSynthesis.speak(u);
+    } else { done(); }
 }
 
 /* ================================================================

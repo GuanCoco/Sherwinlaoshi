@@ -690,27 +690,33 @@ var CHAR = {
 
 var _playing = null;
 
-/* ── Microsoft Edge TTS (free, works globally including China) ── */
-var MS_TTS = 'https://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1';
-var MS_TOK = '6A5AA1D4EAFF4E9FB37E23D68491D6F4';
+/* ── Multi-engine TTS (Android-compatible) ── */
 
-function ttsFetch(text, cb) {
+function edgeFetch(text) {
     var ssml = '<speak version="1.0" xml:lang="zh-CN"><voice name="zh-CN-XiaoxiaoNeural">' + text + '</voice></speak>';
-    fetch(MS_TTS + '?TrustedClientToken=' + MS_TOK, {
+    return fetch('https://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=6A5AA1D4EAFF4E9FB37E23D68491D6F4', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/ssml+xml',
             'X-Microsoft-OutputFormat': 'audio-16khz-32kbitrate-mono-mp3'
         },
         body: ssml
-    }).then(function(r) {
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return r.blob();
-    }).then(function(blob) {
-        cb(URL.createObjectURL(blob));
-    }).catch(function() {
-        cb(null);
-    });
+    }).then(function(r) { return r.ok ? r.blob().then(function(b) { return URL.createObjectURL(b); }) : null; })
+      .catch(function() { return null; });
+}
+
+function tryGoogleURL(audio, text) {
+    audio.src = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=zh-CN&q=' + encodeURIComponent(text);
+    audio.play().catch(function() { /* silent */ });
+}
+
+function tryWebTTS(text) {
+    if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+        var u = new SpeechSynthesisUtterance(text);
+        u.lang = 'zh-CN'; u.rate = 0.8;
+        speechSynthesis.speak(u);
+    }
 }
 
 function onCellClick(e) {
@@ -725,15 +731,18 @@ function onCellClick(e) {
 
     var query = CHAR[syl] || syl;
 
-    ttsFetch(query, function(audioUrl) {
-        if (audioUrl) {
-            var a = new Audio(audioUrl);
-            a.play();
-        } else if ('speechSynthesis' in window) {
-            speechSynthesis.cancel();
-            var u = new SpeechSynthesisUtterance(query);
-            u.lang = 'zh-CN'; u.rate = 0.8;
-            speechSynthesis.speak(u);
+    // Pre-create Audio inside click for Android gesture permission
+    var audio = new Audio();
+    audio.preload = 'auto';
+
+    // Engine 1: Microsoft Edge TTS
+    edgeFetch(query).then(function(blobUrl) {
+        if (blobUrl) {
+            audio.src = blobUrl;
+            audio.play().catch(function() { tryGoogleURL(audio, query); });
+        } else {
+            // Engine 2: Google TTS (works with VPN)
+            tryGoogleURL(audio, query);
         }
     });
 }
