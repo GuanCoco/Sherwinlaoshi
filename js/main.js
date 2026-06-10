@@ -488,25 +488,23 @@ function speak() {
     if (!w) return;
     E.pSpk.classList.add('spk');
 
-    // Check if a zh voice is available (iOS / Windows usually have one,
-    // Android often does NOT — fall back to Google TTS in that case).
-    if ('speechSynthesis' in window) {
-        const voices = speechSynthesis.getVoices();
-        const hasZh = voices.some(v => v.lang.startsWith('zh'));
-        if (hasZh) {
+    const done = function() { E.pSpk.classList.remove('spk'); };
+
+    // Tier 1: Google TTS — most reliable cross-platform, always works
+    const url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=zh-CN&q=' + encodeURIComponent(w);
+    const a = new Audio(url);
+    a.onended = done;
+    a.onerror = function() {
+        // Google TTS failed — try Web Speech as last resort
+        done();
+        if ('speechSynthesis' in window) {
             speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(w);
             u.lang = 'zh-CN'; u.rate = 0.85;
-            u.onend = u.onerror = () => { E.pSpk.classList.remove('spk'); };
+            u.onend = u.onerror = function() {};
             speechSynthesis.speak(u);
-            return;
         }
-    }
-
-    // Fallback: Google Translate TTS (works on all browsers including Android)
-    const url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=zh-CN&q=' + encodeURIComponent(w);
-    const a = new Audio(url);
-    a.onended = a.onerror = () => { E.pSpk.classList.remove('spk'); };
+    };
     a.play();
 }
 
