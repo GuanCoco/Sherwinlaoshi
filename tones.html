@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn Mandarin Chinese tones with visual memory aids — colour-coded images with pronunciation for each tone.">
+    <title>Mandarin Tones | sherwinlaoshi</title>
+    <link rel="canonical" href="https://sherwinlaoshi.com/tones.html">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* ── Tones Page ── */
+        .tones-wrap {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px 16px 48px;
+        }
+        .tones-hero {
+            text-align: center;
+            padding: 32px 0 12px;
+        }
+        .tones-hero h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+        .tones-hero h1 .cn {
+            font-weight: 400;
+            font-size: 1.05em;
+            color: var(--c-text2);
+        }
+        .tones-hero .sub {
+            font-size: .92rem;
+            color: var(--c-text3);
+            max-width: 640px;
+            margin: 0 auto 20px;
+            line-height: 1.65;
+        }
+
+        /* Colour legend row */
+        .tone-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 16px 0 32px;
+            font-size: .84rem;
+        }
+        .tone-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .tone-legend-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .tone-legend-dot.t1 { background: var(--t1); }
+        .tone-legend-dot.t2 { background: var(--t2); }
+        .tone-legend-dot.t3 { background: var(--t3); }
+        .tone-legend-dot.t4 { background: var(--t4); }
+        .tone-legend-dot.t5 { background: var(--t5); }
+
+        /* Tone card */
+        .tone-card {
+            background: var(--c-surface);
+            border-radius: var(--r-xl);
+            box-shadow: var(--sh);
+            border: 1px solid var(--c-border2);
+            padding: 28px 32px;
+            margin-bottom: 28px;
+            transition: box-shadow var(--tr);
+        }
+        .tone-card:hover { box-shadow: var(--sh-md); }
+
+        .tone-card-hd {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .tone-badge {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+            user-select: none;
+        }
+        .tone-badge.t1 { background: var(--t1); }
+        .tone-badge.t2 { background: var(--t2); }
+        .tone-badge.t3 { background: var(--t3); }
+        .tone-badge.t4 { background: var(--t4); }
+        .tone-badge.t5 { background: var(--t5); }
+
+        .tone-title-group { flex: 1; min-width: 200px; }
+        .tone-label { font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 2px; }
+        .tone-label.t1 { color: var(--t1); }
+        .tone-label.t2 { color: var(--t2); }
+        .tone-label.t3 { color: var(--t3); }
+        .tone-label.t4 { color: var(--t4); }
+        .tone-label.t5 { color: var(--t5); }
+
+        .tone-word {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: .04em;
+            line-height: 1.3;
+        }
+        .tone-pinyin {
+            font-size: 1.15rem;
+            font-style: italic;
+            color: var(--c-text2);
+            margin-top: 2px;
+        }
+        .tone-eng {
+            font-size: .88rem;
+            color: var(--c-text3);
+            margin-top: 2px;
+        }
+
+        /* Image gallery */
+        .tone-gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .tone-img-wrap {
+            position: relative;
+            border-radius: var(--r-lg);
+            overflow: hidden;
+            cursor: pointer;
+            aspect-ratio: 1 / 1;
+            background: #f0f0f0;
+            border: 2px solid transparent;
+            transition: border-color .2s, box-shadow .2s, transform .15s;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        .tone-img-wrap:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(0,0,0,.1);
+        }
+        .tone-img-wrap:active { transform: scale(.97); }
+        .tone-img-wrap.playing {
+            animation: imgPulse .5s ease;
+        }
+        @keyframes imgPulse {
+            0%,100% { box-shadow: 0 0 0 0 currentColor; }
+            50% { box-shadow: 0 0 0 8px transparent; }
+        }
+        .tone-img-wrap.t1 { border-color: var(--t1); }
+        .tone-img-wrap.t1.playing { box-shadow: 0 0 0 4px var(--t1); }
+        .tone-img-wrap.t2 { border-color: var(--t2); }
+        .tone-img-wrap.t2.playing { box-shadow: 0 0 0 4px var(--t2); }
+        .tone-img-wrap.t3 { border-color: var(--t3); }
+        .tone-img-wrap.t3.playing { box-shadow: 0 0 0 4px var(--t3); }
+        .tone-img-wrap.t4 { border-color: var(--t4); }
+        .tone-img-wrap.t4.playing { box-shadow: 0 0 0 4px var(--t4); }
+        .tone-img-wrap.t5 { border-color: var(--t5); }
+        .tone-img-wrap.t5.playing { box-shadow: 0 0 0 4px var(--t5); }
+
+        .tone-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .tone-img-speak-icon {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(0,0,0,.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            pointer-events: none;
+            transition: background .2s;
+        }
+        .tone-img-wrap:hover .tone-img-speak-icon {
+            background: rgba(0,0,0,.65);
+        }
+
+        /* Tip box */
+        .tone-tip {
+            background: #f8f9fb;
+            border-radius: var(--r);
+            padding: 14px 18px;
+            font-size: .88rem;
+            color: var(--c-text2);
+            line-height: 1.6;
+            margin-top: 4px;
+        }
+        .tone-tip strong { color: var(--c-text); }
+
+        /* Summary */
+        .tones-summary {
+            margin-top: 12px;
+            padding: 24px 32px;
+            background: var(--c-surface);
+            border-radius: var(--r-xl);
+            box-shadow: var(--sh);
+            border: 1px solid var(--c-border2);
+        }
+        .tones-summary h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .tones-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+        }
+        .tones-summary-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: var(--r);
+            background: #f8f9fb;
+            font-size: .85rem;
+        }
+        .tones-summary-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .tones-summary-dot.t1 { background: var(--t1); }
+        .tones-summary-dot.t2 { background: var(--t2); }
+        .tones-summary-dot.t3 { background: var(--t3); }
+        .tones-summary-dot.t4 { background: var(--t4); }
+        .tones-summary-dot.t5 { background: var(--t5); }
+
+        .tones-summary-item .py {
+            font-style: italic;
+            color: var(--c-text3);
+            margin-left: auto;
+            font-size: .8rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .tones-wrap { padding: 12px 10px 32px; }
+            .tones-hero h1 { font-size: 1.4rem; }
+            .tone-card { padding: 20px 16px; }
+            .tone-word { font-size: 1.6rem; }
+            .tone-gallery { gap: 10px; }
+            .tones-summary { padding: 18px 16px; }
+        }
+        @media (max-width: 480px) {
+            .tones-wrap { padding: 8px 6px 24px; }
+            .tones-hero { padding: 20px 0 8px; }
+            .tones-hero h1 { font-size: 1.2rem; }
+            .tone-card { padding: 14px 12px; border-radius: var(--r-lg); margin-bottom: 20px; }
+            .tone-word { font-size: 1.35rem; }
+            .tone-pinyin { font-size: 1rem; }
+            .tone-badge { width: 40px; height: 40px; font-size: 1.2rem; border-radius: 12px; }
+            .tone-gallery { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+            .tone-tip { font-size: .82rem; padding: 10px 14px; }
+            .tone-legend { gap: 12px; font-size: .76rem; }
+            .tones-summary { padding: 14px 12px; }
+            .tones-summary-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Shared Nav -->
+<nav class="site-nav">
+    <div class="nav-inner">
+        <a href="/" class="nav-logo">
+            <img src="avatar.jpg" alt="sherwinlaoshi" width="32" height="32">
+            sherwinlaoshi
+        </a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="pinyin.html">Pinyin Tool</a>
+            <a href="pinyin-chart.html">Pinyin Chart</a>
+            <a href="tones.html" class="active">Tones</a>
+        </div>
+    </div>
+</nav>
+
+<div class="tones-wrap">
+
+    <header class="tones-hero">
+        <h1>Mandarin Tones <span class="cn">声调</span></h1>
+        <p class="sub">
+            Mandarin Chinese is a tonal language — the pitch of your voice changes the meaning
+            completely. There are four basic tones plus a neutral tone. Use the colour-coded
+            images below to learn each tone easily.
+        </p>
+        <div class="tone-legend">
+            <span class="tone-legend-item"><i class="tone-legend-dot t1"></i> 1st Tone</span>
+            <span class="tone-legend-item"><i class="tone-legend-dot t2"></i> 2nd Tone</span>
+            <span class="tone-legend-item"><i class="tone-legend-dot t3"></i> 3rd Tone</span>
+            <span class="tone-legend-item"><i class="tone-legend-dot t4"></i> 4th Tone</span>
+            <span class="tone-legend-item"><i class="tone-legend-dot t5"></i> Neutral</span>
+        </div>
+    </header>
+
+    <!-- Tone 1: First Tone -->
+    <section class="tone-card" id="tone1">
+        <div class="tone-card-hd">
+            <div class="tone-badge t1">1</div>
+            <div class="tone-title-group">
+                <div class="tone-label t1">First Tone · High Flat</div>
+                <div class="tone-word">飞机</div>
+                <div class="tone-pinyin">fēi jī</div>
+                <div class="tone-eng">airplane</div>
+            </div>
+        </div>
+        <div class="tone-gallery" data-word="飞机">
+            <div class="tone-img-wrap t1" data-speak="飞机">
+                <img src="tones/a1.png" alt="Airplane with straight red smoke trail" loading="lazy">
+                <span class="tone-img-speak-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg>
+                </span>
+            </div>
+            <div class="tone-img-wrap t1" data-speak="飞机">
+                <img src="tones/b1.png" alt="Airplane horizontal flight" loading="lazy">
+                <span class="tone-img-speak-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg>
+                </span>
+            </div>
+            <div class="tone-img-wrap t1" data-speak="飞机">
+                <img src="tones/c1.png" alt="Airplane straight flight path" loading="lazy">
+                <span class="tone-img-speak-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg>
+                </span>
+            </div>
+        </div>
+        <div class="tone-tip">
+            <strong>Pronunciation tip:</strong> Keep your voice steady at a constant high pitch with
+            no rise or fall, just like the airplane flying straight horizontally across the sky.
+        </div>
+    </section>
+
+    <!-- Tone 2: Second Tone -->
+    <section class="tone-card" id="tone2">
+        <div class="tone-card-hd">
+            <div class="tone-badge t2">2</div>
+            <div class="tone-title-group">
+                <div class="tone-label t2">Second Tone · Rising</div>
+                <div class="tone-word">禾苗</div>
+                <div class="tone-pinyin">hé miáo</div>
+                <div class="tone-eng">rice seedling</div>
+            </div>
+        </div>
+        <div class="tone-gallery" data-word="禾苗">
+            <div class="tone-img-wrap t2" data-speak="禾苗">
+                <img src="tones/a2.png" alt="Rice seedling growing upward" loading="lazy">
+                <span class="tone-img-speak-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg>
+                </span>
+            </div>
+            <div class="tone-img-wrap t2" data-speak="禾苗">
+                <img src="tones/b2.png" alt="Rice leaf slanting upward" loading="lazy">
+                <span class="tone-img-speak-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg>
+                </span>
+            </div>
+            <div class="tone-img-wrap t2" data-speak="禾苗">
+                <img src="tones/c2.png" alt="Green rice seedling leaf" loading="lazy">
+                <span class="tone-img-speak-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg>
+                </span>
+            </div>
+        </div>
+        <div class="tone-tip">
+            <strong>Pronunciation tip:</strong> Start at a middle pitch, then raise your voice
+            smoothly upward, following the upward slant of the rice leaf.
+        </div>
+    </section>
+
+    <!-- Tone 3: Third Tone -->
+    <section class="tone-card" id="tone3">
+        <div class="tone-card-hd">
+            <div class="tone-badge t3">3</div>
+            <div class="tone-title-group">
+                <div class="tone-label t3">Third Tone · Falling-Rising</div>
+                <div class="tone-word">水手</div>
+                <div class="tone-pinyin">shuǐ shǒu</div>
+                <div class="tone-eng">sailor</div>
+            </div>
+        </div>
+        <div class="tone-gallery" data-word="水手">
+            <div class="tone-img-wrap t3" data-speak="水手">
+                <img src="tones/a3.png" alt="Sailor on sailboat at sea" loading="lazy">
+                <span class="tone-img-speak-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg>
+                </span>
+            </div>
+            <div class="tone-img-wrap t3" data-speak="水手">
+                <img src="tones/b3.png" alt="Sailboat on ocean waves" loading="lazy">
+                <span class="tone-img-speak-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg>
+                </span>
+            </div>
+            <div class="tone-img-wrap t3" data-speak="水手">
+                <img src="tones/c3.png" alt="Blue sailor and sea" loading="lazy">
+                <span class="tone-img-speak-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg>
+                </span>
+            </div>
+        </div>
+        <div class="tone-tip">
+            <strong>Pronunciation tip:</strong> Lower your voice to the lowest pitch first, then lift
+            it back up to a middle pitch, like a boat dipping down and climbing back up over ocean waves.
+        </div>
+    </section>
+
+    <!-- Tone 4: Fourth Tone -->
+    <section class="tone-card" id="tone4">
+        <div class="tone-card-hd">
+            <div class="tone-badge t4">4</div>
+            <div class="tone-title-group">
+                <div class="tone-label t4">Fourth Tone · Falling</div>
+                <div class="tone-word">降落</div>
+                <div class="tone-pinyin">jiàng luò</div>
+                <div class="tone-eng">descend / land</div>
+            </div>
+        </div>
+        <div class="tone-gallery" data-word="降落">
+            <div class="tone-img-wrap t4" data-speak="降落">
+                <img src="tones/a4.png" alt="Skydiver falling diagonally" loading="lazy">
+                <span class="tone-img-speak-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg>
+                </span>
+            </div>
+            <div class="tone-img-wrap t4" data-speak="降落">
+                <img src="tones/b4.png" alt="Purple skydiver descending" loading="lazy">
+                <span class="tone-img-speak-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg>
+                </span>
+            </div>
+            <div class="tone-img-wrap t4" data-speak="降落">
+                <img src="tones/c4.png" alt="Falling descent movement" loading="lazy">
+                <span class="tone-img-speak-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg>
+                </span>
+            </div>
+        </div>
+        <div class="tone-tip">
+            <strong>Pronunciation tip:</strong> Start high, then drop your voice quickly and firmly
+            down to a low pitch, matching the fast downward movement of the skydiver.
+        </div>
+    </section>
+
+    <!-- Tone 5: Neutral Tone -->
+    <section class="tone-card" id="tone5">
+        <div class="tone-card-hd">
+            <div class="tone-badge t5">5</div>
+            <div class="tone-title-group">
+                <div class="tone-label t5">Neutral Tone</div>
+                <div class="tone-word">星星</div>
+                <div class="tone-pinyin">xīng xing</div>
+                <div class="tone-eng">star</div>
+            </div>
+        </div>
+        <div class="tone-gallery" data-word="星星">
+            <div class="tone-img-wrap t5" data-speak="星星">
+                <img src="tones/a5.png" alt="Stationary grey sphere" loading="lazy">
+                <span class="tone-img-speak-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg>
+                </span>
+            </div>
+            <div class="tone-img-wrap t5" data-speak="星星">
+                <img src="tones/b5.png" alt="Pale grey sphere on blank background" loading="lazy">
+                <span class="tone-img-speak-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg>
+                </span>
+            </div>
+            <div class="tone-img-wrap t5" data-speak="星星">
+                <img src="tones/c5.png" alt="Motionless star in center" loading="lazy">
+                <span class="tone-img-speak-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg>
+                </span>
+            </div>
+        </div>
+        <div class="tone-tip">
+            <strong>Pronunciation tip:</strong> Speak softly and briefly with no rising or falling
+            pitch change — hold a steady neutral middle pitch, just like this motionless star with
+            no tilt or movement in the center of the frame.
+        </div>
+    </section>
+
+    <!-- Brief Summary -->
+    <section class="tones-summary">
+        <h2>Brief Summary</h2>
+        <div class="tones-summary-grid">
+            <div class="tones-summary-item">
+                <i class="tones-summary-dot t1"></i>
+                <span>飞机 fēi jī (airplane)</span>
+                <span class="py">High Flat</span>
+            </div>
+            <div class="tones-summary-item">
+                <i class="tones-summary-dot t2"></i>
+                <span>禾苗 hé miáo (seedling)</span>
+                <span class="py">Rising</span>
+            </div>
+            <div class="tones-summary-item">
+                <i class="tones-summary-dot t3"></i>
+                <span>水手 shuǐ shǒu (sailor)</span>
+                <span class="py">Fall-Rise</span>
+            </div>
+            <div class="tones-summary-item">
+                <i class="tones-summary-dot t4"></i>
+                <span>降落 jiàng luò (descend)</span>
+                <span class="py">Falling</span>
+            </div>
+            <div class="tones-summary-item">
+                <i class="tones-summary-dot t5"></i>
+                <span>星星 xīng xing (star)</span>
+                <span class="py">Neutral</span>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<script>
+/* ================================================================
+   Multi-engine TTS — Click image to speak
+   ================================================================ */
+(function() {
+    var playingEl = null;
+
+    function edgeTTS(text) {
+        var ssml = '<speak version="1.0" xml:lang="zh-CN"><voice name="zh-CN-XiaoxiaoNeural">' + text + '</voice></speak>';
+        return fetch('https://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=6A5AA1D4EAFF4E9FB37E23D68491D6F4', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/ssml+xml',
+                'X-Microsoft-OutputFormat': 'audio-16khz-32kbitrate-mono-mp3'
+            },
+            body: ssml
+        }).then(function(r) { return r.ok ? r.blob().then(function(b) { return URL.createObjectURL(b); }) : null; })
+          .catch(function() { return null; });
+    }
+
+    function tryGoogleURL(audio, text) {
+        audio.src = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=zh-CN&q=' + encodeURIComponent(text);
+        audio.play().catch(function() {
+            tryWebTTS(text);
+        });
+    }
+
+    function tryWebTTS(text) {
+        if ('speechSynthesis' in window) {
+            speechSynthesis.cancel();
+            var u = new SpeechSynthesisUtterance(text);
+            u.lang = 'zh-CN'; u.rate = 0.85;
+            speechSynthesis.speak(u);
+        }
+    }
+
+    function speakWord(word, el) {
+        if (!word) return;
+
+        // Visual feedback
+        if (playingEl) playingEl.classList.remove('playing');
+        playingEl = el;
+        el.classList.add('playing');
+        setTimeout(function() { el.classList.remove('playing'); }, 600);
+
+        var audio = new Audio();
+        audio.preload = 'auto';
+        audio.onended = function() { el.classList.remove('playing'); };
+
+        edgeTTS(word).then(function(blobUrl) {
+            if (blobUrl) {
+                audio.src = blobUrl;
+                audio.play().catch(function() { tryGoogleURL(audio, word); });
+            } else {
+                tryGoogleURL(audio, word);
+            }
+        });
+    }
+
+    // Bind click handlers
+    document.querySelectorAll('.tone-img-wrap').forEach(function(wrap) {
+        wrap.addEventListener('click', function() {
+            var word = this.getAttribute('data-speak');
+            speakWord(word, this);
+        });
+        wrap.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            this.click();
+        });
+    });
+})();
+</script>
+
+</body>
+</html>
