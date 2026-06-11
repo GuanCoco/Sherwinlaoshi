@@ -537,60 +537,39 @@
 
 <script>
 /* ================================================================
-   Multi-engine TTS — Click image to speak
+   Local audio — Click image to play recording
    ================================================================ */
 (function() {
+    var currentAudio = null;
     var playingEl = null;
-
-    function edgeTTS(text) {
-        var ssml = '<speak version="1.0" xml:lang="zh-CN"><voice name="zh-CN-XiaoxiaoNeural">' + text + '</voice></speak>';
-        return fetch('https://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=6A5AA1D4EAFF4E9FB37E23D68491D6F4', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/ssml+xml',
-                'X-Microsoft-OutputFormat': 'audio-16khz-32kbitrate-mono-mp3'
-            },
-            body: ssml
-        }).then(function(r) { return r.ok ? r.blob().then(function(b) { return URL.createObjectURL(b); }) : null; })
-          .catch(function() { return null; });
-    }
-
-    function tryGoogleURL(audio, text) {
-        audio.src = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=zh-CN&q=' + encodeURIComponent(text);
-        audio.play().catch(function() {
-            tryWebTTS(text);
-        });
-    }
-
-    function tryWebTTS(text) {
-        if ('speechSynthesis' in window) {
-            speechSynthesis.cancel();
-            var u = new SpeechSynthesisUtterance(text);
-            u.lang = 'zh-CN'; u.rate = 0.85;
-            speechSynthesis.speak(u);
-        }
-    }
 
     function speakWord(word, el) {
         if (!word) return;
+
+        // Stop any currently playing audio
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio = null;
+        }
 
         // Visual feedback
         if (playingEl) playingEl.classList.remove('playing');
         playingEl = el;
         el.classList.add('playing');
-        setTimeout(function() { el.classList.remove('playing'); }, 600);
 
-        var audio = new Audio();
-        audio.preload = 'auto';
-        audio.onended = function() { el.classList.remove('playing'); };
-
-        edgeTTS(word).then(function(blobUrl) {
-            if (blobUrl) {
-                audio.src = blobUrl;
-                audio.play().catch(function() { tryGoogleURL(audio, word); });
-            } else {
-                tryGoogleURL(audio, word);
-            }
+        var audio = new Audio('rec/tones/' + word + '.m4a');
+        currentAudio = audio;
+        audio.onended = function() {
+            el.classList.remove('playing');
+            currentAudio = null;
+        };
+        audio.onerror = function() {
+            el.classList.remove('playing');
+            currentAudio = null;
+        };
+        audio.play().catch(function() {
+            el.classList.remove('playing');
+            currentAudio = null;
         });
     }
 
