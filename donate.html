@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Support sherwinlaoshi — your donations help keep free Chinese learning tools online.">
+    <title>Power Up ⚡ | sherwinlaoshi</title>
+    <link rel="canonical" href="https://sherwinlaoshi.com/donate.html">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* ── Donate Page ── */
+        .donate-wrap {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 20px 16px 48px;
+        }
+
+        /* Hero */
+        .donate-hero {
+            text-align: center;
+            padding: 36px 0 12px;
+        }
+        .donate-hero .icon {
+            font-size: 3rem;
+            margin-bottom: 8px;
+            display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%,100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .donate-hero h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }
+        .donate-hero h1 .cn {
+            font-weight: 400;
+            font-size: 0.8em;
+            color: var(--c-text2);
+        }
+        .donate-hero .sub {
+            font-size: .92rem;
+            color: var(--c-text3);
+            max-width: 520px;
+            margin: 0 auto;
+            line-height: 1.65;
+        }
+
+        /* Intro card */
+        .donate-intro {
+            background: var(--c-surface);
+            border-radius: var(--r-xl);
+            box-shadow: var(--sh);
+            border: 1px solid var(--c-border2);
+            padding: 28px 32px;
+            margin-bottom: 28px;
+            transition: box-shadow var(--tr);
+        }
+        .donate-intro:hover { box-shadow: var(--sh-md); }
+        .donate-intro p {
+            color: var(--c-text2);
+            font-size: .92rem;
+            line-height: 1.75;
+            margin-bottom: 12px;
+        }
+        .donate-intro p:last-child { margin-bottom: 0; }
+        .donate-intro .highlight {
+            color: var(--c-primary);
+            font-weight: 600;
+        }
+
+        /* QR section */
+        .qr-section-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .qr-section-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: var(--c-primary);
+            border-radius: 2px;
+        }
+        .qr-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+        .qr-card {
+            background: var(--c-surface);
+            border-radius: var(--r-xl);
+            box-shadow: var(--sh);
+            border: 2px solid var(--c-border2);
+            padding: 28px 24px 24px;
+            text-align: center;
+            transition: box-shadow var(--tr), border-color var(--tr), transform var(--tf);
+        }
+        .qr-card:hover {
+            box-shadow: var(--sh-md);
+            transform: translateY(-2px);
+        }
+        .qr-card.wechat:hover { border-color: #07c160; }
+        .qr-card.alipay:hover { border-color: #1677ff; }
+
+        .qr-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .qr-card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: #fff;
+        }
+        .qr-card-icon.wechat { background: #07c160; }
+        .qr-card-icon.alipay { background: #1677ff; }
+        .qr-card-label {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        .qr-card-label.wechat { color: #07c160; }
+        .qr-card-label.alipay { color: #1677ff; }
+
+        .qr-placeholder {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 8px;
+            border-radius: var(--r-lg);
+            border: 2px dashed var(--c-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--c-text3);
+            background: #fafbfc;
+        }
+        .qr-placeholder svg {
+            opacity: 0.3;
+        }
+        .qr-placeholder span {
+            font-size: .78rem;
+        }
+        .qr-note {
+            font-size: .76rem;
+            color: var(--c-text3);
+            margin-top: 4px;
+        }
+
+        /* Perks section */
+        .donate-perks {
+            background: var(--c-surface);
+            border-radius: var(--r-xl);
+            box-shadow: var(--sh);
+            border: 1px solid var(--c-border2);
+            padding: 28px 32px;
+            margin-bottom: 28px;
+            transition: box-shadow var(--tr);
+        }
+        .donate-perks:hover { box-shadow: var(--sh-md); }
+        .donate-perks h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .perk-list {
+            list-style: none;
+            display: grid;
+            gap: 12px;
+        }
+        .perk-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: .9rem;
+            color: var(--c-text2);
+            line-height: 1.5;
+            padding: 10px 14px;
+            background: #f8f9fb;
+            border-radius: var(--r);
+            transition: background var(--tf);
+        }
+        .perk-list li:hover { background: var(--c-primary-l); }
+        .perk-icon {
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .85rem;
+            margin-top: 1px;
+        }
+
+        /* FAQ section */
+        .donate-faq {
+            background: var(--c-surface);
+            border-radius: var(--r-xl);
+            box-shadow: var(--sh);
+            border: 1px solid var(--c-border2);
+            padding: 28px 32px;
+            margin-bottom: 28px;
+            transition: box-shadow var(--tr);
+        }
+        .donate-faq:hover { box-shadow: var(--sh-md); }
+        .donate-faq h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .faq-item {
+            border-bottom: 1px solid var(--c-border2);
+            padding: 16px 0;
+        }
+        .faq-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .faq-item:first-child { padding-top: 0; }
+        .faq-q {
+            font-weight: 600;
+            font-size: .92rem;
+            color: var(--c-text);
+            margin-bottom: 6px;
+        }
+        .faq-a {
+            font-size: .87rem;
+            color: var(--c-text2);
+            line-height: 1.65;
+        }
+
+        /* Footer note */
+        .donate-footer-note {
+            text-align: center;
+            padding: 8px 0 0;
+            font-size: .8rem;
+            color: var(--c-text3);
+            line-height: 1.6;
+        }
+        .donate-footer-note .heart {
+            color: var(--t1);
+            display: inline-block;
+            animation: pulse 1.2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%,100% { transform: scale(1); }
+            50% { transform: scale(1.25); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .donate-wrap { padding: 12px 10px 32px; }
+            .donate-hero { padding: 24px 0 8px; }
+            .donate-hero h1 { font-size: 1.4rem; }
+            .donate-hero .icon { font-size: 2.5rem; }
+            .donate-intro,
+            .donate-perks,
+            .donate-faq { padding: 20px 18px; }
+            .qr-grid { grid-template-columns: 1fr; gap: 16px; }
+            .qr-placeholder { width: 170px; height: 170px; }
+        }
+        @media (max-width: 480px) {
+            .donate-wrap { padding: 8px 6px 24px; }
+            .donate-hero { padding: 16px 0 4px; }
+            .donate-hero h1 { font-size: 1.2rem; }
+            .donate-hero .icon { font-size: 2rem; }
+            .donate-hero .sub { font-size: .84rem; }
+            .donate-intro,
+            .donate-perks,
+            .donate-faq { padding: 14px 12px; border-radius: var(--r-lg); }
+            .donate-intro p { font-size: .85rem; }
+            .qr-card { padding: 18px 12px 16px; }
+            .qr-placeholder { width: 140px; height: 140px; }
+            .qr-card-icon { width: 34px; height: 34px; font-size: 1.1rem; border-radius: 8px; }
+            .qr-card-label { font-size: .92rem; }
+            .faq-q { font-size: .87rem; }
+            .faq-a { font-size: .82rem; }
+            .perk-list li { font-size: .84rem; padding: 8px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Shared Nav -->
+<nav class="site-nav">
+    <div class="nav-inner">
+        <a href="/" class="nav-logo">
+            <img src="avatar.jpg" alt="sherwinlaoshi" width="32" height="32">
+            sherwinlaoshi
+        </a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="pinyin.html">Pinyin Tool</a>
+            <a href="pinyin-chart.html">Pinyin Chart</a>
+            <a href="tones.html">Tones</a>
+            <a href="donate.html" class="active">Donate</a>
+        </div>
+    </div>
+</nav>
+
+<div class="donate-wrap">
+
+    <!-- Hero -->
+    <header class="donate-hero">
+        <span class="icon">⚡️</span>
+        <h1>Power Up <span class="cn">为爱充电</span></h1>
+        <p class="sub">
+            Every contribution — big or small — helps keep these free Chinese learning tools online, ad‑free, and open to everyone.
+        </p>
+    </header>
+
+    <!-- Intro -->
+    <section class="donate-intro">
+        <p>
+            Hi, I'm <span class="highlight">sherwinlaoshi</span>. I build and maintain these
+            Chinese learning tools in my spare time — all <span class="highlight">completely free</span>
+            with no ads, no paywalls, no account required.
+        </p>
+        <p>
+            Running this site involves server costs, domain fees, and countless hours of
+            development and content curation. If you've found these tools useful, consider
+            buying me a coffee ☕️ — your support directly fuels more features, better content,
+            and the long‑term health of this project.
+        </p>
+    </section>
+
+    <!-- QR Code Section -->
+    <h2 class="qr-section-title">Scan to Donate</h2>
+    <div class="qr-grid">
+        <!-- WeChat Pay -->
+        <div class="qr-card wechat">
+            <div class="qr-card-header">
+                <div class="qr-card-icon wechat">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8.69 3.43c-2.65 0-4.8 2.02-4.8 4.51 0 1.43.72 2.74 1.86 3.58l.47.3-.18.63c-.06.21-.15.44-.27.68l-.8 1.42s3.1-1.03 3.91-1.44l.56-.2c.39.1.8.16 1.25.16.34 0 .67-.03.98-.08-.12-.44-.19-.89-.19-1.36 0-3.46 3.06-6.26 6.83-6.26.24 0 .48 0 .71.04a4.935 4.935 0 00-6.33-3.96zm-1.52 2.45a.63.63 0 110 1.26.63.63 0 010-1.26zm3.34 0a.63.63 0 110 1.26.63.63 0 010-1.26z"/><path d="M15.04 13.24c-3.02 0-5.47 2.3-5.47 5.14s2.45 5.14 5.47 5.14c.52 0 1.03-.07 1.52-.2l.68.25c1.19.44 2.78.99 3.54.99h.07c-.11-.23-.22-.5-.3-.73l-.12-.44.49-.36c1.49-1.1 2.36-2.67 2.36-4.38 0-2.87-2.46-5.19-5.48-5.19-.26-.02-.52-.02-.78-.02zm-2.16 2.97a.72.72 0 110 1.44.72.72 0 010-1.44zm4.62 0a.72.72 0 110 1.44.72.72 0 010-1.44z"/></svg>
+                </div>
+                <span class="qr-card-label wechat">WeChat Pay</span>
+            </div>
+            <img src="img/wechat-qr.png" alt="WeChat Pay QR Code" style="width:200px;height:200px;border-radius:var(--r-lg);display:block;margin:0 auto;">
+            <p class="qr-note">Open WeChat → Scan → Donate</p>
+        </div>
+
+        <!-- Alipay -->
+        <div class="qr-card alipay">
+            <div class="qr-card-header">
+                <div class="qr-card-icon alipay">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15.93c-3.95-.49-7-3.17-7-6.93 0-3.87 3.13-7 7-7s7 3.13 7 7c0 3.76-3.05 6.44-7 6.93z"/><path d="M14.5 9h-5v1h1.5l-1 4h1.2l.6-2.5h1.6l-.6 2.5h1.2l1-4H16V9h-1.5z"/></svg>
+                </div>
+                <span class="qr-card-label alipay">Alipay</span>
+            </div>
+            <img src="img/alipay-qr.png" alt="Alipay QR Code" style="width:200px;height:200px;border-radius:var(--r-lg);display:block;margin:0 auto;">
+            <p class="qr-note">Open Alipay → Scan → Donate</p>
+        </div>
+    </div>
+
+    <!-- What your support helps with -->
+    <section class="donate-perks">
+        <h2>🔋 What Your Support Powers</h2>
+        <ul class="perk-list">
+            <li>
+                <span class="perk-icon">🖥️</span>
+                <span><strong>Server &amp; Domain</strong> — Keeps the site fast, secure, and always online for learners worldwide.</span>
+            </li>
+            <li>
+                <span class="perk-icon">🔧</span>
+                <span><strong>New Features</strong> — More tools, better dictionary data, and smarter pinyin processing.</span>
+            </li>
+            <li>
+                <span class="perk-icon">🎨</span>
+                <span><strong>Content &amp; Design</strong> — High‑quality learning materials, illustrations, and a polished user experience.</span>
+            </li>
+            <li>
+                <span class="perk-icon">📚</span>
+                <span><strong>Open Access</strong> — Everything stays free, no ads, no registration — because language learning should be for everyone.</span>
+            </li>
+        </ul>
+    </section>
+
+    <!-- FAQ -->
+    <section class="donate-faq">
+        <h2>💬 Frequently Asked Questions</h2>
+        <div class="faq-item">
+            <div class="faq-q">Is there a minimum donation amount?</div>
+            <div class="faq-a">Not at all! Any amount is appreciated — whether it's a coffee ☕️ or a meal 🍜. Every bit of support makes a difference.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q">Where does the money go?</div>
+            <div class="faq-a">100% goes toward keeping this project alive — server hosting, domain renewal, development tools, and content creation.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q">Will the tools remain free?</div>
+            <div class="faq-a">Absolutely. These tools were built to help people learn Chinese, and they'll always be free and open. Donations simply help cover the costs so I can keep improving them.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q">Can I support in other ways?</div>
+            <div class="faq-a">Yes! Sharing this site with fellow learners, reporting bugs, or suggesting features are all fantastic ways to contribute. Every bit of feedback helps make the tools better for everyone.</div>
+        </div>
+    </section>
+
+    <!-- Footer note -->
+    <p class="donate-footer-note">
+        Thank you for being part of this journey <span class="heart">❤️</span><br>
+        &copy; 2024–2026 sherwinlaoshi
+    </p>
+
+</div>
+
+</body>
+</html>
