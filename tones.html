@@ -537,18 +537,30 @@
 
 <script>
 /* ================================================================
-   Local audio — Click image to play recording
+   Preloaded local audio — Click image to play instantly
    ================================================================ */
 (function() {
+    var audioCache = {};
     var currentAudio = null;
     var playingEl = null;
+
+    // Preload all tone audio files on page load
+    var words = ['飞机', '禾苗', '水手', '降落', '星星'];
+    words.forEach(function(word) {
+        var audio = new Audio();
+        audio.preload = 'auto';
+        audio.src = 'rec/tones/' + word + '.m4a';
+        audio.load();
+        audioCache[word] = audio;
+    });
 
     function speakWord(word, el) {
         if (!word) return;
 
-        // Stop any currently playing audio
+        // Stop any currently playing audio and reset it
         if (currentAudio) {
             currentAudio.pause();
+            currentAudio.currentTime = 0;
             currentAudio = null;
         }
 
@@ -557,20 +569,29 @@
         playingEl = el;
         el.classList.add('playing');
 
-        var audio = new Audio('rec/tones/' + word + '.m4a');
+        // Use preloaded audio
+        var audio = audioCache[word];
+        if (!audio) {
+            el.classList.remove('playing');
+            return;
+        }
+
+        // Clone by resetting: reuse the preloaded element
+        audio.currentTime = 0;
         currentAudio = audio;
-        audio.onended = function() {
+
+        function cleanup() {
             el.classList.remove('playing');
             currentAudio = null;
-        };
-        audio.onerror = function() {
-            el.classList.remove('playing');
-            currentAudio = null;
-        };
-        audio.play().catch(function() {
-            el.classList.remove('playing');
-            currentAudio = null;
-        });
+        }
+
+        audio.onended = cleanup;
+        audio.onerror = cleanup;
+
+        var promise = audio.play();
+        if (promise) {
+            promise.catch(cleanup);
+        }
     }
 
     // Bind click handlers
