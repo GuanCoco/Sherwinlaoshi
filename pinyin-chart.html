@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Interactive Pinyin Chart — click any syllable to hear pronunciation">
+    <meta name="description" content="Complete Pinyin Chart — click any syllable to hear pronunciation">
     <title>Pinyin Chart | sherwinlaoshi</title>
     <link rel="canonical" href="https://sherwinlaoshi.com/pinyin-chart.html">
     <link rel="stylesheet" href="css/style.css">
     <style>
         .chart-wrap {
-            max-width: 1100px;
             margin: 0 auto;
             padding: 16px 12px 40px;
         }
         .chart-hd {
             text-align: center;
-            padding: 24px 0 12px;
+            padding: 24px 0 16px;
         }
         .chart-hd h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; }
         .chart-hd p { font-size: .88rem; color: var(--c-text3); }
@@ -23,100 +22,242 @@
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
             border-radius: var(--r-lg);
-            box-shadow: 0 1px 3px rgba(0,0,0,.06);
-            border: 1px solid var(--c-border2);
-            background: var(--c-surface);
+            box-shadow: var(--sh-md);
+            border: 1px solid #c5d1dd;
         }
-        table.chart {
+
+        /* ---- Table base ---- */
+        .py-table {
             border-collapse: collapse;
-            font-size: .85rem;
+            font-size: .84rem;
             white-space: nowrap;
             min-width: 100%;
+            background: #fff;
         }
-        table.chart th,
-        table.chart td {
-            padding: 6px 8px;
-            text-align: center;
-            min-width: 42px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        /* Row header (final label) */
-        table.chart th.rl {
-            position: sticky;
-            left: 0;
-            background: #f8f9fb;
-            z-index: 2;
-            font-weight: 600;
-            color: var(--c-primary);
-            border-right: 1px solid var(--c-border);
-            min-width: 44px;
-            font-size: .9rem;
-        }
-        /* Column headers */
-        table.chart th.ch {
-            background: var(--c-surface);
-            color: var(--c-text2);
-            font-weight: 600;
-            font-size: .82rem;
-            position: sticky;
-            top: 0;
-            z-index: 1;
-            border-bottom: 2px solid var(--c-border);
-        }
-        /* Group header row */
-        table.chart th.gr {
-            background: #f0f3ff;
-            color: var(--c-primary);
+
+        /* ---- Header row (dark blue bar) ---- */
+        .py-table .hd-row th {
+            padding: 10px 7px;
             font-weight: 700;
-            font-size: .82rem;
+            color: #fff;
+            border: none;
+            vertical-align: middle;
+        }
+        .py-table .hd-title {
+            background: #1b5e9f;
+            position: relative;
+            width: 80px;
+            min-width: 80px;
+            height: 64px;
+            overflow: hidden;
+        }
+        .py-table .hd-diag-line {
+            position: absolute;
+            top: -1px; left: -1px; right: -1px; bottom: -1px;
+            background: linear-gradient(45deg,
+                transparent 46%,
+                rgba(255,255,255,0.45) 46%,
+                rgba(255,255,255,0.45) 54%,
+                transparent 54%);
+            pointer-events: none;
+        }
+        .py-table .hd-diag-top {
+            position: absolute;
+            top: 10px; right: 9px;
+            color: #fff;
+            font-size: .72rem;
+            font-weight: 600;
+            text-align: right;
+            line-height: 1.3;
+        }
+        .py-table .hd-diag-bot {
+            position: absolute;
+            bottom: 10px; left: 9px;
+            color: #fff;
+            font-size: .72rem;
+            font-weight: 600;
             text-align: left;
-            padding: 8px 14px;
-            border-bottom: 2px solid var(--c-border);
-            border-top: 1px solid var(--c-border);
+            line-height: 1.3;
+        }
+        .py-table .hd-init {
+            background: #1b5e9f;
+            font-size: .85rem;
+            min-width: 42px;
+            text-align: center;
+        }
+
+        /* ---- Column header sub-rows ---- */
+        .py-table .sub-hd th {
+            padding: 6px 7px;
+            font-weight: 600;
+            font-size: .82rem;
+            border-bottom: 1px solid #1b5e9f;
+            border-right: 1px solid #e0e6ec;
+            text-align: center;
+            color: #333;
+            background: #f0f4f8;
+        }
+
+        /* zh/ch/sh/r and z/c/s — same blue as standard initials */
+        .py-table th.orange-hd,
+        .py-table th.green-hd {
+            background: #1b5e9f !important;
+            color: #fff !important;
+            border-color: #1b5e9f;
+        }
+
+        /* ---- Row label (final) cell ---- */
+        .py-table td.final-cell,
+        .py-table th.final-cell {
+            padding: 5px 8px;
+            font-weight: 600;
+            font-size: .83rem;
+            border-right: 1px solid #1b5e9f;
+            border-bottom: 1px solid #e8eef3;
+            text-align: center;
+            background: #fff;
+            color: #333;
+            min-width: 44px;
             position: sticky;
             left: 0;
             z-index: 2;
         }
-        /* Cells */
-        table.chart td.cell {
+        /* Blue group labels */
+        .py-table td.final-blue,
+        .py-table th.final-blue {
+            background: #fff;
+        }
+
+        /* ---- Data cells ---- */
+        .py-table td.py-cell {
+            padding: 5px 7px;
+            text-align: center;
             cursor: pointer;
-            color: var(--c-text);
-            font-weight: 500;
-            transition: all .12s;
-            border-radius: 4px;
-            position: relative;
+            color: #333;
+            font-weight: 400;
+            border-right: 1px solid #edf2f7;
+            border-bottom: 1px solid #e8eef3;
+            transition: background .12s ease, color .12s ease;
         }
-        table.chart td.cell:hover {
-            background: var(--c-primary-l);
-            color: var(--c-primary);
+        .py-table td.py-cell:hover {
+            background: #e8f0fe;
+            color: #1b5e9f;
         }
-        table.chart td.cell.playing {
-            background: var(--c-primary);
+        .py-table td.py-cell.playing {
+            background: #1b5e9f;
             color: #fff;
             animation: cellPop .3s ease;
         }
         @keyframes cellPop {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.15); }
+            0%   { transform: scale(1); }
+            50%  { transform: scale(1.15); }
             100% { transform: scale(1); }
         }
-        table.chart td.empty {
+        .py-table td.empty-cell {
             background: transparent;
             cursor: default;
-        }
-        /* Legend */
-        .chart-info {
-            margin-top: 12px;
-            font-size: .8rem;
-            color: var(--c-text3);
-            text-align: center;
+            border-right: 1px solid #f5f7fa;
+            border-bottom: 1px solid #e8eef3;
         }
 
-        @media (max-width: 600px) {
-            table.chart { font-size: .78rem; }
-            table.chart th.rl { min-width: 36px; font-size: .8rem; }
-            table.chart th.ch { font-size: .72rem; padding: 4px 5px; min-width: 36px; }
-            table.chart td { padding: 4px 5px; min-width: 36px; }
+        /* ---- Blue highlight for y-/w- initial syllables ---- */
+        .py-table td.py-highlight {
+            background: #dce6f2 !important;
+            font-weight: 600;
+        }
+        .py-table td.py-highlight:hover {
+            background: #c5d9ed !important;
+        }
+        .py-table td.py-highlight.playing {
+            background: #1b5e9f !important;
+            color: #fff;
+        }
+
+        /* ---- Orange column cells (zh/ch/sh/r) with blue border ---- */
+        .py-table td.py-orange {
+            background: #fde8d8 !important;
+            border-left: 1px solid #1b5e9f;
+            border-right: 1px solid #1b5e9f;
+        }
+        .py-table td.py-orange:hover {
+            background: #fad2b0 !important;
+        }
+        .py-table td.py-orange.playing {
+            background: #1b5e9f !important;
+            color: #fff;
+        }
+
+        /* ---- Green column cells (z/c/s) with blue border ---- */
+        .py-table td.py-green {
+            background: #e4f2dc !important;
+            border-left: 1px solid #1b5e9f;
+            border-right: 1px solid #1b5e9f;
+        }
+        .py-table td.py-green:hover {
+            background: #cae6b8 !important;
+        }
+        .py-table td.py-green.playing {
+            background: #1b5e9f !important;
+            color: #fff;
+        }
+
+        /* ---- Group separator borders (thick) ---- */
+        .py-table th.sep,
+        .py-table td.sep {
+            border-left: 2px solid #1b5e9f !important;
+        }
+        /* Ensure separator shows on empty cells too */
+        .py-table td.empty-cell.sep {
+            border-left: 2px solid #1b5e9f !important;
+        }
+        /* Row group separator (thick bottom border) */
+        .py-table tr.group-end td,
+        .py-table tr.group-end th {
+            border-bottom: 2px solid #1b5e9f;
+        }
+
+        /* Dashed big box */
+        .py-table td.dashed-left { border-left: 2px dashed #1b5e9f !important; }
+        .py-table td.dashed-right { border-right: 2px dashed #1b5e9f !important; }
+        .py-table td.dashed-top { border-top: 2px dashed #1b5e9f !important; }
+        .py-table td.dashed-bottom { border-bottom: 2px dashed #1b5e9f !important; }
+
+        /* ---- Striping for readability ---- */
+        .py-table tr:nth-child(even) td.py-cell:not(.playing) {
+            background: #fafbfd;
+        }
+        .py-table tr:nth-child(even) td.py-cell:hover {
+            background: #e8f0fe;
+        }
+
+        /* ---- Legend ---- */
+        .chart-info {
+            margin-top: 14px;
+            font-size: .78rem;
+            color: var(--c-text3);
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .legend-dot {
+            width: 12px; height: 12px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+
+        @media (max-width: 720px) {
+            .py-table { font-size: .76rem; }
+            .py-table .hd-init { font-size: .76rem; min-width: 36px; padding: 8px 4px; }
+            .py-table td.final-cell, .py-table th.final-cell { min-width: 36px; font-size: .76rem; padding: 4px 5px; }
+            .py-table td.py-cell { font-size: .74rem; padding: 4px 4px; }
+            .chart-wrap { padding: 10px 6px 28px; }
         }
     </style>
 </head>
@@ -146,554 +287,253 @@
     </div>
 
     <div class="chart-scroll">
-        <table class="chart" id="chartTable">
-            <thead id="chartHead"></thead>
-            <tbody id="chartBody"></tbody>
-        </table>
+<table class="py-table" id="pyTable">
+<!-- Header bar -->
+<thead>
+<tr class="hd-row">
+    <th class="hd-title">
+        <div class="hd-diag-line"></div>
+        <div class="hd-diag-top">声母<br>Initials</div>
+        <div class="hd-diag-bot">韵母<br>Finals</div>
+    </th>
+    <th class="hd-init">∅</th><th class="hd-init">b</th><th class="hd-init">p</th><th class="hd-init">m</th><th class="hd-init">f</th>
+    <th class="hd-init sep">d</th><th class="hd-init">t</th><th class="hd-init">n</th><th class="hd-init">l</th>
+    <th class="hd-init sep">g</th><th class="hd-init">k</th><th class="hd-init">h</th>
+    <th class="hd-init sep">j</th><th class="hd-init">q</th><th class="hd-init">x</th>
+    <th class="hd-init sep orange-hd">zh</th><th class="hd-init orange-hd">ch</th><th class="hd-init orange-hd">sh</th>
+    <th class="hd-init sep orange-hd">r</th><th class="hd-init sep green-hd">z</th><th class="hd-init green-hd">c</th><th class="hd-init green-hd">s</th>
+    <th class="hd-init sep">y</th><th class="hd-init">w</th>
+</tr>
+</thead>
+<tbody id="pyBody"></tbody>
+</table>
     </div>
-    <p class="chart-info">All 400+ Mandarin syllables · Click to hear standard pronunciation</p>
+
+    <div class="chart-info">
+        <span class="legend-item"><span class="legend-dot" style="background:#f4a582;"></span> 翘舌 Retroflex</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#92c47d;"></span> 平舌 Alveolar</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#dce6f2;"></span> i/u/ü 组 Blue groups</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#dce6f2;"></span> y-/w- 零声母 Zero-initial</span>
+    </div>
 </div>
 
 <script>
 /* ================================================================
-   Tone mark utility
-   ================================================================ */
-function num2mark(syl) {
-    var marks = {
-        a: ['a','ā','á','ǎ','à','a'], e: ['e','ē','é','ě','è','e'],
-        i: ['i','ī','í','ǐ','ì','i'], o: ['o','ō','ó','ǒ','ò','o'],
-        u: ['u','ū','ú','ǔ','ù','u'], v: ['ü','ǖ','ǘ','ǚ','ǜ','ü']
-    };
-    var m = /^([a-zA-Z:]+)([1-5])$/.exec(syl);
-    if (!m) return syl.toLowerCase().replace(/v/g, 'ü');
-    var v = m[1], t = parseInt(m[2]);
-    var lv = v.toLowerCase();
-    var ti = 0;
-    if (lv.indexOf('a') !== -1) ti = lv.indexOf('a');
-    else if (lv.indexOf('e') !== -1) ti = lv.indexOf('e');
-    else if (lv.indexOf('ou') !== -1) ti = lv.indexOf('o');
-    else ti = Math.min(1, lv.length - 1);
-    var target = lv[ti];
-    if (!marks[target]) return v.toLowerCase().replace(/v/g, 'ü');
-    var mc = marks[target][t];
-    var r = '';
-    for (var i = 0; i < v.length; i++) {
-        r += i === ti ? mc : v[i];
-    }
-    return r.replace(/v/g, 'ü');
-}
+   Pinyin chart data — rows match the reference image layout
+   Each row: [ finalLabel, isBlueGroup?, [cells...] ]
+   Cell value = plain-pinyin string or null for empty
+   ==================================================== */
+var COL_INITIALS = ['∅','b','p','m','f','d','t','n','l','g','k','h','j','q','x','zh','ch','sh','r','z','c','s','y','w'];
 
-function toMarked(raw) {
-    return raw.split(/\s+/).map(num2mark).join('');
-}
-
-/* ================================================================
-   Pinyin chart data  (initials × finals)
-   Each group: { label, rows: [ { final, label, cells: { initial: pinyin } } ] }
-   ================================================================ */
-var INITIALS = ['','b','p','m','f','d','t','n','l','g','k','h','j','q','x','zh','ch','sh','r','z','c','s','y','w'];
-var INIT_LABELS = { '':'','b':'b','p':'p','m':'m','f':'f','d':'d','t':'t','n':'n','l':'l','g':'g','k':'k','h':'h','j':'j','q':'q','x':'x','zh':'zh','ch':'ch','sh':'sh','r':'r','z':'z','c':'c','s':'s','y':'y','w':'w' };
-
-var GROUPS = [
-    {
-        label: 'Simple Finals',
-        rows: [
-            { f:'a', l:'a',  c:{'':{r:'a1',m:'ā'},b:{r:'ba1',m:'bā'},p:{r:'pa1',m:'pā'},m:{r:'ma1',m:'mā'},f:{r:'fa1',m:'fā'},d:{r:'da1',m:'dā'},t:{r:'ta1',m:'tā'},n:{r:'na1',m:'nā'},l:{r:'la1',m:'lā'},g:{r:'ga1',m:'gā'},k:{r:'ka1',m:'kā'},h:{r:'ha1',m:'hā'},zh:{r:'zha1',m:'zhā'},ch:{r:'cha1',m:'chā'},sh:{r:'sha1',m:'shā'},z:{r:'za1',m:'zā'},c:{r:'ca1',m:'cā'},s:{r:'sa1',m:'sā'},y:{r:'ya1',m:'yā'},w:{r:'wa1',m:'wā'}} },
-            { f:'o', l:'o',  c:{'':{r:'o1',m:'ō'},b:{r:'bo1',m:'bō'},p:{r:'po1',m:'pō'},m:{r:'mo1',m:'mō'},f:{r:'fo1',m:'fō'},l:{r:'lo1',m:'lō'},y:{r:'yo1',m:'yō'},w:{r:'wo1',m:'wō'}} },
-            { f:'e', l:'e',  c:{'':{r:'e1',m:'ē'},m:{r:'me1',m:'mē'},d:{r:'de1',m:'dē'},t:{r:'te1',m:'tē'},n:{r:'ne1',m:'nē'},l:{r:'le1',m:'lē'},g:{r:'ge1',m:'gē'},k:{r:'ke1',m:'kē'},h:{r:'he1',m:'hē'},zh:{r:'zhe1',m:'zhē'},ch:{r:'che1',m:'chē'},sh:{r:'she1',m:'shē'},r:{r:'re1',m:'rē'},z:{r:'ze1',m:'zē'},c:{r:'ce1',m:'cē'},s:{r:'se1',m:'sē'}} },
-            { f:'i', l:'i',  c:{'':{r:'yi1',m:'yī'},b:{r:'bi1',m:'bī'},p:{r:'pi1',m:'pī'},m:{r:'mi1',m:'mī'},d:{r:'di1',m:'dī'},t:{r:'ti1',m:'tī'},n:{r:'ni1',m:'nī'},l:{r:'li1',m:'lī'},j:{r:'ji1',m:'jī'},q:{r:'qi1',m:'qī'},x:{r:'xi1',m:'xī'},zh:{r:'zhi1',m:'zhī'},ch:{r:'chi1',m:'chī'},sh:{r:'shi1',m:'shī'},r:{r:'ri1',m:'rī'},z:{r:'zi1',m:'zī'},c:{r:'ci1',m:'cī'},s:{r:'si1',m:'sī'}} },
-            { f:'u', l:'u',  c:{'':{r:'wu1',m:'wū'},b:{r:'bu1',m:'bū'},p:{r:'pu1',m:'pū'},m:{r:'mu1',m:'mū'},f:{r:'fu1',m:'fū'},d:{r:'du1',m:'dū'},t:{r:'tu1',m:'tū'},n:{r:'nu1',m:'nū'},l:{r:'lu1',m:'lū'},g:{r:'gu1',m:'gū'},k:{r:'ku1',m:'kū'},h:{r:'hu1',m:'hū'},zh:{r:'zhu1',m:'zhū'},ch:{r:'chu1',m:'chū'},sh:{r:'shu1',m:'shū'},r:{r:'ru1',m:'rū'},z:{r:'zu1',m:'zū'},c:{r:'cu1',m:'cū'},s:{r:'su1',m:'sū'}} },
-            { f:'ü', l:'ü',  c:{'':{r:'yu1',m:'yū'},n:{r:'nv1',m:'nǖ'},l:{r:'lv1',m:'lǖ'},j:{r:'ju1',m:'jū'},q:{r:'qu1',m:'qū'},x:{r:'xu1',m:'xū'}} },
-        ]
-    },
-    {
-        label: 'a‑Endings',
-        rows: [
-            { f:'ai', l:'ai', c:{'':{r:'ai1',m:'āi'},b:{r:'bai1',m:'bāi'},p:{r:'pai1',m:'pāi'},m:{r:'mai1',m:'māi'},d:{r:'dai1',m:'dāi'},t:{r:'tai1',m:'tāi'},n:{r:'nai1',m:'nāi'},l:{r:'lai1',m:'lāi'},g:{r:'gai1',m:'gāi'},k:{r:'kai1',m:'kāi'},h:{r:'hai1',m:'hāi'},zh:{r:'zhai1',m:'zhāi'},ch:{r:'chai1',m:'chāi'},sh:{r:'shai1',m:'shāi'},z:{r:'zai1',m:'zāi'},c:{r:'cai1',m:'cāi'},s:{r:'sai1',m:'sāi'},w:{r:'wai1',m:'wāi'}} },
-            { f:'ao', l:'ao', c:{'':{r:'ao1',m:'āo'},b:{r:'bao1',m:'bāo'},p:{r:'pao1',m:'pāo'},m:{r:'mao1',m:'māo'},d:{r:'dao1',m:'dāo'},t:{r:'tao1',m:'tāo'},n:{r:'nao1',m:'nāo'},l:{r:'lao1',m:'lāo'},g:{r:'gao1',m:'gāo'},k:{r:'kao1',m:'kāo'},h:{r:'hao1',m:'hāo'},zh:{r:'zhao1',m:'zhāo'},ch:{r:'chao1',m:'chāo'},sh:{r:'shao1',m:'shāo'},r:{r:'rao1',m:'rāo'},z:{r:'zao1',m:'zāo'},c:{r:'cao1',m:'cāo'},s:{r:'sao1',m:'sāo'},y:{r:'yao1',m:'yāo'}} },
-            { f:'an', l:'an', c:{'':{r:'an1',m:'ān'},b:{r:'ban1',m:'bān'},p:{r:'pan1',m:'pān'},m:{r:'man1',m:'mān'},f:{r:'fan1',m:'fān'},d:{r:'dan1',m:'dān'},t:{r:'tan1',m:'tān'},n:{r:'nan1',m:'nān'},l:{r:'lan1',m:'lān'},g:{r:'gan1',m:'gān'},k:{r:'kan1',m:'kān'},h:{r:'han1',m:'hān'},zh:{r:'zhan1',m:'zhān'},ch:{r:'chan1',m:'chān'},sh:{r:'shan1',m:'shān'},r:{r:'ran1',m:'rān'},z:{r:'zan1',m:'zān'},c:{r:'can1',m:'cān'},s:{r:'san1',m:'sān'},y:{r:'yan1',m:'yān'},w:{r:'wan1',m:'wān'}} },
-            { f:'ang',l:'ang', c:{'':{r:'ang1',m:'āng'},b:{r:'bang1',m:'bāng'},p:{r:'pang1',m:'pāng'},m:{r:'mang1',m:'māng'},f:{r:'fang1',m:'fāng'},d:{r:'dang1',m:'dāng'},t:{r:'tang1',m:'tāng'},n:{r:'nang1',m:'nāng'},l:{r:'lang1',m:'lāng'},g:{r:'gang1',m:'gāng'},k:{r:'kang1',m:'kāng'},h:{r:'hang1',m:'hāng'},zh:{r:'zhang1',m:'zhāng'},ch:{r:'chang1',m:'chāng'},sh:{r:'shang1',m:'shāng'},r:{r:'rang1',m:'rāng'},z:{r:'zang1',m:'zāng'},c:{r:'cang1',m:'cāng'},s:{r:'sang1',m:'sāng'},y:{r:'yang1',m:'yāng'},w:{r:'wang1',m:'wāng'}} },
-        ]
-    },
-    {
-        label: 'e‑Endings',
-        rows: [
-            { f:'ei', l:'ei', c:{'':{r:'ei1',m:'ēi'},b:{r:'bei1',m:'bēi'},p:{r:'pei1',m:'pēi'},m:{r:'mei1',m:'mēi'},f:{r:'fei1',m:'fēi'},d:{r:'dei1',m:'dēi'},n:{r:'nei1',m:'nēi'},l:{r:'lei1',m:'lēi'},g:{r:'gei1',m:'gēi'},k:{r:'kei1',m:'kēi'},h:{r:'hei1',m:'hēi'},zh:{r:'zhei1',m:'zhēi'},sh:{r:'shei1',m:'shēi'},z:{r:'zei1',m:'zēi'},w:{r:'wei1',m:'wēi'}} },
-            { f:'en', l:'en', c:{'':{r:'en1',m:'ēn'},b:{r:'ben1',m:'bēn'},p:{r:'pen1',m:'pēn'},m:{r:'men1',m:'mēn'},f:{r:'fen1',m:'fēn'},n:{r:'nen1',m:'nēn'},g:{r:'gen1',m:'gēn'},k:{r:'ken1',m:'kēn'},h:{r:'hen1',m:'hēn'},zh:{r:'zhen1',m:'zhēn'},ch:{r:'chen1',m:'chēn'},sh:{r:'shen1',m:'shēn'},r:{r:'ren1',m:'rēn'},z:{r:'zen1',m:'zēn'},c:{r:'cen1',m:'cēn'},s:{r:'sen1',m:'sēn'},w:{r:'wen1',m:'wēn'}} },
-            { f:'eng',l:'eng', c:{'':{r:'eng1',m:'ēng'},b:{r:'beng1',m:'bēng'},p:{r:'peng1',m:'pēng'},m:{r:'meng1',m:'mēng'},f:{r:'feng1',m:'fēng'},d:{r:'deng1',m:'dēng'},t:{r:'teng1',m:'tēng'},n:{r:'neng1',m:'nēng'},l:{r:'leng1',m:'lēng'},g:{r:'geng1',m:'gēng'},k:{r:'keng1',m:'kēng'},h:{r:'heng1',m:'hēng'},zh:{r:'zheng1',m:'zhēng'},ch:{r:'cheng1',m:'chēng'},sh:{r:'sheng1',m:'shēng'},r:{r:'reng1',m:'rēng'},z:{r:'zeng1',m:'zēng'},c:{r:'ceng1',m:'cēng'},s:{r:'seng1',m:'sēng'},w:{r:'weng1',m:'wēng'}} },
-            { f:'er', l:'er', c:{'':{r:'er2',m:'ér'}} },
-        ]
-    },
-    {
-        label: 'i‑Endings',
-        rows: [
-            { f:'ia', l:'ia', c:{'':{r:'ya1',m:'yā'},l:{r:'lia1',m:'liā'},j:{r:'jia1',m:'jiā'},q:{r:'qia1',m:'qiā'},x:{r:'xia1',m:'xiā'}} },
-            { f:'ie', l:'ie', c:{'':{r:'ye1',m:'yē'},b:{r:'bie1',m:'biē'},p:{r:'pie1',m:'piē'},m:{r:'mie1',m:'miē'},d:{r:'die1',m:'diē'},t:{r:'tie1',m:'tiē'},n:{r:'nie1',m:'niē'},l:{r:'lie1',m:'liē'},j:{r:'jie1',m:'jiē'},q:{r:'qie1',m:'qiē'},x:{r:'xie1',m:'xiē'}} },
-            { f:'iao',l:'iao', c:{'':{r:'yao1',m:'yāo'},b:{r:'biao1',m:'biāo'},p:{r:'piao1',m:'piāo'},m:{r:'miao1',m:'miāo'},d:{r:'diao1',m:'diāo'},t:{r:'tiao1',m:'tiāo'},n:{r:'niao1',m:'niāo'},l:{r:'liao1',m:'liāo'},j:{r:'jiao1',m:'jiāo'},q:{r:'qiao1',m:'qiāo'},x:{r:'xiao1',m:'xiāo'}} },
-            { f:'iu', l:'iu', c:{'':{r:'you1',m:'yōu'},m:{r:'miu1',m:'miū'},d:{r:'diu1',m:'diū'},n:{r:'niu1',m:'niū'},l:{r:'liu1',m:'liū'},j:{r:'jiu1',m:'jiū'},q:{r:'qiu1',m:'qiū'},x:{r:'xiu1',m:'xiū'}} },
-            { f:'ian',l:'ian', c:{'':{r:'yan1',m:'yān'},b:{r:'bian1',m:'biān'},p:{r:'pian1',m:'piān'},m:{r:'mian1',m:'miān'},d:{r:'dian1',m:'diān'},t:{r:'tian1',m:'tiān'},n:{r:'nian1',m:'niān'},l:{r:'lian1',m:'liān'},j:{r:'jian1',m:'jiān'},q:{r:'qian1',m:'qiān'},x:{r:'xian1',m:'xiān'}} },
-            { f:'in', l:'in', c:{'':{r:'yin1',m:'yīn'},b:{r:'bin1',m:'bīn'},p:{r:'pin1',m:'pīn'},m:{r:'min1',m:'mīn'},n:{r:'nin1',m:'nīn'},l:{r:'lin1',m:'līn'},j:{r:'jin1',m:'jīn'},q:{r:'qin1',m:'qīn'},x:{r:'xin1',m:'xīn'}} },
-            { f:'iang',l:'iang',c:{'':{r:'yang1',m:'yāng'},n:{r:'niang1',m:'niāng'},l:{r:'liang1',m:'liāng'},j:{r:'jiang1',m:'jiāng'},q:{r:'qiang1',m:'qiāng'},x:{r:'xiang1',m:'xiāng'}} },
-            { f:'ing', l:'ing',c:{'':{r:'ying1',m:'yīng'},b:{r:'bing1',m:'bīng'},p:{r:'ping1',m:'pīng'},m:{r:'ming1',m:'mīng'},d:{r:'ding1',m:'dīng'},t:{r:'ting1',m:'tīng'},n:{r:'ning1',m:'nīng'},l:{r:'ling1',m:'līng'},j:{r:'jing1',m:'jīng'},q:{r:'qing1',m:'qīng'},x:{r:'xing1',m:'xīng'}} },
-            { f:'iong',l:'iong',c:{'':{r:'yong1',m:'yōng'},j:{r:'jiong1',m:'jiōng'},q:{r:'qiong1',m:'qiōng'},x:{r:'xiong1',m:'xiōng'}} },
-        ]
-    },
-    {
-        label: 'u‑Endings',
-        rows: [
-            { f:'ua', l:'ua', c:{'':{r:'wa1',m:'wā'},g:{r:'gua1',m:'guā'},k:{r:'kua1',m:'kuā'},h:{r:'hua1',m:'huā'},zh:{r:'zhua1',m:'zhuā'},ch:{r:'chua1',m:'chuā'},sh:{r:'shua1',m:'shuā'}} },
-            { f:'uo', l:'uo', c:{'':{r:'wo1',m:'wō'},d:{r:'duo1',m:'duō'},t:{r:'tuo1',m:'tuō'},n:{r:'nuo1',m:'nuō'},l:{r:'luo1',m:'luō'},g:{r:'guo1',m:'guō'},k:{r:'kuo1',m:'kuō'},h:{r:'huo1',m:'huō'},zh:{r:'zhuo1',m:'zhuō'},ch:{r:'chuo1',m:'chuō'},sh:{r:'shuo1',m:'shuō'},r:{r:'ruo1',m:'ruō'},z:{r:'zuo1',m:'zuō'},c:{r:'cuo1',m:'cuō'},s:{r:'suo1',m:'suō'}} },
-            { f:'uai',l:'uai',c:{'':{r:'wai1',m:'wāi'},g:{r:'guai1',m:'guāi'},k:{r:'kuai1',m:'kuāi'},h:{r:'huai1',m:'huāi'},zh:{r:'zhuai1',m:'zhuāi'},ch:{r:'chuai1',m:'chuāi'},sh:{r:'shuai1',m:'shuāi'}} },
-            { f:'ui', l:'ui', c:{'':{r:'wei1',m:'wēi'},d:{r:'dui1',m:'duī'},t:{r:'tui1',m:'tuī'},g:{r:'gui1',m:'guī'},k:{r:'kui1',m:'kuī'},h:{r:'hui1',m:'huī'},zh:{r:'zhui1',m:'zhuī'},ch:{r:'chui1',m:'chuī'},sh:{r:'shui1',m:'shuī'},r:{r:'rui1',m:'ruī'},z:{r:'zui1',m:'zuī'},c:{r:'cui1',m:'cuī'},s:{r:'sui1',m:'suī'}} },
-            { f:'uan',l:'uan',c:{'':{r:'wan1',m:'wān'},d:{r:'duan1',m:'duān'},t:{r:'tuan1',m:'tuān'},n:{r:'nuan1',m:'nuān'},l:{r:'luan1',m:'luān'},g:{r:'guan1',m:'guān'},k:{r:'kuan1',m:'kuān'},h:{r:'huan1',m:'huān'},zh:{r:'zhuan1',m:'zhuān'},ch:{r:'chuan1',m:'chuān'},sh:{r:'shuan1',m:'shuān'},r:{r:'ruan1',m:'ruān'},z:{r:'zuan1',m:'zuān'},c:{r:'cuan1',m:'cuān'},s:{r:'suan1',m:'suān'}} },
-            { f:'un', l:'un', c:{'':{r:'wen1',m:'wēn'},d:{r:'dun1',m:'dūn'},t:{r:'tun1',m:'tūn'},l:{r:'lun1',m:'lūn'},g:{r:'gun1',m:'gūn'},k:{r:'kun1',m:'kūn'},h:{r:'hun1',m:'hūn'},zh:{r:'zhun1',m:'zhūn'},ch:{r:'chun1',m:'chūn'},sh:{r:'shun1',m:'shūn'},r:{r:'run1',m:'rūn'},z:{r:'zun1',m:'zūn'},c:{r:'cun1',m:'cūn'},s:{r:'sun1',m:'sūn'}} },
-            { f:'uang',l:'uang',c:{'':{r:'wang1',m:'wāng'},g:{r:'guang1',m:'guāng'},k:{r:'kuang1',m:'kuāng'},h:{r:'huang1',m:'huāng'},zh:{r:'zhuang1',m:'zhuāng'},ch:{r:'chuang1',m:'chuāng'},sh:{r:'shuang1',m:'shuāng'}} },
-        ]
-    },
-    {
-        label: 'ü‑Endings',
-        rows: [
-            { f:'üe', l:'üe', c:{'':{r:'yue1',m:'yuē'},n:{r:'nve1',m:'nüē'},l:{r:'lve1',m:'lüē'},j:{r:'jue1',m:'juē'},q:{r:'que1',m:'quē'},x:{r:'xue1',m:'xuē'}} },
-            { f:'üan',l:'üan',c:{'':{r:'yuan1',m:'yuān'},j:{r:'juan1',m:'juān'},q:{r:'quan1',m:'quān'},x:{r:'xuan1',m:'xuān'}} },
-            { f:'ün', l:'ün', c:{'':{r:'yun1',m:'yūn'},j:{r:'jun1',m:'jūn'},q:{r:'qun1',m:'qūn'},x:{r:'xun1',m:'xūn'}} },
-        ]
-    }
+/* Columns: ∅=0, b=1, p=2, m=3, f=4, d=5, t=6, n=7, l=8, g=9, k=10, h=11,
+j=12, q=13, x=14, zh=15, ch=16, sh=17, r=18, z=19, c=20, s=21, y=22, w=23 */
+var ROWS = [
+    // -- a/o/e group --
+    ['a', false, ['a','ba','pa','ma','fa','da','ta','na','la','ga','ka','ha',null,null,null,'zha','cha','sha',null,'za','ca','sa',null,null]],
+    ['o', false, ['o','bo','po','mo','fo',null,null,null,'lo',null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]],
+    ['e', false, ['e',null,null,'me',null,'de','te','ne','le','ge','ke','he',null,null,null,'zhe','che','she','re','ze','ce','se',null,null]],
+    ['ai', false, ['ai','bai','pai','mai',null,'dai','tai','nai','lai','gai','kai','hai',null,null,null,'zhai','chai','shai',null,'zai','cai','sai',null,null]],
+    ['ao', false, ['ao','bao','pao','mao',null,'dao','tao','nao','lao','gao','kao','hao',null,null,null,'zhao','chao','shao','rao','zao','cao','sao',null,null]],
+    ['an', false, ['an','ban','pan','man','fan','dan','tan','nan','lan','gan','kan','han',null,null,null,'zhan','chan','shan','ran','zan','can','san',null,null]],
+    ['ang', false, ['ang','bang','pang','mang','fang','dang','tang','nang','lang','gang','kang','hang',null,null,null,'zhang','chang','shang','rang','zang','cang','sang',null,null]],
+    // -- ei / en / eng --
+    ['ei', false, ['ei','bei','pei','mei','fei','dei',null,'nei','lei','gei','kei','hei',null,null,null,'zhei',null,'shei',null,'zei',null,null,null,null]],
+    ['en', false, ['en','ben','pen','men','fen',null,null,'nen',null,'gen','ken','hen',null,null,null,'zhen','chen','shen','ren','zen','cen','sen',null,null]],
+    ['eng', false, ['eng','beng','peng','meng','feng','deng','teng','neng','leng','geng','keng','heng',null,null,null,'zheng','cheng','sheng','reng','zeng','ceng','seng',null,null]],
+    ['er', false, ['er',null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]],
+    // -- i group (blue) --
+    ['i', true, ['yi','bi','pi','mi',null,'di','ti','ni','li',null,null,null,'ji','qi','xi','zhi','chi','shi','ri','zi','ci','si','yi',null]],
+    ['ia', true, ['ya',null,null,null,null,null,null,null,'lia',null,null,null,'jia','qia','xia',null,null,null,null,null,null,null,'ya',null]],
+    ['ie', true, ['ye','bie','pie','mie',null,'die','tie','nie','lie',null,null,null,'jie','qie','xie',null,null,null,null,null,null,null,'ye',null]],
+    ['iao', true, ['yao','biao','piao','miao',null,'diao','tiao','niao','liao',null,null,null,'jiao','qiao','xiao',null,null,null,null,null,null,null,'yao',null]],
+    ['iu', true, ['you',null,null,'miu',null,'diu',null,'niu','liu',null,null,null,'jiu','qiu','xiu',null,null,null,null,null,null,null,'you',null]],
+    ['ian', true, ['yan','bian','pian','mian',null,'dian','tian','nian','lian',null,null,null,'jian','qian','xian',null,null,null,null,null,null,null,'yan',null]],
+    ['in', true, ['yin','bin','pin','min',null,null,null,'nin','lin',null,null,null,'jin','qin','xin',null,null,null,null,null,null,null,'yin',null]],
+    ['iang', true, ['yang',null,null,null,null,null,null,'niang','liang',null,null,null,'jiang','qiang','xiang',null,null,null,null,null,null,null,'yang',null]],
+    ['ing', true, ['ying','bing','ping','ming',null,'ding','ting','ning','ling',null,null,null,'jing','qing','xing',null,null,null,null,null,null,null,'ying',null]],
+    ['iong', true, ['yong',null,null,null,null,null,null,null,null,null,null,null,'jiong','qiong','xiong',null,null,null,null,null,null,null,'yong',null]],
+    // -- u group (blue) --
+    ['u', true, ['wu','bu','pu','mu','fu','du','tu','nu','lu','gu','ku','hu',null,null,null,'zhu','chu','shu','ru','zu','cu','su',null,'wu']],
+    ['ua', true, ['wa',null,null,null,null,null,null,null,null,'gua','kua','hua',null,null,null,'zhua','chua','shua',null,null,null,null,null,'wa']],
+    ['uo', true, ['wo',null,null,null,null,'duo','tuo','nuo','luo','guo','kuo','huo',null,null,null,'zhuo','chuo','shuo','ruo','zuo','cuo','suo',null,'wo']],
+    ['uai', true, ['wai',null,null,null,null,null,null,null,null,'guai','kuai','huai',null,null,null,'zhuai','chuai','shuai',null,null,null,null,null,'wai']],
+    ['ui', true, ['wei',null,null,null,null,'dui','tui',null,null,'gui','kui','hui',null,null,null,'zhui','chui','shui','rui','zui','cui','sui',null,'wei']],
+    ['uan', true, ['wan',null,null,null,null,'duan','tuan','nuan','luan','guan','kuan','huan','juan','quan','xuan','zhuan','chuan','shuan','ruan','zuan','cuan','suan',null,'wan']],
+    ['un', true, ['wen',null,null,null,null,'dun','tun',null,'lun','gun','kun','hun',null,null,null,'zhun','chun','shun','run','zun','cun','sun',null,'wen']],
+    ['uang', true, ['wang',null,null,null,null,null,null,null,null,'guang','kuang','huang',null,null,null,'zhuang','chuang','shuang',null,null,null,null,null,'wang']],
+    // -- ü group (blue) --
+    ['ü', true, ['yu',null,null,null,null,null,null,'nü','lü',null,null,null,'ju','qu','xu',null,null,null,null,null,null,null,'yu',null]],
+    ['üe', true, ['yue',null,null,null,null,null,null,'nüe','lüe',null,null,null,'jue','que','xue',null,null,null,null,null,null,null,'yue',null]],
+    ['üan', true, ['yuan',null,null,null,null,null,null,null,null,null,null,null,'juan','quan','xuan',null,null,null,null,null,null,null,'yuan',null]],
+    ['ün', true, ['yun',null,null,null,null,null,null,null,null,null,null,null,'jun','qun','xun',null,null,null,null,null,null,null,'yun',null]],
 ];
 
 /* ================================================================
-   Render
+   Syllables that get blue background highlight
+   ================================================================ */
+var BLUE_HIGHLIGHT = new Set([
+    'yi','ye','yin','ying',
+    'wu',
+    'yu','yue','yuan','yun'
+]);
+
+/* Syllables that get orange highlight + blue border: zhi/chi/shi/ri */
+var ORANGE_SYLS = new Set(['zhi','chi','shi','ri']);
+/* Syllables that get green highlight + blue border: zi/ci/si */
+var GREEN_SYLS = new Set(['zi','ci','si']);
+/* Group separator columns: f|d, l|g, h|j, x|zh, r|z */
+var SEP_COLS = new Set([5,9,12,15,19]);
+
+/* Row indices that mark group end (thick bottom border) */
+var GROUP_END_ROWS = new Set([10,20,28]); // er, iong, uang
+/* Dashed big boxes:
+   Left box: col 0 (∅), rows 11-32 (i to ün)
+   Right box: cols 22-23 (y,w), rows 11-32 (i to ün) */
+var DASHED_BOX_START_ROW = 11; // i row
+var DASHED_BOX_END_ROW = 32;   // ün row
+var DASHED_BOX_LEFT_COL = 0;   // ∅ column
+var DASHED_BOX_RIGHT_START_COL = 22; // y column
+var DASHED_BOX_RIGHT_END_COL = 23;   // w column
+
+/* ================================================================
+   Render table body
    ================================================================ */
 function buildTable() {
-    var head = document.getElementById('chartHead');
-    var body = document.getElementById('chartBody');
-    var htr = document.createElement('tr');
-    // First header cell for row labels
-    var th = document.createElement('th'); th.className = 'ch'; th.textContent = 'Final'; htr.appendChild(th);
-    for (var i = 0; i < INITIALS.length; i++) {
-        th = document.createElement('th'); th.className = 'ch';
-        th.textContent = INITIALS[i] === '' ? '∅' : INITIALS[i];
-        htr.appendChild(th);
-    }
-    head.appendChild(htr);
-
-    for (var g = 0; g < GROUPS.length; g++) {
-        var group = GROUPS[g];
-        // Group header row
-        var gr = document.createElement('tr');
-        var gth = document.createElement('th'); gth.className = 'gr';
-        gth.setAttribute('colspan', INITIALS.length + 1);
-        gth.textContent = group.label;
-        gr.appendChild(gth);
-        body.appendChild(gr);
-
-        for (var r = 0; r < group.rows.length; r++) {
-            var row = group.rows[r];
-            var tr = document.createElement('tr');
-            // Row label
-            var rl = document.createElement('th'); rl.className = 'rl';
-            rl.textContent = row.l;
-            tr.appendChild(rl);
-
-            for (var c = 0; c < INITIALS.length; c++) {
-                var ini = INITIALS[c];
-                var td = document.createElement('td');
-                var cell = row.c[ini];
-                if (cell) {
-                    td.className = 'cell';
-                    td.textContent = cell.m;
-                    td.title = cell.m;
-                    td.setAttribute('data-syl', cell.m);
-                    td.addEventListener('click', onCellClick);
-                    td.addEventListener('touchend', function(e) {
-                        e.preventDefault(); this.click();
-                    });
-                } else {
-                    td.className = 'empty';
-                    td.textContent = '';
-                }
-                tr.appendChild(td);
-            }
-            body.appendChild(tr);
+    var tbody = document.getElementById('pyBody');
+    for (var r = 0; r < ROWS.length; r++) {
+        var row = ROWS[r];
+        var tr = document.createElement('tr');
+        if (GROUP_END_ROWS.has(r)) {
+            tr.className = 'group-end';
         }
+
+        // Final label cell
+        var fd = document.createElement('td');
+        fd.className = row[1] ? 'final-cell final-blue' : 'final-cell';
+        fd.textContent = row[0];
+        tr.appendChild(fd);
+
+        // Data cells
+        var cells = row[2];
+        for (var c = 0; c < cells.length; c++) {
+            var td = document.createElement('td');
+            var inRange = (r >= DASHED_BOX_START_ROW && r <= DASHED_BOX_END_ROW);
+            // Determine if this cell is in left box (col 0) or right box (cols 22-23)
+            var inLeftBox = inRange && c == DASHED_BOX_LEFT_COL;
+            var inRightBoxStart = inRange && c == DASHED_BOX_RIGHT_START_COL;
+            var inRightBoxEnd = inRange && c == DASHED_BOX_RIGHT_END_COL;
+            var isTopRow = r == DASHED_BOX_START_ROW;
+            var isBottomRow = r == DASHED_BOX_END_ROW;
+
+            if (cells[c]) {
+                var cls = 'py-cell';
+                if (SEP_COLS.has(c)) cls += ' sep';
+                if (BLUE_HIGHLIGHT.has(cells[c])) cls += ' py-highlight';
+                if (ORANGE_SYLS.has(cells[c])) cls += ' py-orange';
+                if (GREEN_SYLS.has(cells[c])) cls += ' py-green';
+                // Dashed boxes
+                if (inLeftBox) {
+                    cls += ' dashed-left dashed-right';
+                    if (isTopRow) cls += ' dashed-top';
+                    if (isBottomRow) cls += ' dashed-bottom';
+                }
+                if (inRightBoxStart) {
+                    cls += ' dashed-left';
+                    if (isTopRow) cls += ' dashed-top';
+                    if (isBottomRow) cls += ' dashed-bottom';
+                }
+                if (inRightBoxEnd) {
+                    cls += ' dashed-right';
+                    if (isTopRow) cls += ' dashed-top';
+                    if (isBottomRow) cls += ' dashed-bottom';
+                }
+                td.className = cls;
+                td.textContent = cells[c];
+                td.setAttribute('data-syl', cells[c]);
+                td.addEventListener('click', onCellClick);
+                td.addEventListener('touchend', function(e) {
+                    e.preventDefault(); this.click();
+                });
+            } else {
+                td.className = 'empty-cell';
+                if (SEP_COLS.has(c)) td.className += ' sep';
+                // Dashed boxes for empty cells
+                if (inLeftBox) {
+                    td.className += ' dashed-left dashed-right';
+                    if (isTopRow) td.className += ' dashed-top';
+                    if (isBottomRow) td.className += ' dashed-bottom';
+                }
+                if (inRightBoxStart) {
+                    td.className += ' dashed-left';
+                    if (isTopRow) td.className += ' dashed-top';
+                    if (isBottomRow) td.className += ' dashed-bottom';
+                }
+                if (inRightBoxEnd) {
+                    td.className += ' dashed-right';
+                    if (isTopRow) td.className += ' dashed-top';
+                    if (isBottomRow) td.className += ' dashed-bottom';
+                }
+            }
+            tr.appendChild(td);
+        }
+        tbody.appendChild(tr);
     }
 }
 
 /* ================================================================
-   Pinyin → Chinese character map for natural TTS tones
+   Pinyin → Chinese character map for TTS
    ================================================================ */
-var CHAR = {
-    'ā':'阿','á':'啊','ǎ':'啊','à':'啊',
-    'bā':'八','bá':'拔','bǎ':'把','bà':'爸',
-    'pā':'趴','pá':'爬','pà':'怕',
-    'mā':'妈','má':'麻','mǎ':'马','mà':'骂',
-    'fā':'发','fá':'罚','fǎ':'法','fà':'发',
-    'dā':'搭','dá':'达','dǎ':'打','dà':'大',
-    'tā':'他','tǎ':'塔','tà':'踏',
-    'nā':'那','ná':'拿','nǎ':'哪','nà':'那',
-    'lā':'拉','lá':'拉','lǎ':'喇','là':'辣',
-    'gā':'嘎','gá':'嘎','gǎ':'嘎','gà':'尬',
-    'kā':'咖','kǎ':'卡',
-    'hā':'哈','há':'哈','hǎ':'哈','hà':'哈',
-    'zhā':'扎','zhá':'炸','zhǎ':'眨','zhà':'炸',
-    'chā':'插','chá':'茶','chǎ':'叉','chà':'差',
-    'shā':'沙','shá':'啥','shǎ':'傻','shà':'厦',
-    'rā':'然','rá':'然','rǎ':'染','rà':'让',
-    'zā':'扎','zá':'杂','zǎ':'咋',
-    'cā':'擦','cǎ':'擦',
-    'sā':'撒','sǎ':'洒','sà':'萨',
-    'yā':'鸭','yá':'牙','yǎ':'雅','yà':'亚',
-    'wā':'挖','wá':'娃','wǎ':'瓦','wà':'袜',
-    'ō':'哦','ó':'哦','ò':'哦',
-    'bō':'播','bó':'博','bǒ':'跛','bò':'播',
-    'pō':'泼','pó':'婆','pǒ':'叵','pò':'破',
-    'mō':'摸','mó':'模','mǒ':'抹','mò':'末',
-    'fó':'佛','lō':'咯','yō':'哟','wō':'窝','wǒ':'我','wò':'握',
-    'ē':'阿','é':'鹅','ě':'恶','è':'饿',
-    'mē':'么','mè':'么',
-    'dē':'德','dé':'得','tè':'特',
-    'nē':'呢','nè':'呢',
-    'lē':'了','lè':'乐',
-    'gē':'歌','gé':'格','gě':'葛','gè':'个',
-    'kē':'科','ké':'壳','kě':'可','kè':'课',
-    'hē':'喝','hé':'和','hè':'贺',
-    'zhē':'遮','zhé':'折','zhě':'者','zhè':'这',
-    'chē':'车','chě':'扯','chè':'彻',
-    'shē':'奢','shé':'蛇','shě':'舍','shè':'社',
-    'rě':'惹','rè':'热',
-    'zē':'则','zé':'则','zè':'仄',
-    'cè':'册','sè':'色',
-    'yī':'一','yí':'移','yǐ':'以','yì':'意',
-    'bī':'逼','bí':'鼻','bǐ':'笔','bì':'必',
-    'pī':'批','pí':'皮','pǐ':'匹','pì':'辟',
-    'mī':'眯','mí':'迷','mǐ':'米','mì':'密',
-    'dī':'低','dí':'敌','dǐ':'底','dì':'地',
-    'tī':'踢','tí':'提','tǐ':'体','tì':'替',
-    'nī':'妮','ní':'泥','nǐ':'你','nì':'逆',
-    'lī':'哩','lí':'离','lǐ':'里','lì':'力',
-    'jī':'机','jí':'及','jǐ':'几','jì':'记',
-    'qī':'七','qí':'其','qǐ':'起','qì':'气',
-    'xī':'西','xí':'习','xǐ':'洗','xì':'系',
-    'zhī':'之','zhí':'直','zhǐ':'只','zhì':'至',
-    'chī':'吃','chí':'持','chǐ':'尺','chì':'赤',
-    'shī':'师','shí':'十','shǐ':'使','shì':'是',
-    'rì':'日','zī':'资','zǐ':'子','zì':'自',
-    'cī':'词','cí':'词','cǐ':'此','cì':'次',
-    'sī':'思','sǐ':'死','sì':'四',
-    'wū':'屋','wú':'无','wǔ':'五','wù':'物',
-    'bū':'不','bú':'不','bǔ':'补','bù':'不',
-    'pū':'扑','pú':'葡','pǔ':'普','pù':'铺',
-    'mū':'母','mú':'模','mǔ':'母','mù':'木',
-    'fū':'夫','fú':'服','fǔ':'府','fù':'父',
-    'dū':'都','dú':'读','dǔ':'赌','dù':'度',
-    'tū':'突','tú':'图','tǔ':'土','tù':'兔',
-    'nú':'奴','nǔ':'努','nù':'怒',
-    'lū':'噜','lú':'卢','lǔ':'鲁','lù':'路',
-    'gū':'姑','gú':'骨','gǔ':'古','gù':'故',
-    'kū':'哭','kǔ':'苦','kù':'库',
-    'hū':'呼','hú':'胡','hǔ':'虎','hù':'护',
-    'zhū':'猪','zhú':'竹','zhǔ':'主','zhù':'住',
-    'chū':'出','chú':'除','chǔ':'楚','chù':'处',
-    'shū':'书','shú':'熟','shǔ':'数','shù':'树',
-    'rú':'如','rǔ':'乳','rù':'入',
-    'zū':'租','zú':'足','zǔ':'组',
-    'cū':'粗','cù':'促','sū':'苏','sù':'速',
-    'yū':'于','yú':'鱼','yǔ':'雨','yù':'玉',
-    'nǖ':'女','nǘ':'女','nǚ':'女','nǜ':'女',
-    'lǖ':'绿','lǘ':'驴','lǚ':'旅','lǜ':'绿',
-    'jū':'居','jú':'局','jǔ':'举','jù':'具',
-    'qū':'区','qú':'渠','qǔ':'取','qù':'去',
-    'xū':'需','xú':'徐','xǔ':'许','xù':'续',
-    'āi':'哀','ái':'挨','ǎi':'矮','ài':'爱',
-    'bāi':'掰','bái':'白','bǎi':'百','bài':'败',
-    'pāi':'拍','pái':'排','pǎi':'排','pài':'派',
-    'mái':'埋','mǎi':'买','mài':'卖',
-    'dāi':'呆','dǎi':'逮','dài':'带',
-    'tāi':'胎','tái':'台','tài':'太',
-    'nǎi':'奶','nài':'耐',
-    'lái':'来','lài':'赖',
-    'gāi':'该','gǎi':'改','gài':'盖',
-    'kāi':'开','kǎi':'凯',
-    'hāi':'嗨','hái':'还','hǎi':'海','hài':'害',
-    'zhāi':'摘','zhái':'宅','zhǎi':'窄','zhài':'债',
-    'chāi':'拆','chái':'柴','chài':'柴',
-    'shāi':'筛','shài':'晒',
-    'zāi':'灾','zǎi':'载','zài':'在',
-    'cāi':'猜','cái':'才','cǎi':'采','cài':'菜',
-    'sāi':'塞','sài':'赛',
-    'wāi':'歪','wài':'外',
-    'āo':'凹','áo':'熬','ǎo':'袄','ào':'奥',
-    'bāo':'包','báo':'薄','bǎo':'保','bào':'报',
-    'pāo':'抛','páo':'袍','pǎo':'跑','pào':'炮',
-    'māo':'猫','máo':'毛','mǎo':'卯','mào':'冒',
-    'dāo':'刀','dáo':'刀','dǎo':'岛','dào':'到',
-    'tāo':'涛','táo':'逃','tǎo':'讨','tào':'套',
-    'nāo':'孬','náo':'挠','nǎo':'脑','nào':'闹',
-    'lāo':'捞','láo':'劳','lǎo':'老','lào':'涝',
-    'gāo':'高','gǎo':'搞','gào':'告',
-    'kāo':'考','kǎo':'考','kào':'靠',
-    'hāo':'蒿','háo':'豪','hǎo':'好','hào':'号',
-    'zhāo':'招','zháo':'着','zhǎo':'找','zhào':'照',
-    'chāo':'超','cháo':'朝','chǎo':'吵','chào':'抄',
-    'shāo':'烧','sháo':'勺','shǎo':'少','shào':'绍',
-    'rāo':'饶','ráo':'饶','rǎo':'扰','rào':'绕',
-    'zāo':'遭','záo':'凿','zǎo':'早','zào':'造',
-    'cāo':'操','cáo':'曹','cǎo':'草',
-    'sāo':'骚','sǎo':'扫','sào':'扫',
-    'yāo':'腰','yáo':'摇','yǎo':'咬','yào':'要',
-    'ān':'安','án':'俺','ǎn':'俺','àn':'按',
-    'bān':'班','bǎn':'板','bàn':'半',
-    'pān':'潘','pán':'盘','pàn':'判',
-    'mān':'满','mán':'瞒','mǎn':'满','màn':'慢',
-    'fān':'翻','fán':'烦','fǎn':'反','fàn':'饭',
-    'dān':'单','dǎn':'胆','dàn':'但',
-    'tān':'贪','tán':'谈','tǎn':'毯','tàn':'探',
-    'nán':'男','nǎn':'难','nàn':'难',
-    'lán':'蓝','lǎn':'懒','làn':'烂',
-    'gān':'干','gǎn':'赶','gàn':'干',
-    'kān':'看','kǎn':'砍','kàn':'看',
-    'hān':'憨','hán':'含','hǎn':'喊','hàn':'汉',
-    'zhān':'粘','zhǎn':'展','zhàn':'站',
-    'chān':'搀','chán':'馋','chǎn':'产','chàn':'颤',
-    'shān':'山','shǎn':'闪','shàn':'善',
-    'rán':'然','rǎn':'染',
-    'zān':'赞','zán':'咱','zǎn':'攒','zàn':'赞',
-    'cān':'参','cán':'蚕','cǎn':'惨','càn':'灿',
-    'sān':'三','sǎn':'伞','sàn':'散',
-    'yān':'烟','yán':'言','yǎn':'眼','yàn':'验',
-    'wān':'弯','wán':'完','wǎn':'晚','wàn':'万',
-    'āng':'昂','áng':'昂','àng':'盎',
-    'bāng':'帮','bǎng':'绑','bàng':'棒',
-    'pāng':'乓','páng':'旁','pǎng':'胖','pàng':'胖',
-    'māng':'忙','máng':'忙','mǎng':'莽',
-    'fāng':'方','fáng':'房','fǎng':'访','fàng':'放',
-    'dāng':'当','dǎng':'党','dàng':'当',
-    'tāng':'汤','táng':'糖','tǎng':'躺','tàng':'烫',
-    'nāng':'囊','náng':'囊','nǎng':'囊','nàng':'囊',
-    'lāng':'狼','láng':'狼','lǎng':'朗','làng':'浪',
-    'gāng':'刚','gǎng':'港','gàng':'杠',
-    'kāng':'康','káng':'扛','kàng':'抗',
-    'hāng':'夯','háng':'行','hàng':'行',
-    'zhāng':'张','zhǎng':'长','zhàng':'丈',
-    'chāng':'昌','cháng':'长','chǎng':'厂','chàng':'唱',
-    'shāng':'伤','shǎng':'赏','shàng':'上',
-    'rāng':'让','ráng':'让','rǎng':'嚷','ràng':'让',
-    'zāng':'脏','zàng':'藏',
-    'cāng':'仓','cáng':'藏',
-    'sāng':'桑','sǎng':'嗓','sàng':'丧',
-    'yāng':'央','yáng':'阳','yǎng':'养','yàng':'样',
-    'wāng':'汪','wáng':'王','wǎng':'网','wàng':'忘',
-    'ēi':'诶','éi':'诶','ěi':'诶','èi':'诶',
-    'bēi':'杯','běi':'北','bèi':'被',
-    'pēi':'胚','péi':'陪','pèi':'配',
-    'mēi':'没','méi':'没','měi':'美','mèi':'妹',
-    'fēi':'飞','féi':'肥','fěi':'匪','fèi':'费',
-    'dēi':'得','děi':'得',
-    'nēi':'内','něi':'馁','nèi':'内',
-    'lēi':'勒','léi':'雷','lěi':'累','lèi':'类',
-    'gēi':'给','gěi':'给',
-    'hēi':'黑','héi':'黑',
-    'zhēi':'这','zhèi':'这',
-    'shéi':'谁','zēi':'贼','zéi':'贼',
-    'wēi':'威','wéi':'为','wěi':'伟','wèi':'位',
-    'ēn':'恩','èn':'恩',
-    'bēn':'奔','běn':'本','bèn':'笨',
-    'pēn':'喷','pén':'盆','pèn':'喷',
-    'mēn':'闷','mén':'门','mèn':'闷',
-    'fēn':'分','fén':'坟','fěn':'粉','fèn':'份',
-    'nēn':'嫩','nèn':'嫩',
-    'gēn':'跟','gén':'跟','gěn':'跟','gèn':'跟',
-    'kēn':'肯','kěn':'肯','kèn':'肯',
-    'hēn':'很','hén':'痕','hěn':'很','hèn':'恨',
-    'zhēn':'真','zhěn':'诊','zhèn':'阵',
-    'chēn':'琛','chén':'陈','chèn':'衬',
-    'shēn':'身','shén':'神','shěn':'审','shèn':'慎',
-    'rén':'人','rěn':'忍','rèn':'认',
-    'zēn':'怎','zěn':'怎','zèn':'怎',
-    'cēn':'参','cén':'岑','sēn':'森',
-    'wēn':'温','wén':'文','wěn':'稳','wèn':'问',
-    'ēng':'鞥','bēng':'崩','béng':'甭','běng':'绷','bèng':'蹦',
-    'pēng':'烹','péng':'朋','pěng':'捧','pèng':'碰',
-    'mēng':'蒙','méng':'蒙','měng':'猛','mèng':'梦',
-    'fēng':'风','féng':'缝','fěng':'讽','fèng':'凤',
-    'dēng':'灯','děng':'等','dèng':'邓',
-    'tēng':'疼','téng':'疼','tèng':'疼',
-    'néng':'能','nèng':'能',
-    'lēng':'冷','léng':'冷','lěng':'冷','lèng':'愣',
-    'gēng':'更','gěng':'耿','gèng':'更',
-    'kēng':'坑','kěng':'坑',
-    'hēng':'哼','héng':'横','hèng':'横',
-    'zhēng':'争','zhěng':'整','zhèng':'正',
-    'chēng':'称','chéng':'成','chěng':'逞','chèng':'秤',
-    'shēng':'生','shéng':'绳','shěng':'省','shèng':'胜',
-    'rēng':'扔','réng':'仍',
-    'zēng':'增','zèng':'赠',
-    'céng':'层','cèng':'蹭',
-    'sēng':'僧',
-    'wēng':'翁','wěng':'翁','wèng':'瓮',
-    'ér':'儿','ěr':'耳','èr':'二',
-    'yā':'鸭','yǎ':'雅','yà':'亚',
-    'liā':'俩','liǎ':'俩',
-    'jiā':'家','jiá':'夹','jiǎ':'假','jià':'价',
-    'qiā':'掐','qiá':'恰','qiǎ':'卡','qià':'恰',
-    'xiā':'虾','xiá':'霞','xià':'下',
-    'yē':'耶','yé':'爷','yě':'也','yè':'夜',
-    'biē':'憋','bié':'别','biě':'瘪','biè':'别',
-    'piē':'撇','piě':'撇',
-    'miē':'灭','miè':'灭',
-    'diē':'爹','dié':'叠',
-    'tiē':'贴','tiě':'铁','tiè':'帖',
-    'niē':'捏','niè':'聂',
-    'liē':'咧','liě':'裂','liè':'列',
-    'jiē':'接','jié':'节','jiě':'姐','jiè':'借',
-    'qiē':'切','qié':'茄','qiě':'且','qiè':'切',
-    'xiē':'些','xié':'鞋','xiě':'写','xiè':'谢',
-    'yāo':'腰','yǎo':'咬','yào':'要',
-    'biāo':'标','biǎo':'表','biào':'标',
-    'piāo':'飘','piáo':'朴','piǎo':'漂','piào':'票',
-    'miāo':'喵','miáo':'苗','miǎo':'秒','miào':'妙',
-    'diāo':'雕','diào':'调',
-    'tiāo':'挑','tiáo':'条','tiǎo':'挑','tiào':'跳',
-    'niǎo':'鸟','niào':'尿',
-    'liāo':'撩','liáo':'聊','liǎo':'了','liào':'料',
-    'jiāo':'交','jiáo':'嚼','jiǎo':'脚','jiào':'叫',
-    'qiāo':'敲','qiáo':'桥','qiǎo':'巧','qiào':'翘',
-    'xiāo':'消','xiáo':'消','xiǎo':'小','xiào':'笑',
-    'yōu':'优','yóu':'由','yǒu':'有','yòu':'又',
-    'miù':'谬','diū':'丢',
-    'niū':'妞','niú':'牛','niǔ':'扭','niù':'拗',
-    'liū':'溜','liú':'刘','liǔ':'柳','liù':'六',
-    'jiū':'纠','jiǔ':'九','jiù':'就',
-    'qiū':'秋','qiú':'求','qiǔ':'求',
-    'xiū':'休','xiǔ':'朽','xiù':'秀',
-    'yān':'烟','yǎn':'眼','yàn':'验',
-    'biān':'边','biǎn':'扁','biàn':'变',
-    'piān':'篇','pián':'便','piǎn':'片','piàn':'片',
-    'mián':'棉','miǎn':'免','miàn':'面',
-    'diān':'颠','diǎn':'点','diàn':'电',
-    'tiān':'天','tián':'田','tiǎn':'舔','tiàn':'填',
-    'niān':'年','nián':'年','niǎn':'撵','niàn':'念',
-    'liān':'连','lián':'连','liǎn':'脸','liàn':'练',
-    'jiān':'间','jiǎn':'简','jiàn':'见',
-    'qiān':'千','qián':'前','qiǎn':'浅','qiàn':'欠',
-    'xiān':'先','xián':'咸','xiǎn':'显','xiàn':'线',
-    'yīn':'音','yín':'银','yǐn':'引','yìn':'印',
-    'bīn':'宾','bìn':'宾',
-    'pīn':'拼','pín':'频','pǐn':'品','pìn':'聘',
-    'mín':'民','mǐn':'敏',
-    'nín':'您','līn':'林','lín':'林','lǐn':'凛','lìn':'吝',
-    'jīn':'金','jǐn':'紧','jìn':'进',
-    'qīn':'亲','qín':'琴','qǐn':'寝','qìn':'沁',
-    'xīn':'新','xín':'寻','xǐn':'信','xìn':'信',
-    'yāng':'央','yáng':'阳','yǎng':'养','yàng':'样',
-    'niáng':'娘','niàng':'酿',
-    'liáng':'凉','liǎng':'两','liàng':'亮',
-    'jiāng':'江','jiǎng':'讲','jiàng':'将',
-    'qiāng':'枪','qiáng':'强','qiǎng':'抢','qiàng':'呛',
-    'xiāng':'香','xiáng':'详','xiǎng':'想','xiàng':'向',
-    'yīng':'英','yíng':'迎','yǐng':'影','yìng':'应',
-    'bīng':'冰','bǐng':'饼','bìng':'并',
-    'pīng':'乒','píng':'平',
-    'míng':'明','mǐng':'命','mìng':'命',
-    'dīng':'丁','dǐng':'顶','dìng':'定',
-    'tīng':'听','tíng':'停','tǐng':'挺','tìng':'听',
-    'níng':'宁','nǐng':'拧','nìng':'宁',
-    'líng':'零','lǐng':'领','lìng':'另',
-    'jīng':'经','jǐng':'景','jìng':'静',
-    'qīng':'清','qíng':'情','qǐng':'请','qìng':'庆',
-    'xīng':'星','xíng':'行','xǐng':'醒','xìng':'性',
-    'yōng':'拥','yóng':'拥','yǒng':'永','yòng':'用',
-    'jiōng':'囧','jiǒng':'窘',
-    'qióng':'穷','xiōng':'兄','xióng':'雄','xiòng':'熊',
-    'wā':'挖','wǎ':'瓦','wà':'袜',
-    'guā':'瓜','guǎ':'寡','guà':'挂',
-    'kuā':'夸','kuǎ':'垮','kuà':'跨',
-    'huā':'花','huá':'华','huà':'化',
-    'zhuā':'抓','zhuǎ':'爪',
-    'shuā':'刷','shuǎ':'耍',
-    'wō':'窝','wǒ':'我','wò':'握',
-    'duō':'多','duó':'夺','duǒ':'朵','duò':'舵',
-    'tuō':'拖','tuó':'驼','tuǒ':'妥','tuò':'拓',
-    'nuó':'挪','nuò':'诺',
-    'luō':'啰','luó':'罗','luǒ':'裸','luò':'落',
-    'guō':'锅','guó':'国','guǒ':'果','guò':'过',
-    'kuò':'扩','huō':'豁','huó':'活','huǒ':'火','huò':'或',
-    'zhuō':'捉','zhuó':'着',
-    'chuō':'戳','chuò':'绰',
-    'shuō':'说','shuò':'说',
-    'ruò':'若','zuō':'作','zuó':'昨','zuǒ':'左','zuò':'做',
-    'cuō':'搓','cuò':'错','suō':'缩','suǒ':'所','suò':'锁',
-    'wāi':'歪','wài':'外',
-    'guāi':'乖','guǎi':'拐','guài':'怪',
-    'kuài':'快','huái':'怀','huài':'坏',
-    'zhuāi':'拽','zhuǎi':'转','zhuài':'拽',
-    'chuāi':'揣','chuǎi':'揣','chuài':'踹',
-    'shuāi':'摔','shuǎi':'甩','shuài':'帅',
-    'wēi':'威','wéi':'为','wěi':'伟','wèi':'位',
-    'duī':'堆','duì':'对',
-    'tuī':'推','tuí':'颓','tuǐ':'腿','tuì':'退',
-    'guī':'规','guǐ':'鬼','guì':'贵',
-    'kuī':'亏','kuí':'葵','kuǐ':'愧','kuì':'愧',
-    'huī':'灰','huí':'回','huǐ':'毁','huì':'会',
-    'zhuī':'追','zhuì':'坠',
-    'chuī':'吹','chuí':'垂',
-    'shuǐ':'水','shuì':'睡',
-    'ruǐ':'蕊','ruì':'瑞',
-    'zuī':'嘴','zuǐ':'嘴','zuì':'最',
-    'cuī':'催','cuǐ':'催','cuì':'翠',
-    'suī':'虽','suí':'随','suǐ':'髓','suì':'岁',
-    'wān':'弯','wǎn':'晚','wàn':'万',
-    'duān':'端','duǎn':'短','duàn':'段',
-    'tuān':'湍','tuán':'团',
-    'nuǎn':'暖','luán':'乱','luǎn':'卵','luàn':'乱',
-    'guān':'关','guǎn':'馆','guàn':'惯',
-    'kuān':'宽','kuǎn':'款',
-    'huān':'欢','huán':'还','huǎn':'缓','huàn':'换',
-    'zhuān':'专','zhuǎn':'转','zhuàn':'赚',
-    'chuān':'穿','chuán':'传','chuǎn':'喘','chuàn':'串',
-    'shuān':'拴','shuàn':'涮',
-    'ruǎn':'软','zuān':'钻','zuǎn':'钻','zuàn':'钻',
-    'cuān':'蹿','cuán':'攒','cuàn':'窜',
-    'suān':'酸','suàn':'算',
-    'wēn':'温','wén':'文','wěn':'稳','wèn':'问',
-    'dūn':'吨','dǔn':'吨','dùn':'顿',
-    'tūn':'吞','tún':'屯','tǔn':'屯','tùn':'屯',
-    'lūn':'轮','lún':'轮','lùn':'论',
-    'gǔn':'滚','gùn':'棍',
-    'kūn':'昆','kǔn':'捆','kùn':'困',
-    'hūn':'婚','hún':'魂','hùn':'混',
-    'zhūn':'谆','zhǔn':'准',
-    'chūn':'春','chún':'纯','chǔn':'蠢',
-    'shǔn':'吮','shùn':'顺',
-    'rùn':'润','zūn':'尊','zǔn':'尊','zùn':'尊',
-    'cūn':'村','cún':'存','cǔn':'忖','cùn':'寸',
-    'sūn':'孙','sǔn':'损',
-    'wāng':'汪','wáng':'王','wǎng':'网','wàng':'忘',
-    'guāng':'光','guǎng':'广','guàng':'逛',
-    'kuāng':'框','kuáng':'狂','kuǎng':'框','kuàng':'况',
-    'huāng':'慌','huáng':'黄','huǎng':'谎','huàng':'晃',
-    'zhuāng':'装','zhuǎng':'装','zhuàng':'壮',
-    'chuāng':'窗','chuáng':'床','chuǎng':'闯','chuàng':'创',
-    'shuāng':'双','shuǎng':'爽',
-    'yuē':'约','yuě':'约','yuè':'月',
-    'nüè':'虐','lüè':'略',
-    'juē':'决','jué':'决','juě':'决','juè':'倔',
-    'quē':'缺','qué':'缺','què':'却',
-    'xuē':'学','xué':'学','xuě':'雪','xuè':'血',
-    'yuān':'渊','yuán':'元','yuǎn':'远','yuàn':'院',
-    'juān':'捐','juǎn':'卷','juàn':'卷',
-    'quān':'圈','quán':'全','quǎn':'犬','quàn':'劝',
-    'xuān':'宣','xuán':'悬','xuǎn':'选','xuàn':'炫',
-    'yūn':'晕','yún':'云','yǔn':'允','yùn':'运',
-    'jūn':'军','jùn':'军',
-    'qún':'群','xūn':'勋','xún':'寻','xùn':'训',
-    'ēnɡ':'鞥','kēi':'尅','tēi':'忒',
-    'hng':'哼','hm':'噷',
+var CHAR_MAP = {
+    'ba':'八','pa':'趴','ma':'妈','fa':'发','da':'搭','ta':'他','na':'那','la':'拉','ga':'嘎','ka':'咖','ha':'哈',
+    'zha':'扎','cha':'插','sha':'沙','za':'扎','ca':'擦','sa':'撒',
+    'bo':'播','po':'泼','mo':'摸','fo':'佛','lo':'咯',
+    'me':'么','de':'德','te':'特','ne':'呢','le':'乐','ge':'歌','ke':'科','he':'喝',
+    'zhe':'遮','che':'车','she':'奢','re':'热','ze':'则','ce':'册','se':'色',
+    'bai':'掰','pai':'拍','mai':'埋','dai':'呆','tai':'胎','nai':'奶','lai':'来','gai':'该','kai':'开','hai':'嗨',
+    'zhai':'摘','chai':'拆','shai':'筛','zai':'灾','cai':'猜','sai':'塞',
+    'bao':'包','pao':'抛','mao':'猫','dao':'刀','tao':'涛','nao':'孬','lao':'捞','gao':'高','kao':'考','hao':'蒿',
+    'zhao':'招','chao':'超','shao':'烧','rao':'饶','zao':'遭','cao':'操','sao':'骚',
+    'ban':'班','pan':'潘','man':'满','fan':'翻','dan':'单','tan':'贪','nan':'男','lan':'蓝','gan':'干','kan':'看','han':'憨',
+    'zhan':'粘','chan':'搀','shan':'山','ran':'然','zan':'赞','can':'参','san':'三',
+    'bang':'帮','pang':'乓','mang':'忙','fang':'方','dang':'当','tang':'汤','nang':'囊','lang':'狼','gang':'刚','kang':'康','hang':'夯',
+    'zhang':'张','chang':'昌','shang':'伤','rang':'让','zang':'脏','cang':'仓','sang':'桑',
+    'bei':'杯','pei':'胚','mei':'美','fei':'飞','dei':'得','nei':'内','lei':'累','gei':'给','kei':'克','hei':'黑',
+    'shei':'谁','zei':'贼',
+    'ben':'奔','pen':'喷','men':'门','fen':'分','nen':'嫩','gen':'根','ken':'肯','hen':'很',
+    'zhen':'真','chen':'晨','shen':'深','ren':'人','zen':'怎','cen':'参','sen':'森',
+    'beng':'崩','peng':'朋','meng':'梦','feng':'风','deng':'灯','teng':'疼','neng':'能','leng':'冷','geng':'更','keng':'坑','heng':'横',
+    'zheng':'正','cheng':'称','sheng':'声','reng':'仍','zeng':'赠','ceng':'层','seng':'僧',
+    'er':'儿',
+    'yi':'一','bi':'逼','pi':'批','mi':'眯','di':'低','ti':'踢','ni':'妮','li':'哩','ji':'机','qi':'七','xi':'西',
+    'zhi':'之','chi':'吃','shi':'师','ri':'日','zi':'资','ci':'词','si':'思',
+    'ya':'鸭','lia':'俩','jia':'家','qia':'掐','xia':'虾',
+    'ye':'耶','bie':'憋','pie':'撇','mie':'灭','die':'爹','tie':'贴','nie':'捏','lie':'咧','jie':'接','qie':'切','xie':'些',
+    'yao':'腰','biao':'标','piao':'飘','miao':'喵','diao':'雕','tiao':'挑','niao':'鸟','liao':'撩','jiao':'交','qiao':'敲','xiao':'消',
+    'you':'优','miu':'谬','diu':'丢','niu':'妞','liu':'溜','jiu':'纠','qiu':'秋','xiu':'休',
+    'yan':'烟','bian':'边','pian':'篇','mian':'棉','dian':'颠','tian':'天','nian':'年','lian':'连','jian':'间','qian':'千','xian':'先',
+    'yin':'音','bin':'宾','pin':'拼','min':'民','nin':'您','lin':'林','jin':'金','qin':'亲','xin':'新',
+    'yang':'央','liang':'凉','jiang':'江','qiang':'枪','xiang':'香',
+    'ying':'英','bing':'冰','ping':'乒','ming':'明','ding':'丁','ting':'听','ning':'宁','ling':'零','jing':'经','qing':'清','xing':'星',
+    'yong':'拥','jiong':'囧','qiong':'穷','xiong':'兄',
+    'wu':'屋','bu':'不','pu':'扑','mu':'母','fu':'夫','du':'都','tu':'突','nu':'奴','lu':'噜','gu':'姑','ku':'哭','hu':'呼',
+    'zhu':'猪','chu':'出','shu':'书','ru':'如','zu':'租','cu':'粗','su':'苏',
+    'zhei':'这',
+    'wa':'挖','gua':'瓜','kua':'夸','hua':'花','zhua':'抓','chua':'啜','shua':'刷',
+    'wo':'窝','duo':'多','tuo':'拖','nuo':'挪','luo':'罗','guo':'锅','kuo':'阔','huo':'火','zhuo':'捉','chuo':'戳','shuo':'说','ruo':'若','zuo':'作','cuo':'错','suo':'缩',
+    'wai':'歪','guai':'乖','kuai':'快','huai':'怀','zhuai':'拽','chuai':'揣','shuai':'摔',
+    'wei':'威','dui':'堆','tui':'推','gui':'规','kui':'亏','hui':'灰','zhui':'追','chui':'吹','shui':'水','rui':'蕊','zui':'嘴','cui':'催','sui':'虽',
+    'wan':'弯','duan':'端','tuan':'湍','nuan':'暖','luan':'乱','guan':'关','kuan':'宽','huan':'欢','zhuan':'专','chuan':'穿','shuan':'拴','ruan':'软','zuan':'钻','cuan':'蹿','suan':'酸',
+    'wen':'温','dun':'吨','tun':'吞','lun':'轮','gun':'滚','kun':'昆','hun':'婚','zhun':'谆','chun':'春','shun':'吮','run':'润','zun':'尊','cun':'村','sun':'孙',
+    'wang':'汪','guang':'光','kuang':'框','huang':'慌','zhuang':'装','chuang':'窗','shuang':'双',
+    'yu':'于','nv':'女','lv':'绿','ju':'居','qu':'区','xu':'需',
+    'yue':'约','nve':'虐','lve':'略','jue':'决','que':'缺','xue':'学',
+    'yuan':'渊','juan':'捐','quan':'全','xuan':'宣',
+    'yun':'晕','jun':'军','qun':'群','xun':'勋'
 };
 
 var _playing = null;
 
-/* ── Multi-engine TTS (Android-compatible) ── */
-
+/* ── Multi-engine TTS ── */
 function edgeFetch(text) {
     var ssml = '<speak version="1.0" xml:lang="zh-CN"><voice name="zh-CN-XiaoxiaoNeural">' + text + '</voice></speak>';
     return fetch('https://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=6A5AA1D4EAFF4E9FB37E23D68491D6F4', {
@@ -709,16 +549,7 @@ function edgeFetch(text) {
 
 function tryGoogleURL(audio, text) {
     audio.src = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=zh-CN&q=' + encodeURIComponent(text);
-    audio.play().catch(function() { /* silent */ });
-}
-
-function tryWebTTS(text) {
-    if ('speechSynthesis' in window) {
-        speechSynthesis.cancel();
-        var u = new SpeechSynthesisUtterance(text);
-        u.lang = 'zh-CN'; u.rate = 0.8;
-        speechSynthesis.speak(u);
-    }
+    audio.play().catch(function() {});
 }
 
 function onCellClick(e) {
@@ -731,27 +562,22 @@ function onCellClick(e) {
     td.classList.add('playing');
     setTimeout(function() { td.classList.remove('playing'); }, 800);
 
-    var query = CHAR[syl] || syl;
-
-    // Pre-create Audio inside click for Android gesture permission
+    var sylv = syl.replace(/ü/g,'v').replace(/Ü/g,'V');
+    var query = CHAR_MAP[sylv] || CHAR_MAP[syl] || syl;
     var audio = new Audio();
     audio.preload = 'auto';
 
-    // Engine 1: Microsoft Edge TTS
     edgeFetch(query).then(function(blobUrl) {
         if (blobUrl) {
             audio.src = blobUrl;
             audio.play().catch(function() { tryGoogleURL(audio, query); });
         } else {
-            // Engine 2: Google TTS (works with VPN)
             tryGoogleURL(audio, query);
         }
     });
 }
 
-/* ================================================================
-   Init
-   ================================================================ */
+/* Init */
 buildTable();
 </script>
 </body>
