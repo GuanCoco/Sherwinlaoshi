@@ -8,6 +8,7 @@
     <link rel="canonical" href="https://sherwinlaoshi.com/vark-test.html">
     <link rel="stylesheet" href="css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <style>
         .vark-wrap {
             max-width: 800px;
@@ -448,6 +449,109 @@
             background: var(--c-primary-l);
         }
 
+        /* Nickname Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,.45);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-dialog {
+            background: var(--c-surface);
+            border-radius: var(--r-xl);
+            box-shadow: 0 20px 60px rgba(0,0,0,.2);
+            padding: 32px 36px;
+            width: 90%;
+            max-width: 420px;
+            text-align: center;
+            animation: modalIn .25s ease;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(20px) scale(.96); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .modal-dialog h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--c-text);
+        }
+        .modal-dialog .modal-sub {
+            font-size: .82rem;
+            color: var(--c-text3);
+            margin-bottom: 20px;
+        }
+        .modal-input-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .modal-input-row input {
+            flex: 1;
+            padding: 11px 14px;
+            border: 1.5px solid var(--c-border);
+            border-radius: var(--r);
+            font-size: .92rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color var(--tf);
+        }
+        .modal-input-row input:focus {
+            border-color: var(--c-primary);
+        }
+        .modal-input-row .modal-rand-btn {
+            flex-shrink: 0;
+            padding: 11px 16px;
+            border: 1.5px solid var(--c-primary);
+            background: var(--c-primary-l);
+            color: var(--c-primary);
+            border-radius: var(--r);
+            cursor: pointer;
+            font-size: .82rem;
+            font-weight: 600;
+            font-family: inherit;
+            white-space: nowrap;
+            transition: all var(--tf);
+        }
+        .modal-input-row .modal-rand-btn:hover {
+            background: var(--c-primary);
+            color: #fff;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .modal-actions button {
+            padding: 10px 28px;
+            border-radius: var(--r);
+            font-size: .9rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all var(--tf);
+        }
+        .modal-btn-cancel {
+            background: transparent;
+            border: 1.5px solid var(--c-border);
+            color: var(--c-text2);
+        }
+        .modal-btn-cancel:hover { border-color: var(--c-text2); }
+        .modal-btn-confirm {
+            background: var(--c-primary);
+            color: #fff;
+            border: none;
+            box-shadow: 0 2px 4px rgba(79,70,229,.3);
+        }
+        .modal-btn-confirm:hover {
+            background: var(--c-primary-h);
+            box-shadow: 0 4px 8px rgba(79,70,229,.35);
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .vark-wrap { padding: 12px 10px 32px; }
@@ -618,11 +722,29 @@
             <!-- Actions -->
             <div class="action-btns">
                 <button class="action-btn outline" id="retestBtn" onclick="retakeTest()">🔄 重新测评</button>
+                <button class="action-btn primary" id="saveImgBtn" onclick="saveImage()">📷 保存结果图片</button>
                 <a class="action-btn primary" id="contactBtn" href="contact.html">📧 预约定制中文课</a>
             </div>
         </div>
     </div>
 
+
+</div>
+
+<!-- Nickname Modal -->
+<div class="modal-overlay" id="nicknameModal">
+    <div class="modal-dialog">
+        <h3 id="nicknameTitle">输入你的昵称</h3>
+        <p class="modal-sub" id="nicknameSub">将在你的专属测评图片中展示</p>
+        <div class="modal-input-row">
+            <input type="text" id="nicknameInput" placeholder="输入昵称..." maxlength="20">
+            <button class="modal-rand-btn" id="randNickBtn" onclick="randomNickname()">🎲 随机</button>
+        </div>
+        <div class="modal-actions">
+            <button class="modal-btn-cancel" onclick="cancelNickname()">跳过</button>
+            <button class="modal-btn-confirm" onclick="confirmNickname()">确认生成</button>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -669,6 +791,7 @@ const I18N = {
         planStep4: '④ 阶段适配：初学发音阶段侧重听觉/视觉，考级备考强化读写，日常交流侧重实景实践。',
         retestTip: '<strong>温馨提醒：</strong>核心学习特质天生定型不易改变，低分维度不代表缺陷，可适度刻意补强。学习阶段变化会带来临时偏好偏移——<strong>建议每3个月复测一次</strong>，动态校准学习策略。',
         retestBtn: '🔄 重新测评',
+        saveImgBtn: '📷 保存结果图片',
         contactBtn: '📧 预约定制中文课',
         radarLabel: '你的学习倾向分值',
         radarLabels: ['视觉学习', '听觉学习', '读写研习', '实践行动'],
@@ -723,6 +846,7 @@ const I18N = {
         planStep4: '④ Stage Adaptation: Focus on auditory/visual for pronunciation, reading/writing for exam prep, and real-world practice for daily conversation.',
         retestTip: '<strong>Friendly Reminder:</strong> Core learning traits are innate and stable; low scores do not indicate deficits but can be moderately strengthened. Learning stage changes bring temporary preference shifts — <strong>retake every 3 months</strong> to dynamically calibrate your strategy.',
         retestBtn: '🔄 Retake Test',
+        saveImgBtn: '📷 Save as Image',
         contactBtn: '📧 Book a Custom Chinese Lesson',
         radarLabel: 'Your Learning Tendency Scores',
         radarLabels: ['Visual', 'Auditory', 'Read/Write', 'Kinesthetic'],
@@ -877,6 +1001,7 @@ function updateStaticText() {
     document.getElementById('dimTitleK').textContent = t('dimTitleK');
     document.getElementById('retestTip').innerHTML = t('retestTip');
     document.getElementById('retestBtn').textContent = t('retestBtn');
+    document.getElementById('saveImgBtn').textContent = t('saveImgBtn');
     document.getElementById('contactBtn').textContent = t('contactBtn');
 }
 
@@ -1055,6 +1180,225 @@ function drawRadar(scores) {
             }
         }
     });
+}
+
+// ===================== Nickname Modal =====================
+let nicknameResolve = null;
+
+const RANDOM_NICKNAMES_ZH = [
+    '学习达人', '中文探索者', '语言小天才', '追光者', '知识猎人',
+    '熊猫学友', '龙之传人', '星海旅人', '墨香书生', '智慧树苗',
+    '勤学蜜蜂', '梦想启航', '远行少年', '晨曦微光', '清风徐来',
+    '若水', '灵犀', '知行', '云帆', '望远'
+];
+
+const RANDOM_NICKNAMES_EN = [
+    'LanguageLover', 'ChineseExplorer', 'WordWizard', 'StudyStar',
+    'PandaLearner', 'DragonTamer', 'StarSeeker', 'InkWanderer',
+    'WisdomSprout', 'DreamChaser', 'CuriousMind', 'BrightPath',
+    'NorthStar', 'AceLearner', 'ZenMaster'
+];
+
+function randomNickname() {
+    const list = currentLang === 'zh' ? RANDOM_NICKNAMES_ZH : RANDOM_NICKNAMES_EN;
+    const pick = list[Math.floor(Math.random() * list.length)];
+    document.getElementById('nicknameInput').value = pick;
+}
+
+function showNicknameModal() {
+    return new Promise(resolve => {
+        nicknameResolve = resolve;
+        // Update modal text
+        if (currentLang === 'zh') {
+            document.getElementById('nicknameTitle').textContent = '输入你的昵称';
+            document.getElementById('nicknameSub').textContent = '将在你的专属测评图片中展示';
+            document.getElementById('nicknameInput').placeholder = '输入昵称...';
+            document.getElementById('randNickBtn').textContent = '🎲 随机';
+            document.querySelector('.modal-btn-cancel').textContent = '跳过';
+            document.querySelector('.modal-btn-confirm').textContent = '确认生成';
+        } else {
+            document.getElementById('nicknameTitle').textContent = 'Enter Your Nickname';
+            document.getElementById('nicknameSub').textContent = 'Will appear on your report image';
+            document.getElementById('nicknameInput').placeholder = 'Enter nickname...';
+            document.getElementById('randNickBtn').textContent = '🎲 Random';
+            document.querySelector('.modal-btn-cancel').textContent = 'Skip';
+            document.querySelector('.modal-btn-confirm').textContent = 'Generate';
+        }
+        document.getElementById('nicknameInput').value = '';
+        document.getElementById('nicknameModal').classList.add('show');
+        document.getElementById('nicknameInput').focus();
+    });
+}
+
+function cancelNickname() {
+    document.getElementById('nicknameModal').classList.remove('show');
+    if (nicknameResolve) {
+        nicknameResolve(null);
+        nicknameResolve = null;
+    }
+}
+
+function confirmNickname() {
+    const val = document.getElementById('nicknameInput').value.trim();
+    document.getElementById('nicknameModal').classList.remove('show');
+    if (nicknameResolve) {
+        nicknameResolve(val || null);
+        nicknameResolve = null;
+    }
+}
+
+// Allow Enter key to confirm
+document.getElementById('nicknameInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') confirmNickname();
+});
+
+async function saveImage() {
+    const btn = document.getElementById('saveImgBtn');
+
+    // Show nickname modal and wait for input
+    const nickname = await showNicknameModal();
+
+    const origText = btn.textContent;
+    btn.textContent = '⏳ ' + (currentLang === 'zh' ? '生成中...' : 'Generating...');
+    btn.disabled = true;
+
+    try {
+        const resultCard = document.querySelector('.result-card');
+        const siteUrl = 'https://sherwinlaoshi.com/vark-test.html';
+
+        // Capture result card
+        const cardCanvas = await html2canvas(resultCard, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#ffffff',
+            logging: false
+        });
+
+        // Header section (only if nickname provided)
+        const headerH = nickname ? (100 * 2) : 0; // 100px at 2x scale
+        const footerH = 270 * 2; // 270px at 2x scale
+        const pad = 20 * 2; // padding
+
+        // Create composite canvas with header + card + footer
+        const compCanvas = document.createElement('canvas');
+        compCanvas.width = cardCanvas.width;
+        compCanvas.height = headerH + cardCanvas.height + footerH;
+        const ctx = compCanvas.getContext('2d');
+
+        // White background
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, compCanvas.width, compCanvas.height);
+
+        // === Draw Header ===
+        if (nickname) {
+            // Gradient header background
+            const hGrad = ctx.createLinearGradient(0, 0, compCanvas.width, 0);
+            hGrad.addColorStop(0, '#eef2ff');
+            hGrad.addColorStop(0.5, '#ede9fe');
+            hGrad.addColorStop(1, '#eef2ff');
+            ctx.fillStyle = hGrad;
+            ctx.fillRect(0, 0, compCanvas.width, headerH);
+
+            // Bottom border of header
+            ctx.strokeStyle = '#c7d2fe';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(pad, headerH);
+            ctx.lineTo(compCanvas.width - pad, headerH);
+            ctx.stroke();
+
+            // Greeting text
+            ctx.textAlign = 'center';
+            const greetingText = currentLang === 'zh'
+                ? `亲爱的${nickname}，恭喜你完成了SherwinLaoshi的VARK test`
+                : `Dear ${nickname}, congratulations on completing Sherwin Laoshi's VARK test`;
+
+            // Draw title with word wrapping
+            ctx.fillStyle = '#3730a3';
+            ctx.font = 'bold ' + (16 * 2) + 'px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            const maxW = compCanvas.width - pad * 4;
+            const words = greetingText.split('');
+            let line = '';
+            let yOff = headerH / 2 - 10 * 2;
+            for (let i = 0; i < words.length; i++) {
+                const testLine = line + words[i];
+                if (ctx.measureText(testLine).width > maxW && line.length > 0) {
+                    ctx.fillText(line, compCanvas.width / 2, yOff);
+                    line = words[i];
+                    yOff += 24 * 2;
+                } else {
+                    line = testLine;
+                }
+            }
+            if (line) ctx.fillText(line, compCanvas.width / 2, yOff);
+        }
+
+        // Draw result card (offset by headerH)
+        ctx.drawImage(cardCanvas, 0, headerH);
+
+        // === Draw Footer ===
+        // Divider line
+        const divY = headerH + cardCanvas.height + pad;
+        ctx.strokeStyle = '#e5e7eb';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(pad * 2, divY);
+        ctx.lineTo(compCanvas.width - pad * 2, divY);
+        ctx.stroke();
+
+        // Load QR code
+        const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(siteUrl);
+        const qrImg = new Image();
+        qrImg.crossOrigin = 'anonymous';
+        await new Promise((resolve, reject) => {
+            qrImg.onload = resolve;
+            qrImg.onerror = reject;
+            qrImg.src = qrUrl;
+        });
+
+        // QR code size and position
+        const qrSize = 120 * 2; // 120px at 2x
+        const qrX = (compCanvas.width - qrSize) / 2;
+        const qrY = divY + pad;
+        ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);
+
+        // Text below QR code
+        const lineH = 18 * 2;
+        const textY1 = qrY + qrSize + pad * 2;
+        ctx.textAlign = 'center';
+
+        // Line 1: 扫码做测试
+        ctx.fillStyle = '#374151';
+        ctx.font = 'bold ' + (18 * 2) + 'px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+        ctx.fillText('扫码做测试', compCanvas.width / 2, textY1);
+
+        // Line 2: Scan To Test
+        ctx.fillStyle = '#6b7280';
+        ctx.font = (14 * 2) + 'px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+        ctx.fillText('Scan To Test', compCanvas.width / 2, textY1 + lineH);
+
+        // Line 3: Website URL
+        ctx.fillStyle = '#9ca3af';
+        ctx.font = (11 * 2) + 'px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+        ctx.fillText(siteUrl, compCanvas.width / 2, textY1 + lineH * 2);
+
+        // Download
+        const now = new Date();
+        const pad2 = n => ('0' + n).slice(-2);
+        const dateStr = now.getFullYear() + pad2(now.getMonth() + 1) + pad2(now.getDate());
+
+        const link = document.createElement('a');
+        link.download = 'VARK_Report_' + dateStr + '.png';
+        link.href = compCanvas.toDataURL('image/png');
+        link.click();
+
+    } catch (err) {
+        console.error('Image generation failed:', err);
+        alert(currentLang === 'zh' ? '图片生成失败，请重试。' : 'Image generation failed. Please try again.');
+    } finally {
+        btn.textContent = origText;
+        btn.disabled = false;
+    }
 }
 
 function retakeTest() {
