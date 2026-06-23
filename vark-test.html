@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="VARK Learning Style Assessment | 语言学习风格精准测评 — 40题全场景诊断，蛛网雷达图直观呈现你的视觉/听觉/读写/动觉四维学习倾向。">
+    <title>Learning Style Test | 学习风格测评 | sherwinlaoshi</title>
+    <link rel="canonical" href="https://sherwinlaoshi.com/vark-test.html">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <style>
+        .vark-wrap {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px 16px 48px;
+        }
+
+        /* Hero */
+        .vark-hero {
+            text-align: center;
+            padding: 36px 0 20px;
+        }
+        /* Language toggle */
+        .lang-toggle-wrap {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 4px;
+        }
+        .lang-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--c-surface);
+            border: 1.5px solid var(--c-border);
+            border-radius: 24px;
+            padding: 0;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: .82rem;
+            font-weight: 600;
+            color: var(--c-text2);
+            transition: all var(--tf);
+            overflow: hidden;
+        }
+        .lang-toggle:hover {
+            border-color: var(--c-primary);
+            box-shadow: 0 2px 8px rgba(79,70,229,.12);
+        }
+        .lang-toggle .lang-opt {
+            padding: 6px 16px;
+            border-radius: 22px;
+            transition: all var(--tf);
+            white-space: nowrap;
+        }
+        .lang-toggle .lang-opt.active {
+            background: var(--c-primary);
+            color: #fff;
+        }
+
+        .vark-hero .hero-icon {
+            font-size: 3rem;
+            margin-bottom: 8px;
+            display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%,100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .vark-hero h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }
+        .vark-hero h1 .cn {
+            font-weight: 400;
+            font-size: 0.78em;
+            color: var(--c-text2);
+        }
+        .vark-hero .sub {
+            font-size: .92rem;
+            color: var(--c-text3);
+            max-width: 580px;
+            margin: 0 auto;
+            line-height: 1.65;
+        }
+
+        /* Info card */
+        .vark-intro {
+            background: var(--c-surface);
+            border-radius: var(--r-xl);
+            box-shadow: var(--sh);
+            border: 1px solid var(--c-border2);
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            transition: box-shadow var(--tr);
+        }
+        .vark-intro:hover { box-shadow: var(--sh-md); }
+        .vark-intro .explain {
+            color: var(--c-text2);
+            font-size: .92rem;
+            line-height: 1.8;
+        }
+        .vark-intro .explain strong {
+            color: var(--c-primary);
+        }
+        .four-types-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 18px;
+        }
+        .type-mini {
+            background: #f8f9fb;
+            border-radius: var(--r);
+            padding: 14px 12px;
+            text-align: center;
+            transition: background var(--tf);
+        }
+        .type-mini:hover { background: var(--c-primary-l); }
+        .type-mini .type-icon {
+            font-size: 1.6rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .type-mini .type-name {
+            font-weight: 700;
+            font-size: .82rem;
+            color: var(--c-text);
+        }
+        .type-mini .type-desc {
+            font-size: .7rem;
+            color: var(--c-text3);
+            margin-top: 2px;
+        }
+
+        /* Description tip box */
+        .desc-tip {
+            background: #f0f6ff;
+            border-radius: var(--r);
+            padding: 18px 20px;
+            margin-bottom: 24px;
+            line-height: 1.75;
+            font-size: .88rem;
+            color: #204b7c;
+        }
+        .desc-tip strong { color: #1e5a99; }
+
+        /* Question card */
+        .quiz-card {
+            background: var(--c-surface);
+            border-radius: var(--r-xl);
+            box-shadow: var(--sh);
+            border: 1px solid var(--c-border2);
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            transition: box-shadow var(--tr);
+        }
+        .quiz-card:hover { box-shadow: var(--sh-md); }
+        .quiz-card h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--c-text);
+        }
+        .quiz-card .dim-label {
+            font-size: .76rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: 20px;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+        .dim-v { background: #fef3c7; color: #b45309; }
+        .dim-a { background: #fce7f3; color: #be185d; }
+        .dim-r { background: #e0e7ff; color: #3730a3; }
+        .dim-k { background: #d1fae5; color: #065f46; }
+
+        .q-item {
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--c-border2);
+        }
+        .q-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .q-text {
+            font-size: .95rem;
+            font-weight: 500;
+            color: var(--c-text);
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        .q-opts {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .q-opt {
+            flex: 1;
+            min-width: 80px;
+        }
+        .q-opt input { display: none; }
+        .q-opt label {
+            display: block;
+            text-align: center;
+            padding: 10px 8px;
+            border-radius: var(--r);
+            border: 1.5px solid var(--c-border);
+            font-size: .82rem;
+            color: var(--c-text2);
+            cursor: pointer;
+            transition: all var(--tf);
+            user-select: none;
+            background: #f8f9fb;
+        }
+        .q-opt label:hover {
+            border-color: var(--c-primary);
+            color: var(--c-primary);
+            background: var(--c-primary-l);
+        }
+        .q-opt input:checked + label {
+            border-color: var(--c-primary);
+            background: var(--c-primary);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* Submit button */
+        .vark-submit-wrap {
+            text-align: center;
+            margin: 8px 0 0;
+        }
+        .vark-submit {
+            background: var(--c-primary);
+            color: #fff;
+            border: none;
+            padding: 15px 48px;
+            border-radius: var(--r);
+            font-size: 1.05rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all var(--tf);
+            box-shadow: 0 2px 4px rgba(79,70,229,.3);
+        }
+        .vark-submit:hover {
+            background: var(--c-primary-h);
+            box-shadow: 0 4px 12px rgba(79,70,229,.35);
+            transform: translateY(-1px);
+        }
+        .vark-submit:active { transform: scale(.97); }
+
+        /* Result area */
+        #resultArea {
+            display: none;
+        }
+        .result-card {
+            background: var(--c-surface);
+            border-radius: var(--r-xl);
+            box-shadow: var(--sh);
+            border: 1px solid var(--c-border2);
+            padding: 32px;
+            margin-bottom: 24px;
+            transition: box-shadow var(--tr);
+        }
+        .result-card:hover { box-shadow: var(--sh-md); }
+        .result-card h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .result-card .result-sub {
+            text-align: center;
+            font-size: .85rem;
+            color: var(--c-text3);
+            margin-bottom: 24px;
+        }
+
+        /* Score breakdown */
+        .score-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+        .score-item {
+            text-align: center;
+            padding: 16px 10px;
+            border-radius: var(--r-lg);
+            border: 2px solid var(--c-border2);
+            transition: all var(--tf);
+        }
+        .score-item .dim-icon {
+            font-size: 1.4rem;
+            display: block;
+            margin-bottom: 2px;
+        }
+        .score-item .dim-title {
+            font-size: .76rem;
+            font-weight: 600;
+            color: var(--c-text2);
+            margin-bottom: 6px;
+        }
+        .score-item .dim-score {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+        }
+        .score-item.highlight {
+            border-color: var(--c-primary);
+            background: var(--c-primary-l);
+        }
+        .score-item.highlight .dim-score { color: var(--c-primary); }
+        .score-item.highlight .dim-title { color: var(--c-primary); }
+
+        /* Radar chart */
+        .radar-wrap {
+            width: 100%;
+            max-width: 420px;
+            margin: 0 auto 28px;
+        }
+
+        /* Type conclusion */
+        .type-box {
+            background: #f8f9fb;
+            border-radius: var(--r-lg);
+            padding: 24px;
+            margin-bottom: 24px;
+            text-align: center;
+            border: 2px solid var(--c-primary);
+        }
+        .type-box .type-badge {
+            display: inline-block;
+            background: var(--c-primary);
+            color: #fff;
+            font-weight: 700;
+            font-size: .88rem;
+            padding: 6px 20px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+        }
+        .type-box h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--c-text);
+        }
+        .type-box .type-detail {
+            font-size: .88rem;
+            color: var(--c-text2);
+            line-height: 1.65;
+        }
+
+        /* Custom plan */
+        .plan-card {
+            background: #f8fbff;
+            border-radius: var(--r-lg);
+            padding: 24px 28px;
+            margin-bottom: 24px;
+            line-height: 1.85;
+        }
+        .plan-card h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+            color: var(--c-text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .plan-card h3::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: var(--c-primary);
+            border-radius: 2px;
+        }
+        .plan-card .plan-step {
+            margin-bottom: 10px;
+            font-size: .9rem;
+            color: var(--c-text2);
+            padding-left: 20px;
+            position: relative;
+        }
+        .plan-card .plan-step::before {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 10px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--c-primary);
+        }
+
+        /* Retest reminder */
+        .retest-tip {
+            background: #fff5f8;
+            border-radius: var(--r);
+            padding: 18px 22px;
+            margin-bottom: 24px;
+            font-size: .87rem;
+            color: #913b52;
+            line-height: 1.7;
+            text-align: center;
+        }
+        .retest-tip strong { color: #be185d; }
+
+        /* Action buttons */
+        .action-btns {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 11px 24px;
+            border-radius: var(--r);
+            font-size: .9rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all var(--tf);
+            text-decoration: none;
+            border: none;
+        }
+        .action-btn.primary {
+            background: var(--c-primary);
+            color: #fff;
+            box-shadow: 0 2px 4px rgba(79,70,229,.3);
+        }
+        .action-btn.primary:hover {
+            background: var(--c-primary-h);
+            box-shadow: 0 4px 8px rgba(79,70,229,.35);
+        }
+        .action-btn.outline {
+            background: transparent;
+            color: var(--c-primary);
+            border: 1.5px solid var(--c-primary);
+        }
+        .action-btn.outline:hover {
+            background: var(--c-primary-l);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .vark-wrap { padding: 12px 10px 32px; }
+            .vark-hero { padding: 24px 0 12px; }
+            .vark-hero h1 { font-size: 1.4rem; }
+            .vark-hero .hero-icon { font-size: 2.5rem; }
+            .vark-intro, .quiz-card, .result-card { padding: 20px 18px; }
+            .four-types-grid { grid-template-columns: repeat(2, 1fr); }
+            .score-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .q-opts { gap: 6px; }
+            .q-opt label { padding: 8px 6px; font-size: .78rem; }
+        }
+        @media (max-width: 480px) {
+            .vark-wrap { padding: 8px 6px 24px; }
+            .vark-hero { padding: 16px 0 8px; }
+            .vark-hero h1 { font-size: 1.2rem; }
+            .vark-hero .hero-icon { font-size: 2rem; }
+            .vark-hero .sub { font-size: .84rem; }
+            .vark-intro, .quiz-card { padding: 14px 12px; border-radius: var(--r-lg); }
+            .vark-intro .explain { font-size: .85rem; }
+            .four-types-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .type-mini { padding: 10px 8px; }
+            .type-mini .type-name { font-size: .76rem; }
+            .q-text { font-size: .88rem; }
+            .q-opt { min-width: 60px; }
+            .q-opt label { padding: 7px 4px; font-size: .72rem; }
+            .result-card { padding: 16px 12px; border-radius: var(--r-lg); }
+            .score-item { padding: 12px 6px; }
+            .score-item .dim-score { font-size: 1.4rem; }
+            .type-box { padding: 16px 14px; }
+            .plan-card { padding: 16px 14px; }
+            .action-btns { flex-direction: column; }
+            .vark-submit { padding: 13px 32px; font-size: .95rem; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Shared Nav -->
+<nav class="site-nav">
+    <div class="nav-inner">
+        <a href="/" class="nav-logo">
+            <img src="avatar.png" alt="sherwinlaoshi" width="32" height="32">
+            sherwinlaoshi
+        </a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="pinyin.html">Pinyin Tool</a>
+            <a href="pinyin-chart.html">Pinyin Chart</a>
+            <a href="tones.html">Tones</a>
+            <a href="vark-test.html" class="active">VARK Test | 测评</a>
+            <a href="donate.html">Donate</a>
+            <a href="contact.html">Contact</a>
+        </div>
+    </div>
+</nav>
+
+<div class="vark-wrap">
+
+    <!-- Language Toggle -->
+    <div class="lang-toggle-wrap">
+        <div class="lang-toggle" id="langToggle">
+            <span class="lang-opt active" id="langZh" onclick="switchLang('zh')">中文</span>
+            <span class="lang-opt" id="langEn" onclick="switchLang('en')">English</span>
+        </div>
+    </div>
+
+    <!-- Hero -->
+    <header class="vark-hero">
+        <span class="hero-icon">🧠</span>
+        <h1 id="heroTitle">学习风格人格测评 <span class="cn">VARK Profile</span></h1>
+        <p class="sub" id="heroSub">
+            40题全场景诊断 · 四维蛛网雷达图 · 像十六型人格一样看懂自己的学习基因
+        </p>
+    </header>
+
+    <!-- Intro -->
+    <section class="vark-intro">
+        <p class="explain" id="introText"></p>
+        <div class="four-types-grid">
+            <div class="type-mini">
+                <span class="type-icon">👁️</span>
+                <span class="type-name" id="typeNameV">视觉 Visual</span>
+                <span class="type-desc" id="typeDescV">图像·字形·色彩</span>
+            </div>
+            <div class="type-mini">
+                <span class="type-icon">👂</span>
+                <span class="type-name" id="typeNameA">听觉 Auditory</span>
+                <span class="type-desc" id="typeDescA">语音·对话·节奏</span>
+            </div>
+            <div class="type-mini">
+                <span class="type-icon">📝</span>
+                <span class="type-name" id="typeNameR">读写 Read/Write</span>
+                <span class="type-desc" id="typeDescR">文字·笔记·体系</span>
+            </div>
+            <div class="type-mini">
+                <span class="type-icon">🙌</span>
+                <span class="type-name" id="typeNameK">动觉 Kinesthetic</span>
+                <span class="type-desc" id="typeDescK">实操·情景·体验</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Important notice -->
+    <div class="desc-tip" id="descTip"></div>
+
+    <!-- Quiz Area -->
+    <div id="quizContainer">
+        <div class="quiz-card">
+            <h2 id="quizTitle">学习风格测评 · 40题</h2>
+            <span class="dim-label" id="quizHint" style="background:#f0f0ff;color:#4f46e5;">每题没有对错，凭第一直觉选择即可</span>
+            <div id="qAll"></div>
+        </div>
+
+        <div class="vark-submit-wrap">
+            <button class="vark-submit" id="submitBtn" onclick="showResult()">✨ 生成专属学习风格报告</button>
+        </div>
+    </div>
+
+    <!-- Result Area -->
+    <div id="resultArea">
+        <div class="result-card">
+            <h2 id="resultTitle">你的专属学习风格测评报告</h2>
+            <p class="result-sub" id="resultSub">基于40题全场景诊断 · 四维倾向精准量化</p>
+
+            <!-- Score breakdown -->
+            <div class="score-grid">
+                <div class="score-item" id="scoreV">
+                    <span class="dim-icon">👁️</span>
+                    <span class="dim-title" id="dimTitleV">视觉学习</span>
+                    <span class="dim-score" id="numV">0</span>
+                    <span style="font-size:.7rem;color:var(--c-text3)">/30</span>
+                </div>
+                <div class="score-item" id="scoreA">
+                    <span class="dim-icon">👂</span>
+                    <span class="dim-title" id="dimTitleA">听觉学习</span>
+                    <span class="dim-score" id="numA">0</span>
+                    <span style="font-size:.7rem;color:var(--c-text3)">/30</span>
+                </div>
+                <div class="score-item" id="scoreR">
+                    <span class="dim-icon">📝</span>
+                    <span class="dim-title" id="dimTitleR">读写研习</span>
+                    <span class="dim-score" id="numR">0</span>
+                    <span style="font-size:.7rem;color:var(--c-text3)">/30</span>
+                </div>
+                <div class="score-item" id="scoreK">
+                    <span class="dim-icon">🙌</span>
+                    <span class="dim-title" id="dimTitleK">实践行动</span>
+                    <span class="dim-score" id="numK">0</span>
+                    <span style="font-size:.7rem;color:var(--c-text3)">/30</span>
+                </div>
+            </div>
+
+            <!-- Radar chart -->
+            <div class="radar-wrap">
+                <canvas id="varkRadar"></canvas>
+            </div>
+
+            <!-- Type conclusion -->
+            <div class="type-box" id="typeBox"></div>
+
+            <!-- Custom Plan -->
+            <div class="plan-card" id="planBox"></div>
+
+            <!-- Retest tip -->
+            <div class="retest-tip" id="retestTip"></div>
+
+            <!-- Actions -->
+            <div class="action-btns">
+                <button class="action-btn outline" id="retestBtn" onclick="retakeTest()">🔄 重新测评</button>
+                <a class="action-btn primary" id="contactBtn" href="contact.html">📧 预约定制中文课</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ===================== i18n Dictionary =====================
+const LANG_KEY = 'vark_lang';
+let currentLang = localStorage.getItem(LANG_KEY) || 'zh';
+
+const I18N = {
+    zh: {
+        heroTitle: '学习风格人格测评 <span class="cn">VARK Profile</span>',
+        heroSub: '40题全场景诊断 · 四维蛛网雷达图 · 像十六型人格一样看懂自己的学习基因',
+        introText: '本测评参考<strong>VARK学习风格模型</strong>与<strong>MBTI十六型人格测评逻辑</strong>，通过<strong>40道全场景细分题目</strong>精准测算你的四大学习维度真实倾向，拒绝单一标签定义，以维度配比组合判定你的<strong>专属学习人格</strong>。',
+        typeNameV: '视觉 Visual', typeDescV: '图像·字形·色彩',
+        typeNameA: '听觉 Auditory', typeDescA: '语音·对话·节奏',
+        typeNameR: '读写 Read/Write', typeDescR: '文字·笔记·体系',
+        typeNameK: '动觉 Kinesthetic', typeDescK: '实操·情景·体验',
+        descTip: '<strong>重要说明：</strong>先天核心学习特质长期稳定，不会发生本质改变；仅在不同学习阶段、学习目标下产生短期偏好偏移。<br><strong>专业建议：每3个月复测一次</strong>，根据当下维度分值微调学习方案与课程规划。',
+        quizTitle: '学习风格测评 · 40题',
+        quizHint: '每题没有对错，凭第一直觉选择即可',
+        submitBtn: '✨ 生成专属学习风格报告',
+        resultTitle: '你的专属学习风格测评报告',
+        resultSub: '基于40题全场景诊断 · 四维倾向精准量化',
+        dimTitleV: '视觉学习', dimTitleA: '听觉学习', dimTitleR: '读写研习', dimTitleK: '实践行动',
+        dimNames: { V: '视觉学习', A: '听觉学习', R: '读写研习', K: '实践行动' },
+        optionLabels: ['完全符合', '比较符合', '一般', '不符合'],
+        alertIncomplete: '请完成全部40道题目后再提交！未作答的题目可以凭直觉快速选择。',
+        typeBalanced: '四维均衡 · 全能适配型',
+        typeBalancedDesc: '你在视觉、听觉、读写、动觉四个维度上分值持平，属于灵活切换型学习者。可以根据不同学习目标自由切换学习模式，是一种极为罕见且高效的多元学习人格。',
+        typeDualSuffix: ' · 双核驱动型',
+        typeDualDesc: '你的核心学习倾向由<strong>{p}</strong>与<strong>{s}</strong>双维度主导，两种模式协同驱动，互为补充，学习效率远超单一模式。',
+        typeSingleSuffix: '主导 · {s}辅助型',
+        typeSingleDesc: '你的主导学习倾向为<strong>{p}</strong>，这是你天生最高效的吸收模式；<strong>{s}</strong>为辅助适配维度，可在主导模式基础上协同强化。',
+        typePortrait: '你的学习人格画像',
+        typeFooter: '低分维度代表当前学习弱势项，日常学习可适度刻意补强，但不代表缺陷——每个人都有自己的独特学习基因组合。',
+        planTitle: '🎯 专属中文学习定制方案',
+        planStep1: '① 主力学习模式：',
+        planStep1Text: ' 以<strong>{p}</strong>为核心学习通道——{advice}',
+        planStep2: '② 辅助协同模式：',
+        planStep2Text: ' 搭配<strong>{s}</strong>进行双向巩固——{advice}',
+        planStep3: '③ 短板补强：',
+        planStep3Text: ' <strong>{w}</strong>得分偏低{tag}——{advice}',
+        planStep3Weak: '（需要重点关注补强）',
+        planStep3Ok: '（日常适度练习即可）',
+        planStep4: '④ 阶段适配：初学发音阶段侧重听觉/视觉，考级备考强化读写，日常交流侧重实景实践。',
+        retestTip: '<strong>温馨提醒：</strong>核心学习特质天生定型不易改变，低分维度不代表缺陷，可适度刻意补强。学习阶段变化会带来临时偏好偏移——<strong>建议每3个月复测一次</strong>，动态校准学习策略。',
+        retestBtn: '🔄 重新测评',
+        contactBtn: '📧 预约定制中文课',
+        radarLabel: '你的学习倾向分值',
+        radarLabels: ['视觉学习', '听觉学习', '读写研习', '实践行动'],
+        dimAdvice: {
+            V: '多用图文课件、拼音汉字闪卡、声调示意图、思维导图语法梳理；推荐看带字幕中文视频。',
+            A: '强化听力沉浸、口语跟读、语音纠音、儿歌韵律教学；优先打通听说再逐步加入书写。',
+            R: '适合精读课文、词汇系统梳理、句式写作训练、整理语法笔记；HSK备考效率极高。',
+            K: '多用角色扮演、情景模拟、实物教学、课堂互动游戏；在实践中自然习得中文。'
+        },
+        weakAdvice: {
+            V: '每周安排20分钟图文闪卡或思维导图整理，逐步建立视觉记忆通路。',
+            A: '每天听10分钟中文音频并跟读，从简单对话开始建立听觉信心。',
+            R: '每周写3-5句中文日记或整理一小段词汇笔记，循序渐进培养书写习惯。',
+            K: '每周围绕一个生活场景（如点餐、购物）做5分钟情景演练，让身体参与记忆。'
+        }
+    },
+    en: {
+        heroTitle: 'Learning Style Personality Profile <span class="cn">VARK Assessment</span>',
+        heroSub: '40-Question Full-Spectrum Diagnosis · Four-Dimensional Spider Radar · Understand Your Learning DNA Like a Personality Test',
+        introText: 'This assessment references the <strong>VARK Learning Style Model</strong> and <strong>MBTI personality profiling logic</strong>, using <strong>40 finely-tuned scenario questions</strong> to precisely measure your true tendencies across four learning dimensions, rejecting single-label definitions to determine your <strong>unique learning personality</strong> through dimensional ratio combinations.',
+        typeNameV: 'Visual 视觉', typeDescV: 'Images · Glyphs · Colors',
+        typeNameA: 'Auditory 听觉', typeDescA: 'Speech · Dialogue · Rhythm',
+        typeNameR: 'Read/Write 读写', typeDescR: 'Text · Notes · Systems',
+        typeNameK: 'Kinesthetic 动觉', typeDescK: 'Practice · Scenarios · Experience',
+        descTip: '<strong>Important:</strong> Core learning traits are stable long-term and do not fundamentally change; only short-term preference shifts occur across different learning stages and goals.<br><strong>Recommendation: Retake every 3 months</strong> to fine-tune your study plan based on current dimension scores.',
+        quizTitle: 'Learning Style Assessment · 40 Questions',
+        quizHint: 'No right or wrong answers — go with your first instinct',
+        submitBtn: '✨ Generate Your Learning Style Report',
+        resultTitle: 'Your Personalized Learning Style Report',
+        resultSub: 'Based on 40-Question Full-Spectrum Diagnosis · Precise Four-Dimensional Quantification',
+        dimTitleV: 'Visual', dimTitleA: 'Auditory', dimTitleR: 'Read/Write', dimTitleK: 'Kinesthetic',
+        dimNames: { V: 'Visual Learning', A: 'Auditory Learning', R: 'Read/Write Learning', K: 'Kinesthetic Learning' },
+        optionLabels: ['Very True', 'Mostly True', 'Neutral', 'Not True'],
+        alertIncomplete: 'Please answer all 40 questions before submitting! You can go with your gut for any unanswered ones.',
+        typeBalanced: 'Four-Dimension Balanced · Universal Adapter',
+        typeBalancedDesc: 'Your scores are even across all four dimensions — Visual, Auditory, Read/Write, and Kinesthetic. You are a flexible switcher who can freely shift learning modes based on different goals. This is an exceptionally rare and efficient multi-modal learning personality.',
+        typeDualSuffix: ' · Dual-Core Driver',
+        typeDualDesc: 'Your core learning tendency is driven by <strong>{p}</strong> and <strong>{s}</strong> in tandem. These two modes collaborate and complement each other, yielding efficiency far beyond a single mode.',
+        typeSingleSuffix: '-Dominant · {s}-Assisted',
+        typeSingleDesc: 'Your dominant learning tendency is <strong>{p}</strong>, your most naturally efficient absorption mode; <strong>{s}</strong> serves as your auxiliary dimension, reinforcing your dominant mode synergistically.',
+        typePortrait: 'Your Learning Personality Portrait',
+        typeFooter: 'Lower-scoring dimensions represent current learning weaknesses that can be moderately strengthened — they are not deficits. Everyone has their own unique learning gene combination.',
+        planTitle: '🎯 Custom Chinese Learning Plan',
+        planStep1: '① Primary Learning Mode: ',
+        planStep1Text: ' Use <strong>{p}</strong> as your core learning channel — {advice}',
+        planStep2: '② Auxiliary Mode: ',
+        planStep2Text: ' Pair with <strong>{s}</strong> for dual reinforcement — {advice}',
+        planStep3: '③ Strengthen Weakness: ',
+        planStep3Text: ' <strong>{w}</strong> scored lower {tag} — {advice}',
+        planStep3Weak: '(needs focused strengthening)',
+        planStep3Ok: '(occasional practice is enough)',
+        planStep4: '④ Stage Adaptation: Focus on auditory/visual for pronunciation, reading/writing for exam prep, and real-world practice for daily conversation.',
+        retestTip: '<strong>Friendly Reminder:</strong> Core learning traits are innate and stable; low scores do not indicate deficits but can be moderately strengthened. Learning stage changes bring temporary preference shifts — <strong>retake every 3 months</strong> to dynamically calibrate your strategy.',
+        retestBtn: '🔄 Retake Test',
+        contactBtn: '📧 Book a Custom Chinese Lesson',
+        radarLabel: 'Your Learning Tendency Scores',
+        radarLabels: ['Visual', 'Auditory', 'Read/Write', 'Kinesthetic'],
+        dimAdvice: {
+            V: 'Use illustrated courseware, character flash cards, tone diagrams, and mind-map grammar reviews. We recommend watching Chinese videos with subtitles.',
+            A: 'Strengthen listening immersion, oral shadowing, pronunciation correction, and rhythmic chants. Prioritize listening/speaking before gradually adding writing.',
+            R: 'Ideal for intensive reading, systematic vocabulary review, sentence-writing drills, and grammar note-taking. Extremely efficient for HSK prep.',
+            K: 'Use role-playing, scenario simulation, real-object teaching, and classroom interactive games. Acquire Chinese naturally through practice.'
+        },
+        weakAdvice: {
+            V: 'Schedule 20 minutes weekly for image-based flashcards or mind-map review to gradually build visual memory pathways.',
+            A: 'Listen to 10 minutes of Chinese audio daily and shadow along. Start with simple dialogues to build auditory confidence.',
+            R: 'Write 3-5 Chinese diary sentences or organize a short vocabulary note each week. Gradually build writing habits step by step.',
+            K: 'Spend 5 minutes weekly on a real-life scenario role-play (e.g., ordering food, shopping) to engage your body in memory.'
+        }
+    }
+};
+
+function t(key) {
+    const lang = I18N[currentLang];
+    return lang[key] !== undefined ? lang[key] : key;
+}
+
+// ===================== Question Bank =====================
+const questionsByDim = {
+    V: [
+        {d:"V", t_zh:"学习陌生知识，我最先关注画面、图片、排版布局", t_en:"When learning unfamiliar material, I first notice images, pictures, and layout."},
+        {d:"V", t_zh:"记知识点时，看着文字/图形比单纯听讲记得更牢固", t_en:"Seeing text/graphics helps me remember points more firmly than just listening."},
+        {d:"V", t_zh:"上课更容易被彩色课件、示意图、思维导图吸引注意力", t_en:"In class, I'm more drawn to colorful slides, diagrams, and mind maps."},
+        {d:"V", t_zh:"忘记知识点时，脑海里最先浮现课本画面与文字位置", t_en:"When I forget something, the textbook image and text position come to mind first."},
+        {d:"V", t_zh:"更喜欢观看带字幕、配图的语言学习教学视频", t_en:"I prefer watching language tutorial videos with subtitles and illustrations."},
+        {d:"V", t_zh:"整理学习内容，习惯用表格、流程图、色块划分重点", t_en:"I organize content using tables, flowcharts, and color-coded highlights."},
+        {d:"V", t_zh:"学习汉字优先观察字形结构、笔顺、偏旁外观", t_en:"When learning Chinese characters, I first observe structure, stroke order, and appearance."},
+        {d:"V", t_zh:"长时间学习，看图文资料比听音频更不容易疲惫", t_en:"During long study sessions, reading visual materials tires me less than listening to audio."},
+        {d:"V", t_zh:"理解抽象语法，更依赖图解演示而非口头讲解", t_en:"To grasp abstract grammar, I rely more on illustrated demos than verbal explanations."},
+        {d:"V", t_zh:"挑选学习资料，优先选择图文丰富、排版清晰的版本", t_en:"When choosing materials, I pick versions with rich graphics and clean layouts."}
+    ],
+    A: [
+        {d:"A", t_zh:"接收新知识，听他人讲述比自己看书理解更快", t_en:"Receiving new knowledge, listening to someone explain is faster than reading by myself."},
+        {d:"A", t_zh:"记忆语言发音、声调，反复聆听跟读效果最好", t_en:"For pronunciation and tones, repeated listening and shadowing works best."},
+        {d:"A", t_zh:"空闲时更喜欢听语言音频、对话、有声读物学习", t_en:"In my free time, I prefer learning through audio, dialogues, and audiobooks."},
+        {d:"A", t_zh:"回忆学过的内容，最先想起当时听到的语音与对话", t_en:"Recalling learned content, the speech and conversations I heard come to mind first."},
+        {d:"A", t_zh:"遇到难题，更愿意听他人讲解思路而非自行看文字解析", t_en:"When stuck, I'd rather hear someone's explanation than read a written solution."},
+        {d:"A", t_zh:"纯语音聊天交流，对我语言练习提升帮助很大", t_en:"Voice-only conversations greatly help boost my language practice."},
+        {d:"A", t_zh:"学习偏爱安静聆听、跟随模仿，不喜大量观看文字", t_en:"I prefer quiet listening and imitation over reading large amounts of text."},
+        {d:"A", t_zh:"背诵内容，大声朗读、听音复述远比默读高效", t_en:"For memorization, reading aloud and oral repetition is far more effective than silent reading."},
+        {d:"A", t_zh:"学习氛围里，人声讲解、互动对话最能让我专注", t_en:"In a learning setting, vocal explanations and interactive dialogue keep me most focused."},
+        {d:"A", t_zh:"提升口语，优先依靠多听多聊，而非对照文字朗读", t_en:"To improve speaking, I rely primarily on listening and chatting rather than reading from text."}
+    ],
+    R: [
+        {d:"R", t_zh:"必须通过阅读文字、书写记录才能扎实掌握知识点", t_en:"I must read text and write notes to solidly master knowledge points."},
+        {d:"R", t_zh:"习惯摘抄重点、整理笔记、罗列知识点清单巩固学习", t_en:"I habitually excerpt key points, organize notes, and list items to reinforce learning."},
+        {d:"R", t_zh:"偏爱纯文字教材、课文读物，静下心精读钻研", t_en:"I prefer pure-text materials and readings, quietly concentrating on in-depth study."},
+        {d:"R", t_zh:"语言学习中，愿意花费时间练字、写句子、写短文", t_en:"In language learning, I'm willing to spend time practicing characters, writing sentences and essays."},
+        {d:"R", t_zh:"复盘学习成果，依靠书写总结、文字复盘完成", t_en:"To review learning outcomes, I rely on written summaries and text-based reflection."},
+        {d:"R", t_zh:"面对考点语法规则，喜欢逐条研读文字定义吃透", t_en:"Facing grammar rules, I like to study text definitions one by one to fully understand."},
+        {d:"R", t_zh:"比起实景练习，更享受独自读书、做题的学习状态", t_en:"Compared to real-life practice, I enjoy the state of reading and doing exercises alone more."},
+        {d:"R", t_zh:"学习新词汇，一定要抄写拼写释义才算完全掌握", t_en:"Learning new vocabulary, I must copy, spell, and write definitions to fully master it."},
+        {d:"R", t_zh:"备考语言考试，依靠刷题、阅读、书面背诵为主", t_en:"Preparing for language exams, I mainly rely on practice tests, reading, and written memorization."},
+        {d:"R", t_zh:"对外输出观点，更擅长书面文字表达而非口头即兴", t_en:"Expressing opinions, I'm better at written expression than impromptu speaking."}
+    ],
+    K: [
+        {d:"K", t_zh:"久坐静坐学习效率极低，需要走动、动手才能集中精神", t_en:"Sitting still to study is very inefficient for me; I need to move and use my hands to focus."},
+        {d:"K", t_zh:"学语言喜欢结合肢体动作、手势表演辅助记忆", t_en:"Learning language, I like combining body movements and gestures to aid memory."},
+        {d:"K", t_zh:"最快学会语言的方式是实景使用、角色扮演、场景模拟", t_en:"The fastest way for me to learn a language is real-world use, role-play, and scenario simulation."},
+        {d:"K", t_zh:"更喜欢在真实场景、生活环境中实践学习，脱离课本", t_en:"I prefer practicing in real settings and living environments, away from textbooks."},
+        {d:"K", t_zh:"学习新知识倾向动手实操、亲身体验，而非被动接收", t_en:"Learning new things, I lean toward hands-on practice over passive reception."},
+        {d:"K", t_zh:"课堂中最喜欢互动游戏、情景演练、实地演练类内容", t_en:"In class, I enjoy interactive games, scenario drills, and on-site exercises the most."},
+        {d:"K", t_zh:"记忆语句词汇，融入真实场景使用后很难遗忘", t_en:"Once vocabulary and phrases are used in real scenarios, they're hard to forget."},
+        {d:"K", t_zh:"厌烦枯燥纯理论学习，必须结合实际运用才有动力", t_en:"I dislike dry theoretical study and need practical application to stay motivated."},
+        {d:"K", t_zh:"外出社交、实地交流是我最认可的语言提升方式", t_en:"Going out, socializing, and real-world communication is my top way to improve language."},
+        {d:"K", t_zh:"调整学习状态，通过运动、互动实践就能快速找回", t_en:"To reset my learning state, exercise and interactive practice quickly bring me back."}
+    ]
+};
+
+const dimIcons = { V: '👁️', A: '👂', R: '📝', K: '🙌' };
+const dimColors = { V: '#f59e0b', A: '#ec4899', R: '#6366f1', K: '#10b981' };
+const dims = ['V', 'A', 'R', 'K'];
+
+// ===================== Build & Shuffle All Questions =====================
+function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+let shuffled = [];
+
+function buildShuffled() {
+    const allQuestions = [];
+    dims.forEach(dim => {
+        questionsByDim[dim].forEach(q => {
+            allQuestions.push({ dim: q.d, text_zh: q.t_zh, text_en: q.t_en });
+        });
+    });
+    shuffled = shuffle(allQuestions);
+}
+buildShuffled();
+
+function getQuestionText(q) {
+    return currentLang === 'en' ? q.text_en : q.text_zh;
+}
+
+// ===================== Render All Questions =====================
+function renderAllQuestions() {
+    const container = document.getElementById('qAll');
+    if (!container) return;
+    const opts = t('optionLabels');
+    let html = '';
+    shuffled.forEach((q, qi) => {
+        const num = qi + 1;
+        html += '<div class="q-item">';
+        html += '<div class="q-text"><span style="color:var(--c-text3);font-size:.8rem;margin-right:6px;">' + num + '.</span>' + getQuestionText(q) + '</div>';
+        html += '<div class="q-opts">';
+        opts.forEach((opt, oi) => {
+            const val = 3 - oi;
+            html += '<div class="q-opt">';
+            html += '<input type="radio" name="q' + qi + '" value="' + val + '" id="q' + qi + '_' + oi + '">';
+            html += '<label for="q' + qi + '_' + oi + '">' + opt + '</label>';
+            html += '</div>';
+        });
+        html += '</div></div>';
+    });
+    container.innerHTML = html;
+}
+
+// ===================== Update Static UI Text =====================
+function updateStaticText() {
+    document.getElementById('heroTitle').innerHTML = t('heroTitle');
+    document.getElementById('heroSub').textContent = t('heroSub');
+    document.getElementById('introText').innerHTML = t('introText');
+    document.getElementById('typeNameV').textContent = t('typeNameV');
+    document.getElementById('typeDescV').textContent = t('typeDescV');
+    document.getElementById('typeNameA').textContent = t('typeNameA');
+    document.getElementById('typeDescA').textContent = t('typeDescA');
+    document.getElementById('typeNameR').textContent = t('typeNameR');
+    document.getElementById('typeDescR').textContent = t('typeDescR');
+    document.getElementById('typeNameK').textContent = t('typeNameK');
+    document.getElementById('typeDescK').textContent = t('typeDescK');
+    document.getElementById('descTip').innerHTML = t('descTip');
+    document.getElementById('quizTitle').textContent = t('quizTitle');
+    document.getElementById('quizHint').textContent = t('quizHint');
+    document.getElementById('submitBtn').textContent = t('submitBtn');
+    document.getElementById('resultTitle').textContent = t('resultTitle');
+    document.getElementById('resultSub').textContent = t('resultSub');
+    document.getElementById('dimTitleV').textContent = t('dimTitleV');
+    document.getElementById('dimTitleA').textContent = t('dimTitleA');
+    document.getElementById('dimTitleR').textContent = t('dimTitleR');
+    document.getElementById('dimTitleK').textContent = t('dimTitleK');
+    document.getElementById('retestTip').innerHTML = t('retestTip');
+    document.getElementById('retestBtn').textContent = t('retestBtn');
+    document.getElementById('contactBtn').textContent = t('contactBtn');
+}
+
+// ===================== Language Switch =====================
+function switchLang(lang) {
+    currentLang = lang;
+    localStorage.setItem(LANG_KEY, lang);
+    document.getElementById('langZh').classList.toggle('active', lang === 'zh');
+    document.getElementById('langEn').classList.toggle('active', lang === 'en');
+    // Rebuild shuffled with same seed concept — but to preserve user answers we reuse existing shuffled
+    // Actually re-shuffle only if quiz is visible (not result)
+    if (document.getElementById('quizContainer').style.display !== 'none') {
+        renderAllQuestions();
+    }
+    updateStaticText();
+}
+
+// Initialize language toggle on load
+(function initLang() {
+    document.getElementById('langZh').classList.toggle('active', currentLang === 'zh');
+    document.getElementById('langEn').classList.toggle('active', currentLang === 'en');
+    updateStaticText();
+    renderAllQuestions();
+})();
+
+// ===================== Result Logic =====================
+let radarChart = null;
+
+function showResult() {
+    let scores = { V: 0, A: 0, R: 0, K: 0 };
+    let allAnswered = true;
+
+    for (let qi = 0; qi < shuffled.length; qi++) {
+        const selected = document.querySelector('input[name="q' + qi + '"]:checked');
+        if (!selected) {
+            allAnswered = false;
+            continue;
+        }
+        const dim = shuffled[qi].dim;
+        scores[dim] += parseInt(selected.value, 10);
+    }
+
+    if (!allAnswered) {
+        alert(t('alertIncomplete'));
+        return;
+    }
+
+    // Update static text for result area in case lang changed
+    updateStaticText();
+
+    // Hide quiz, show result
+    document.getElementById('quizContainer').style.display = 'none';
+    document.getElementById('resultArea').style.display = 'block';
+    document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
+
+    // Update score numbers
+    document.getElementById('numV').textContent = scores.V;
+    document.getElementById('numA').textContent = scores.A;
+    document.getElementById('numR').textContent = scores.R;
+    document.getElementById('numK').textContent = scores.K;
+
+    // Highlight highest
+    const maxScore = Math.max(scores.V, scores.A, scores.R, scores.K);
+    dims.forEach(d => {
+        const el = document.getElementById('score' + d);
+        if (scores[d] === maxScore) {
+            el.classList.add('highlight');
+        } else {
+            el.classList.remove('highlight');
+        }
+    });
+
+    // Determine type
+    const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+    const primary = sorted[0];
+    const secondary = sorted[1];
+    const allEqual = sorted.every(s => s[1] === maxScore);
+    const dimNamesMap = t('dimNames');
+
+    let typeTitle, typeDesc;
+    if (allEqual) {
+        typeTitle = t('typeBalanced');
+        typeDesc = t('typeBalancedDesc');
+    } else if (sorted[0][1] === sorted[1][1] && sorted[0][1] > sorted[2][1]) {
+        typeTitle = dimNamesMap[primary[0]] + ' + ' + dimNamesMap[secondary[0]] + t('typeDualSuffix');
+        typeDesc = t('typeDualDesc').replace('{p}', dimNamesMap[primary[0]]).replace('{s}', dimNamesMap[secondary[0]]);
+    } else {
+        typeTitle = dimNamesMap[primary[0]] + t('typeSingleSuffix').replace('{s}', dimNamesMap[secondary[0]]);
+        typeDesc = t('typeSingleDesc').replace('{p}', dimNamesMap[primary[0]]).replace('{s}', dimNamesMap[secondary[0]]);
+    }
+
+    document.getElementById('typeBox').innerHTML = `
+        <span class="type-badge">${typeTitle}</span>
+        <h3>${t('typePortrait')}</h3>
+        <p class="type-detail">${typeDesc}<br><br>${t('typeFooter')}</p>
+    `;
+
+    // Custom plan
+    generatePlan(scores, primary, secondary, sorted);
+
+    // Draw chart
+    drawRadar(scores);
+}
+
+function generatePlan(scores, primary, secondary, sorted) {
+    const weak = sorted[3];
+    const ws = weak[1] < 10 ? t('planStep3Weak') : t('planStep3Ok');
+    const dimNamesMap = t('dimNames');
+    const dimAdviceMap = t('dimAdvice');
+    const weakAdviceMap = t('weakAdvice');
+
+    let html = '<h3>' + t('planTitle') + '</h3>';
+
+    html += '<div class="plan-step"><strong>' + t('planStep1') + '</strong>';
+    html += dimIcons[primary[0]] + t('planStep1Text').replace('{p}', dimNamesMap[primary[0]]).replace('{advice}', dimAdviceMap[primary[0]]) + '</div>';
+
+    html += '<div class="plan-step"><strong>' + t('planStep2') + '</strong>';
+    html += dimIcons[secondary[0]] + t('planStep2Text').replace('{s}', dimNamesMap[secondary[0]]).replace('{advice}', dimAdviceMap[secondary[0]]) + '</div>';
+
+    html += '<div class="plan-step"><strong>' + t('planStep3') + '</strong>';
+    html += dimIcons[weak[0]] + t('planStep3Text').replace('{w}', dimNamesMap[weak[0]]).replace('{tag}', ws).replace('{advice}', weakAdviceMap[weak[0]]) + '</div>';
+
+    html += '<div class="plan-step"><strong>' + t('planStep4') + '</div>';
+
+    document.getElementById('planBox').innerHTML = html;
+}
+
+function drawRadar(scores) {
+    const ctx = document.getElementById('varkRadar').getContext('2d');
+    if (radarChart) radarChart.destroy();
+
+    radarChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: t('radarLabels'),
+            datasets: [{
+                label: t('radarLabel'),
+                data: [scores.V, scores.A, scores.R, scores.K],
+                backgroundColor: 'rgba(79,70,229,0.15)',
+                borderColor: '#4f46e5',
+                borderWidth: 2.5,
+                pointBackgroundColor: '#4f46e5',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 6,
+                pointHoverRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                r: {
+                    min: 0,
+                    max: 30,
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 6,
+                        font: { size: 10 },
+                        backdropColor: 'transparent'
+                    },
+                    pointLabels: {
+                        font: { size: 13, weight: '600' },
+                        color: '#1a1a2e'
+                    },
+                    grid: {
+                        color: '#e5e7eb'
+                    },
+                    angleLines: {
+                        color: '#e5e7eb'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function retakeTest() {
+    document.getElementById('quizContainer').style.display = 'block';
+    document.getElementById('resultArea').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Reset all radio buttons
+    document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+
+    // Reset highlights
+    ['V', 'A', 'R', 'K'].forEach(d => {
+        document.getElementById('score' + d).classList.remove('highlight');
+    });
+
+    if (radarChart) {
+        radarChart.destroy();
+        radarChart = null;
+    }
+}
+</script>
+
+</body>
+</html>
