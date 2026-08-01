@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>汉库 - 字卡 Flashcard</title>
+<style>
+:root {
+  --bg: #f5f0e8;
+  --card-bg: #fffef9;
+  --text: #3a3226;
+  --accent: #c43a31;
+  --accent2: #1a6b4b;
+  --border: #d4c5a9;
+  --shadow: 0 4px 24px rgba(0,0,0,.08);
+  --font-cn: 'KaiTi','STKaiti','楷体','Noto Serif SC',serif;
+  --card-radius: 20px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 16px; }
+body {
+  font-family: var(--font-cn);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  overflow-x: hidden;
+}
+
+/* Top bar */
+.top-bar {
+  width: 100%; max-width: 560px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px; gap: 8px;
+}
+.lang-select {
+  padding: 6px 10px; border-radius: 16px; border: 1.5px solid var(--border);
+  background: #fff; font-size: .8rem; font-family: inherit; color: var(--text);
+  cursor: pointer; outline: none; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%233a3226' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 8px center;
+  padding-right: 26px;
+}
+.version-tag { font-size: .72rem; color: #999; }
+
+/* Header */
+header {
+  width: 100%;
+  background: linear-gradient(135deg,#8b1a1a 0%,#c43a31 50%,#a02c20 100%);
+  color: #fff; text-align: center; padding: 22px 16px 18px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.15);
+}
+header h1 { font-size: clamp(1.8rem,8vw,2.8rem); letter-spacing: .12em; text-shadow: 0 2px 4px rgba(0,0,0,.3); }
+header .sub { font-size: clamp(.7rem,3vw,.9rem); opacity: .85; margin-top: 2px; }
+
+/* Stats */
+.stats-bar {
+  width: 100%; max-width: 560px; display: flex; gap: 8px;
+  padding: 10px 12px 0; flex-wrap: wrap; justify-content: center;
+}
+.stat {
+  background: #fff; border-radius: 10px; padding: 6px 14px; font-size: .78rem;
+  box-shadow: var(--shadow); display: flex; align-items: center; gap: 6px;
+  border: 1px solid var(--border);
+}
+.stat strong { font-size: 1.05rem; color: var(--accent); }
+
+/* Container */
+.container {
+  width: 100%; max-width: 560px; padding: 0 12px 32px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+
+/* Categories */
+.cat-wrap { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 4px; }
+.cat-btn {
+  padding: 6px 12px; border-radius: 18px; border: 1.5px solid var(--border);
+  background: #fff; cursor: pointer; font-size: .76rem; font-family: inherit;
+  color: var(--text); transition: all .2s; white-space: nowrap; -webkit-tap-highlight-color: transparent;
+}
+.cat-btn:hover, .cat-btn:active { border-color: var(--accent); color: var(--accent); }
+.cat-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: bold; }
+
+/* Search */
+.search-wrap { display: flex; gap: 8px; justify-content: center; width: 100%; }
+.search-input {
+  width: 100%; max-width: 380px; padding: 10px 16px; border-radius: 22px;
+  border: 1.5px solid var(--border); font-size: .9rem; font-family: inherit;
+  background: #fff; outline: none; transition: border-color .2s;
+}
+.search-input:focus { border-color: var(--accent); }
+
+/* Card Area */
+.card-area { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+
+/* Flashcard */
+.card-scene {
+  width: min(88vw, 420px);
+  height: min(78vw, 560px);
+  max-height: 66vh;
+  perspective: 1200px;
+  cursor: pointer;
+  position: relative;
+  touch-action: pan-y;
+}
+.card-inner {
+  width: 100%; height: 100%; position: relative;
+  transition: transform .5s cubic-bezier(.4,0,.2,1);
+  transform-style: preserve-3d;
+}
+.card-inner.flipped { transform: rotateY(180deg); }
+.card-face {
+  position: absolute; inset: 0; -webkit-backface-visibility: hidden; backface-visibility: hidden;
+  border-radius: var(--card-radius); display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: clamp(16px,4vw,28px) clamp(14px,3vw,24px);
+  box-shadow: var(--shadow), 0 8px 32px rgba(0,0,0,.06);
+  border: 2px solid var(--border); background: var(--card-bg);
+  overflow: hidden;
+}
+.card-front { gap: clamp(4px,1.5vw,10px); }
+.card-back {
+  transform: rotateY(180deg); justify-content: flex-start; text-align: left; gap: 10px; overflow-y: auto;
+}
+
+/* Seal stamp */
+.card-front::after {
+  content: '汉'; position: absolute; top: 10px; right: 14px;
+  font-size: clamp(1rem,3vw,1.4rem); color: var(--accent); opacity: .12;
+  font-weight: bold; border: 1.5px solid var(--accent); border-radius: 50%;
+  width: clamp(28px,7vw,36px); height: clamp(28px,7vw,36px);
+  display: flex; align-items: center; justify-content: center; line-height: 1;
+}
+
+/* Character display */
+.char-display {
+  position: relative; display: flex; align-items: center; justify-content: center;
+  width: 100%; flex: 1; min-height: 0;
+}
+.char-text {
+  font-size: clamp(5rem, 22vw, 9rem); line-height: 1; color: #2a2218;
+  transition: opacity .2s; font-family: var(--font-cn);
+}
+.char-text.hidden { opacity: 0; }
+#strokeContainer { width: 100%; height: 100%; display: none; align-items: center; justify-content: center; }
+#strokeContainer.active { display: flex; }
+
+/* Pinyin + Play */
+.pinyin-row { display: flex; align-items: center; gap: 8px; }
+.card-pinyin { font-size: clamp(1rem,3.5vw,1.3rem); color: #888; letter-spacing: .04em; }
+.play-btn {
+  width: clamp(30px,8vw,38px); height: clamp(30px,8vw,38px);
+  border-radius: 50%; border: 1.5px solid var(--accent2); background: #fff;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all .2s; font-size: clamp(.9rem,3vw,1.1rem);
+  -webkit-tap-highlight-color: transparent; color: var(--accent2);
+}
+.play-btn:active { transform: scale(.9); background: var(--accent2); color: #fff; }
+.play-btn.playing { background: var(--accent2); color: #fff; animation: pulse .8s infinite; }
+@keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
+.card-cat-tag {
+  font-size: clamp(.65rem,2vw,.75rem); color: var(--accent);
+  border: 1px solid var(--accent); border-radius: 12px; padding: 3px 10px; opacity: .7;
+}
+
+/* Back side */
+.card-back h3 { font-size: clamp(1rem,3.5vw,1.2rem); color: var(--accent2); margin-bottom: 2px; width: 100%; text-align: center; }
+.card-back .eng-main { font-size: clamp(.9rem,3vw,1.1rem); color: #666; margin-bottom: 4px; width: 100%; text-align: center; }
+.card-back .examples { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+.card-back .ex-item {
+  background: #faf7ef; border-radius: 10px; padding: 10px 14px;
+  border-left: 3px solid var(--accent2); font-size: clamp(.85rem,2.8vw,.95rem); line-height: 1.5;
+}
+.card-back .ex-item .word { font-size: clamp(1rem,3.2vw,1.15rem); font-weight: bold; color: #2a2218; }
+.card-back .ex-item .pinyin-ex { font-size: clamp(.72rem,2.5vw,.82rem); color: #999; }
+.card-back .ex-item .eng-ex { font-size: clamp(.75rem,2.5vw,.85rem); color: #777; margin-top: 2px; }
+
+/* Controls */
+.controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
+.nav-btn {
+  width: clamp(38px,10vw,46px); height: clamp(38px,10vw,46px);
+  border-radius: 50%; border: 1.5px solid var(--border); background: #fff;
+  cursor: pointer; font-size: 1.2rem; color: var(--text); transition: all .2s;
+  display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow);
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-btn:active { background: var(--accent); color: #fff; border-color: var(--accent); transform: scale(.92); }
+.counter { font-size: .9rem; color: #888; min-width: 60px; text-align: center; font-family: sans-serif; }
+.action-btn {
+  padding: clamp(8px,2vw,10px) clamp(14px,3vw,20px); border-radius: 22px;
+  border: 1.5px solid var(--accent); background: #fff; cursor: pointer;
+  font-size: .82rem; font-family: inherit; color: var(--accent); transition: all .2s;
+  display: flex; align-items: center; gap: 4px; white-space: nowrap; -webkit-tap-highlight-color: transparent;
+}
+.action-btn:active { background: var(--accent); color: #fff; }
+.action-btn.order { border-color: var(--accent2); color: var(--accent2); }
+.action-btn.order:active { background: var(--accent2); color: #fff; }
+.action-btn.shuffle { border-color: #8b5e3c; color: #8b5e3c; }
+.action-btn.shuffle:active { background: #8b5e3c; color: #fff; }
+.action-btn.stroke { border-color: #5b4caf; color: #5b4caf; }
+.action-btn.stroke:active, .action-btn.stroke.active { background: #5b4caf; color: #fff; }
+
+/* Progress */
+.progress-wrap { width: 100%; max-width: 420px; display: flex; align-items: center; gap: 10px; }
+.progress-bar { flex: 1; height: 6px; background: #e0d8c8; border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--accent2); border-radius: 3px; transition: width .3s; }
+.progress-label { font-size: .75rem; color: #999; white-space: nowrap; font-family: sans-serif; }
+
+/* Kbd hint */
+.kbd-hint { font-size: .72rem; color: #bbb; text-align: center; font-family: sans-serif; }
+.kbd-hint kbd { background: #eee; border: 1px solid #ccc; border-radius: 3px; padding: 1px 5px; font-size: .7rem; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,.78); color: #fff; padding: 8px 18px; border-radius: 20px;
+  font-size: .82rem; z-index: 100; opacity: 0; transition: opacity .3s; pointer-events: none;
+  max-width: 85vw; text-align: center;
+}
+.toast.show { opacity: 1; }
+
+@media (max-width: 380px) {
+  .cat-btn { padding: 5px 10px; font-size: .7rem; }
+  .action-btn { padding: 7px 11px; font-size: .75rem; gap: 2px; }
+  .nav-btn { width: 36px; height: 36px; font-size: 1rem; }
+  .controls { gap: 5px; }
+  .card-scene { width: min(92vw, 420px); }
+}
+@media (min-width: 768px) {
+  .card-scene { max-width: 420px; max-height: 70vh; }
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<div class="top-bar">
+  <select class="lang-select" id="langSelect">
+    <option value="zh">中文</option>
+    <option value="en">English</option>
+    <option value="es">Español</option>
+  </select>
+  <span class="version-tag" id="versionTag">v2.2 · 121字</span>
+</div>
+
+<header>
+  <h1>汉 库</h1>
+  <div class="sub" id="headerSub">HSK 1-3 级 汉字闪卡 · 121 字 · 11 大分类</div>
+</header>
+
+<div class="stats-bar">
+  <div class="stat"><span id="statChars">📚 总字数</span> <strong>121</strong></div>
+  <div class="stat"><span id="statCats">📂 分类数</span> <strong>11</strong></div>
+  <div class="stat"><span id="statWords">🔤 双字词</span> <strong>242</strong></div>
+</div>
+
+<div class="container">
+  <div class="cat-wrap" id="catWrap"></div>
+  <div class="search-wrap">
+    <input class="search-input" id="searchInput" type="text" placeholder="搜索汉字...">
+  </div>
+
+  <div class="card-area">
+    <div class="card-scene" id="cardScene">
+      <div class="card-inner" id="cardInner">
+        <div class="card-face card-front">
+          <div class="char-display">
+            <div class="char-text" id="charText"></div>
+            <div id="strokeContainer"></div>
+          </div>
+          <div class="pinyin-row">
+            <span class="card-pinyin" id="cardPinyin"></span>
+            <button class="play-btn" id="playBtn" type="button" title="播放发音">🔊</button>
+          </div>
+          <div class="card-cat-tag" id="cardCatTag"></div>
+        </div>
+        <div class="card-face card-back">
+          <h3 id="backEng"></h3>
+          <div class="eng-main" id="backPinyinMain"></div>
+          <div class="examples" id="backExamples"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="nav-btn" id="prevBtn" type="button" title="上一个">◀</button>
+      <span class="counter" id="counter">1 / 121</span>
+      <button class="nav-btn" id="nextBtn" type="button" title="下一个">▶</button>
+      <button class="action-btn order" id="orderBtn" type="button"><span id="txtOrder">顺序</span></button>
+      <button class="action-btn shuffle" id="shuffleBtn" type="button"><span id="txtShuffle">随机</span></button>
+      <button class="action-btn stroke" id="strokeBtn" type="button"><span id="txtStroke">笔顺</span></button>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <span class="progress-label" id="progressLabel">1/121</span>
+    </div>
+
+    <div class="kbd-hint" id="kbdHint">
+      按 ← → 切换 &nbsp; 按 空格 翻转 &nbsp; 按 P 播放
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+// ============ I18N ============
+function getI18n(lang) {
+  var d = {
+    zh: {
+      headerSub: 'HSK 1-3 级 汉字闪卡 · 121 字 · 11 大分类',
+      statChars: '📚 总字数', statCats: '📂 分类数', statWords: '🔤 双字词',
+      search: '搜索汉字...', all: '全部',
+      txtOrder: '顺序', txtShuffle: '随机', txtStroke: '笔顺',
+      kbd: '按 ← → 切换  按 空格 翻转  按 P 播放',
+      toastStrokeOn: '笔顺模式已开启，点击卡片播放笔顺动画',
+      toastStrokeOff: '笔顺模式已关闭',
+      toastNoSpeech: '浏览器不支持语音播放',
+      toastNoStroke: '暂不支持该字的笔顺数据',
+      cats: {
+        '数字':'数字','人体/人称':'人体/人称','方位/空间':'方位/空间',
+        '自然/天地':'自然/天地','动物':'动物','动作动词':'动作动词',
+        '食物/器物':'食物/器物','形容词':'形容词','指示/量词':'指示/量词',
+        '时间':'时间','名词/其他':'名词/其他'
+      }
+    },
+    en: {
+      headerSub: 'HSK 1-3 Chinese Character Flashcards · 121 Characters · 11 Categories',
+      statChars: '📚 Total', statCats: '📂 Categories', statWords: '🔤 Words',
+      search: 'Search characters...', all: 'All',
+      txtOrder: 'Order', txtShuffle: 'Shuffle', txtStroke: 'Stroke',
+      kbd: '← → navigate   Space flip   P play audio',
+      toastStrokeOn: 'Stroke mode on. Click card to animate.',
+      toastStrokeOff: 'Stroke mode off.',
+      toastNoSpeech: 'Speech not supported.',
+      toastNoStroke: 'Stroke data unavailable for this character.',
+      cats: {
+        '数字':'Numbers','人体/人称':'Body & People','方位/空间':'Directions & Space',
+        '自然/天地':'Nature','动物':'Animals','动作动词':'Action Verbs',
+        '食物/器物':'Food & Objects','形容词':'Adjectives','指示/量词':'Demonstratives',
+        '时间':'Time','名词/其他':'Nouns & Others'
+      }
+    },
+    es: {
+      headerSub: 'Tarjetas HSK 1-3 · 121 Caracteres · 11 Categorías',
+      statChars: '📚 Total', statCats: '📂 Categorías', statWords: '🔤 Palabras',
+      search: 'Buscar caracteres...', all: 'Todo',
+      txtOrder: 'Orden', txtShuffle: 'Aleatorio', txtStroke: 'Trazo',
+      kbd: '← → navegar   Espacio girar   P audio',
+      toastStrokeOn: 'Modo trazo activado. Toca la tarjeta para animar.',
+      toastStrokeOff: 'Modo trazo desactivado.',
+      toastNoSpeech: 'Voz no soportada.',
+      toastNoStroke: 'Datos de trazo no disponibles.',
+      cats: {
+        '数字':'Números','人体/人称':'Cuerpo y Personas','方位/空间':'Direcciones y Espacio',
+        '自然/天地':'Naturaleza','动物':'Animales','动作动词':'Verbos de Acción',
+        '食物/器物':'Comida y Objetos','形容词':'Adjetivos','指示/量词':'Demostrativos',
+        '时间':'Tiempo','名词/其他':'Sustantivos y Otros'
+      }
+    }
+  };
+  return d[lang] || d.zh;
+}
+
+// ============ FLASHCARD DATA ============
+var cardsData = [
+  {c:'一',py:'yī',en:'one',es:'uno',x:[{w:'一个',py:'yī gè',en:'one',es:'uno'},{w:'一月',py:'yī yuè',en:'January',es:'enero'}],cat:'数字'},
+  {c:'二',py:'èr',en:'two',es:'dos',x:[{w:'二月',py:'èr yuè',en:'February',es:'febrero'},{w:'二十',py:'èr shí',en:'twenty',es:'veinte'}],cat:'数字'},
+  {c:'三',py:'sān',en:'three',es:'tres',x:[{w:'三月',py:'sān yuè',en:'March',es:'marzo'},{w:'三十',py:'sān shí',en:'thirty',es:'treinta'}],cat:'数字'},
+  {c:'四',py:'sì',en:'four',es:'cuatro',x:[{w:'四月',py:'sì yuè',en:'April',es:'abril'},{w:'四十',py:'sì shí',en:'forty',es:'cuarenta'}],cat:'数字'},
+  {c:'五',py:'wǔ',en:'five',es:'cinco',x:[{w:'五月',py:'wǔ yuè',en:'May',es:'mayo'},{w:'五十',py:'wǔ shí',en:'fifty',es:'cincuenta'}],cat:'数字'},
+  {c:'六',py:'liù',en:'six',es:'seis',x:[{w:'六月',py:'liù yuè',en:'June',es:'junio'},{w:'六十',py:'liù shí',en:'sixty',es:'sesenta'}],cat:'数字'},
+  {c:'七',py:'qī',en:'seven',es:'siete',x:[{w:'七月',py:'qī yuè',en:'July',es:'julio'},{w:'七十',py:'qī shí',en:'seventy',es:'setenta'}],cat:'数字'},
+  {c:'八',py:'bā',en:'eight',es:'ocho',x:[{w:'八月',py:'bā yuè',en:'August',es:'agosto'},{w:'八十',py:'bā shí',en:'eighty',es:'ochenta'}],cat:'数字'},
+  {c:'九',py:'jiǔ',en:'nine',es:'nueve',x:[{w:'九月',py:'jiǔ yuè',en:'September',es:'septiembre'},{w:'九十',py:'jiǔ shí',en:'ninety',es:'noventa'}],cat:'数字'},
+  {c:'十',py:'shí',en:'ten',es:'diez',x:[{w:'十月',py:'shí yuè',en:'October',es:'octubre'},{w:'十分',py:'shí fēn',en:'very',es:'muy'}],cat:'数字'},
+
+  {c:'人',py:'rén',en:'person',es:'persona',x:[{w:'人生',py:'rén shēng',en:'life',es:'vida'},{w:'人品',py:'rén pǐn',en:'moral character',es:'carácter moral'}],cat:'人体/人称'},
+  {c:'儿',py:'ér',en:'child',es:'niño',x:[{w:'儿女',py:'ér nǚ',en:'sons and daughters',es:'hijos e hijas'},{w:'儿科',py:'ér kē',en:'pediatrics',es:'pediatría'}],cat:'人体/人称'},
+  {c:'子',py:'zǐ',en:'son; seed',es:'hijo; semilla',x:[{w:'子女',py:'zǐ nǚ',en:'children',es:'hijos'},{w:'子弹',py:'zǐ dàn',en:'bullet',es:'bala'}],cat:'人体/人称'},
+  {c:'己',py:'jǐ',en:'self',es:'uno mismo',x:[{w:'自己',py:'zì jǐ',en:'oneself',es:'uno mismo'},{w:'知己',py:'zhī jǐ',en:'bosom friend',es:'amigo íntimo'}],cat:'人体/人称'},
+  {c:'心',py:'xīn',en:'heart',es:'corazón',x:[{w:'心情',py:'xīn qíng',en:'mood',es:'estado de ánimo'},{w:'心事',py:'xīn shì',en:'worry',es:'preocupación'}],cat:'人体/人称'},
+  {c:'目',py:'mù',en:'eye',es:'ojo',x:[{w:'目光',py:'mù guāng',en:'gaze',es:'mirada'},{w:'目录',py:'mù lù',en:'catalog',es:'catálogo'}],cat:'人体/人称'},
+  {c:'手',py:'shǒu',en:'hand',es:'mano',x:[{w:'手工',py:'shǒu gōng',en:'handwork',es:'trabajo manual'},{w:'手法',py:'shǒu fǎ',en:'technique',es:'técnica'}],cat:'人体/人称'},
+  {c:'耳',py:'ěr',en:'ear',es:'oreja',x:[{w:'耳朵',py:'ěr duǒ',en:'ear',es:'oreja'},{w:'耳环',py:'ěr huán',en:'earring',es:'pendiente'}],cat:'人体/人称'},
+  {c:'足',py:'zú',en:'foot; enough',es:'pie; suficiente',x:[{w:'足球',py:'zú qiú',en:'football',es:'fútbol'},{w:'足够',py:'zú gòu',en:'enough',es:'suficiente'}],cat:'人体/人称'},
+  {c:'力',py:'lì',en:'strength',es:'fuerza',x:[{w:'力气',py:'lì qi',en:'strength',es:'fuerza'},{w:'力度',py:'lì dù',en:'intensity',es:'intensidad'}],cat:'人体/人称'},
+  {c:'我',py:'wǒ',en:'I',es:'yo',x:[{w:'我们',py:'wǒ men',en:'we',es:'nosotros'},{w:'我国',py:'wǒ guó',en:'our country',es:'nuestro país'}],cat:'人体/人称'},
+  {c:'朋',py:'péng',en:'friend',es:'amigo',x:[{w:'朋友',py:'péng you',en:'friend',es:'amigo'},{w:'亲朋',py:'qīn péng',en:'relatives and friends',es:'familiares y amigos'}],cat:'人体/人称'},
+  {c:'友',py:'yǒu',en:'friend',es:'amigo',x:[{w:'友爱',py:'yǒu ài',en:'friendly affection',es:'afecto amistoso'},{w:'友情',py:'yǒu qíng',en:'friendship',es:'amistad'}],cat:'人体/人称'},
+  {c:'姓',py:'xìng',en:'surname',es:'apellido',x:[{w:'姓名',py:'xìng míng',en:'full name',es:'nombre completo'},{w:'百姓',py:'bǎi xìng',en:'common people',es:'gente común'}],cat:'人体/人称'},
+  {c:'头',py:'tóu',en:'head',es:'cabeza',x:[{w:'头发',py:'tóu fa',en:'hair',es:'pelo'},{w:'头脑',py:'tóu nǎo',en:'mind',es:'mente'}],cat:'人体/人称'},
+  {c:'面',py:'miàn',en:'face; side',es:'cara; lado',x:[{w:'面前',py:'miàn qián',en:'in front of',es:'delante de'},{w:'面积',py:'miàn jī',en:'area',es:'área'}],cat:'人体/人称'},
+  {c:'口',py:'kǒu',en:'mouth',es:'boca',x:[{w:'口语',py:'kǒu yǔ',en:'spoken language',es:'lengua hablada'},{w:'口袋',py:'kǒu dài',en:'pocket',es:'bolsillo'}],cat:'人体/人称'},
+  {c:'牙',py:'yá',en:'tooth',es:'diente',x:[{w:'牙齿',py:'yá chǐ',en:'tooth',es:'diente'},{w:'牙医',py:'yá yī',en:'dentist',es:'dentista'}],cat:'人体/人称'},
+  {c:'舌',py:'shé',en:'tongue',es:'lengua',x:[{w:'舌头',py:'shé tou',en:'tongue',es:'lengua'},{w:'舌尖',py:'shé jiān',en:'tip of the tongue',es:'punta de la lengua'}],cat:'人体/人称'},
+
+  {c:'上',py:'shàng',en:'up; on',es:'arriba; sobre',x:[{w:'上面',py:'shàng miàn',en:'above',es:'arriba'},{w:'上车',py:'shàng chē',en:'get on (a vehicle)',es:'subir (a un vehículo)'}],cat:'方位/空间'},
+  {c:'下',py:'xià',en:'down; below',es:'abajo; debajo',x:[{w:'下面',py:'xià miàn',en:'below',es:'abajo'},{w:'下来',py:'xià lái',en:'come down',es:'bajar'}],cat:'方位/空间'},
+  {c:'中',py:'zhōng',en:'middle; in',es:'medio; en',x:[{w:'中间',py:'zhōng jiān',en:'middle',es:'medio'},{w:'中学',py:'zhōng xué',en:'middle school',es:'escuela secundaria'}],cat:'方位/空间'},
+  {c:'开',py:'kāi',en:'open; start',es:'abrir; empezar',x:[{w:'开门',py:'kāi mén',en:'open the door',es:'abrir la puerta'},{w:'开始',py:'kāi shǐ',en:'start',es:'comenzar'}],cat:'方位/空间'},
+  {c:'东',py:'dōng',en:'east',es:'este',x:[{w:'东方',py:'dōng fāng',en:'east',es:'oriente'},{w:'东北',py:'dōng běi',en:'northeast',es:'noreste'}],cat:'方位/空间'},
+  {c:'北',py:'běi',en:'north',es:'norte',x:[{w:'北方',py:'běi fāng',en:'north',es:'norte'},{w:'北风',py:'běi fēng',en:'north wind',es:'viento del norte'}],cat:'方位/空间'},
+  {c:'外',py:'wài',en:'outside',es:'fuera',x:[{w:'外面',py:'wài miàn',en:'outside',es:'afuera'},{w:'外语',py:'wài yǔ',en:'foreign language',es:'lengua extranjera'}],cat:'方位/空间'},
+  {c:'里',py:'lǐ',en:'inside',es:'dentro',x:[{w:'里面',py:'lǐ miàn',en:'inside',es:'adentro'},{w:'里外',py:'lǐ wài',en:'inside and outside',es:'dentro y fuera'}],cat:'方位/空间'},
+  {c:'西',py:'xī',en:'west',es:'oeste',x:[{w:'西方',py:'xī fāng',en:'west',es:'occidente'},{w:'西餐',py:'xī cān',en:'Western food',es:'comida occidental'}],cat:'方位/空间'},
+  {c:'南',py:'nán',en:'south',es:'sur',x:[{w:'南方',py:'nán fāng',en:'south',es:'sur'},{w:'南风',py:'nán fēng',en:'south wind',es:'viento del sur'}],cat:'方位/空间'},
+  {c:'左',py:'zuǒ',en:'left',es:'izquierda',x:[{w:'左边',py:'zuǒ biān',en:'left side',es:'lado izquierdo'},{w:'左手',py:'zuǒ shǒu',en:'left hand',es:'mano izquierda'}],cat:'方位/空间'},
+  {c:'右',py:'yòu',en:'right',es:'derecha',x:[{w:'右边',py:'yòu biān',en:'right side',es:'lado derecho'},{w:'右手',py:'yòu shǒu',en:'right hand',es:'mano derecha'}],cat:'方位/空间'},
+  {c:'关',py:'guān',en:'close; shut',es:'cerrar',x:[{w:'关心',py:'guān xīn',en:'care about',es:'preocuparse por'},{w:'关系',py:'guān xì',en:'relationship',es:'relación'}],cat:'方位/空间'},
+  {c:'间',py:'jiān',en:'between; room',es:'entre; habitación',x:[{w:'中间',py:'zhōng jiān',en:'middle',es:'medio'},{w:'房间',py:'fáng jiān',en:'room',es:'habitación'}],cat:'方位/空间'},
+
+  {c:'日',py:'rì',en:'sun; day',es:'sol; día',x:[{w:'日期',py:'rì qī',en:'date',es:'fecha'},{w:'日夜',py:'rì yè',en:'day and night',es:'día y noche'}],cat:'自然/天地'},
+  {c:'月',py:'yuè',en:'moon; month',es:'luna; mes',x:[{w:'月亮',py:'yuè liang',en:'moon',es:'luna'},{w:'月份',py:'yuè fèn',en:'month',es:'mes'}],cat:'自然/天地'},
+  {c:'天',py:'tiān',en:'sky; day',es:'cielo; día',x:[{w:'天空',py:'tiān kōng',en:'sky',es:'cielo'},{w:'天气',py:'tiān qì',en:'weather',es:'clima'}],cat:'自然/天地'},
+  {c:'土',py:'tǔ',en:'earth; soil',es:'tierra; suelo',x:[{w:'土地',py:'tǔ dì',en:'land',es:'tierra'},{w:'泥土',py:'ní tǔ',en:'mud / soil',es:'barro / suelo'}],cat:'自然/天地'},
+  {c:'木',py:'mù',en:'wood; tree',es:'madera; árbol',x:[{w:'木头',py:'mù tou',en:'wood',es:'madera'},{w:'木材',py:'mù cái',en:'timber',es:'madera'}],cat:'自然/天地'},
+  {c:'水',py:'shuǐ',en:'water',es:'agua',x:[{w:'水果',py:'shuǐ guǒ',en:'fruit',es:'fruta'},{w:'水平',py:'shuǐ píng',en:'level',es:'nivel'}],cat:'自然/天地'},
+  {c:'火',py:'huǒ',en:'fire',es:'fuego',x:[{w:'火车',py:'huǒ chē',en:'train',es:'tren'},{w:'火光',py:'huǒ guāng',en:'firelight',es:'luz del fuego'}],cat:'自然/天地'},
+  {c:'石',py:'shí',en:'stone',es:'piedra',x:[{w:'石头',py:'shí tou',en:'stone',es:'piedra'},{w:'石油',py:'shí yóu',en:'oil',es:'petróleo'}],cat:'自然/天地'},
+  {c:'光',py:'guāng',en:'light',es:'luz',x:[{w:'光明',py:'guāng míng',en:'bright',es:'brillante'},{w:'光线',py:'guāng xiàn',en:'light ray',es:'rayo de luz'}],cat:'自然/天地'},
+  {c:'田',py:'tián',en:'field',es:'campo',x:[{w:'田野',py:'tián yě',en:'field',es:'campo'},{w:'农田',py:'nóng tián',en:'farmland',es:'tierra de cultivo'}],cat:'自然/天地'},
+  {c:'江',py:'jiāng',en:'river',es:'río',x:[{w:'江水',py:'jiāng shuǐ',en:'river water',es:'agua del río'},{w:'江南',py:'jiāng nán',en:'south of Yangtze',es:'sur del Yangtsé'}],cat:'自然/天地'},
+  {c:'云',py:'yún',en:'cloud',es:'nube',x:[{w:'云彩',py:'yún cai',en:'cloud',es:'nube'},{w:'云朵',py:'yún duǒ',en:'cloud',es:'nube'}],cat:'自然/天地'},
+  {c:'风',py:'fēng',en:'wind',es:'viento',x:[{w:'风景',py:'fēng jǐng',en:'scenery',es:'paisaje'},{w:'风雨',py:'fēng yǔ',en:'wind and rain',es:'viento y lluvia'}],cat:'自然/天地'},
+  {c:'雨',py:'yǔ',en:'rain',es:'lluvia',x:[{w:'雨水',py:'yǔ shuǐ',en:'rain water',es:'agua de lluvia'},{w:'雨伞',py:'yǔ sǎn',en:'umbrella',es:'paraguas'}],cat:'自然/天地'},
+  {c:'电',py:'diàn',en:'electricity',es:'electricidad',x:[{w:'电视',py:'diàn shì',en:'TV',es:'televisión'},{w:'电子',py:'diàn zǐ',en:'electronic',es:'electrónico'}],cat:'自然/天地'},
+  {c:'阳',py:'yáng',en:'sun; positive',es:'sol; positivo',x:[{w:'阳光',py:'yáng guāng',en:'sunshine',es:'luz solar'},{w:'阳台',py:'yáng tái',en:'balcony',es:'balcón'}],cat:'自然/天地'},
+  {c:'草',py:'cǎo',en:'grass',es:'hierba',x:[{w:'草地',py:'cǎo dì',en:'grassland',es:'prado'},{w:'草原',py:'cǎo yuán',en:'prairie',es:'pradera'}],cat:'自然/天地'},
+
+  {c:'马',py:'mǎ',en:'horse',es:'caballo',x:[{w:'马路',py:'mǎ lù',en:'road',es:'carretera'},{w:'马上',py:'mǎ shàng',en:'immediately',es:'inmediatamente'}],cat:'动物'},
+  {c:'鸟',py:'niǎo',en:'bird',es:'pájaro',x:[{w:'小鸟',py:'xiǎo niǎo',en:'small bird',es:'pajarito'},{w:'鸟窝',py:'niǎo wō',en:"bird's nest",es:'nido de pájaro'}],cat:'动物'},
+  {c:'羊',py:'yáng',en:'sheep',es:'oveja',x:[{w:'羊毛',py:'yáng máo',en:'wool',es:'lana'},{w:'羊群',py:'yáng qún',en:'flock of sheep',es:'rebaño de ovejas'}],cat:'动物'},
+  {c:'牛',py:'niú',en:'cow',es:'vaca',x:[{w:'牛奶',py:'niú nǎi',en:'milk',es:'leche'},{w:'牛角',py:'niú jiǎo',en:'ox horn',es:'cuerno de buey'}],cat:'动物'},
+  {c:'乌',py:'wū',en:'crow; black',es:'cuervo; negro',x:[{w:'乌鸦',py:'wū yā',en:'crow',es:'cuervo'},{w:'乌黑',py:'wū hēi',en:'jet-black',es:'negro azabache'}],cat:'动物'},
+  {c:'鱼',py:'yú',en:'fish',es:'pez',x:[{w:'鱼虾',py:'yú xiā',en:'fish and shrimp',es:'pescado y camarones'},{w:'鱼网',py:'yú wǎng',en:'fishing net',es:'red de pesca'}],cat:'动物'},
+
+  {c:'入',py:'rù',en:'enter',es:'entrar',x:[{w:'入口',py:'rù kǒu',en:'entrance',es:'entrada'},{w:'出入',py:'chū rù',en:'in and out',es:'entrar y salir'}],cat:'动作动词'},
+  {c:'出',py:'chū',en:'go out',es:'salir',x:[{w:'出门',py:'chū mén',en:'go out',es:'salir'},{w:'出现',py:'chū xiàn',en:'appear',es:'aparecer'}],cat:'动作动词'},
+  {c:'去',py:'qù',en:'go',es:'ir',x:[{w:'去年',py:'qù nián',en:'last year',es:'el año pasado'},{w:'去向',py:'qù xiàng',en:'destination',es:'destino'}],cat:'动作动词'},
+  {c:'打',py:'dǎ',en:'hit; strike',es:'golpear',x:[{w:'打球',py:'dǎ qiú',en:'play ball',es:'jugar a la pelota'},{w:'打扫',py:'dǎ sǎo',en:'clean up',es:'limpiar'}],cat:'动作动词'},
+  {c:'飞',py:'fēi',en:'fly',es:'volar',x:[{w:'飞行',py:'fēi xíng',en:'fly',es:'volar'},{w:'飞机',py:'fēi jī',en:'airplane',es:'avión'}],cat:'动作动词'},
+  {c:'走',py:'zǒu',en:'walk',es:'caminar',x:[{w:'走路',py:'zǒu lù',en:'walk',es:'caminar'},{w:'走开',py:'zǒu kāi',en:'go away',es:'irse'}],cat:'动作动词'},
+  {c:'习',py:'xí',en:'study; practice',es:'estudiar; practicar',x:[{w:'学习',py:'xué xí',en:'study',es:'estudiar'},{w:'习惯',py:'xí guàn',en:'habit',es:'hábito'}],cat:'动作动词'},
+  {c:'自',py:'zì',en:'self; from',es:'uno mismo; desde',x:[{w:'自身',py:'zì shēn',en:'oneself',es:'uno mismo'},{w:'自由',py:'zì yóu',en:'freedom',es:'libertad'}],cat:'动作动词'},
+  {c:'学',py:'xué',en:'study',es:'estudiar',x:[{w:'学生',py:'xué shēng',en:'student',es:'estudiante'},{w:'学问',py:'xué wèn',en:'knowledge',es:'conocimiento'}],cat:'动作动词'},
+  {c:'说',py:'shuō',en:'speak',es:'hablar',x:[{w:'说话',py:'shuō huà',en:'speak',es:'hablar'},{w:'说明',py:'shuō míng',en:'explain',es:'explicar'}],cat:'动作动词'},
+  {c:'吃',py:'chī',en:'eat',es:'comer',x:[{w:'吃饭',py:'chī fàn',en:'eat a meal',es:'comer'},{w:'吃苦',py:'chī kǔ',en:'bear hardship',es:'soportar dificultades'}],cat:'动作动词'},
+  {c:'喝',py:'hē',en:'drink',es:'beber',x:[{w:'喝水',py:'hē shuǐ',en:'drink water',es:'beber agua'},{w:'喝茶',py:'hē chá',en:'drink tea',es:'beber té'}],cat:'动作动词'},
+  {c:'爱',py:'ài',en:'love',es:'amar',x:[{w:'爱心',py:'ài xīn',en:'compassion',es:'compasión'},{w:'爱好',py:'ài hào',en:'hobby',es:'pasatiempo'}],cat:'动作动词'},
+  {c:'通',py:'tōng',en:'through; connect',es:'a través; conectar',x:[{w:'通过',py:'tōng guò',en:'pass / via',es:'pasar / mediante'},{w:'通知',py:'tōng zhī',en:'notify',es:'notificar'}],cat:'动作动词'},
+  {c:'笑',py:'xiào',en:'laugh',es:'reír',x:[{w:'笑声',py:'xiào shēng',en:'laughter',es:'risa'},{w:'笑话',py:'xiào huà',en:'joke',es:'chiste'}],cat:'动作动词'},
+  {c:'唱',py:'chàng',en:'sing',es:'cantar',x:[{w:'唱歌',py:'chàng gē',en:'sing',es:'cantar'},{w:'唱片',py:'chàng piàn',en:'record (music)',es:'disco'}],cat:'动作动词'},
+  {c:'叫',py:'jiào',en:'call; shout',es:'llamar; gritar',x:[{w:'叫声',py:'jiào shēng',en:'shout',es:'grito'},{w:'叫做',py:'jiào zuò',en:'be called',es:'llamarse'}],cat:'动作动词'},
+  {c:'过',py:'guò',en:'pass; cross',es:'pasar; cruzar',x:[{w:'过去',py:'guò qù',en:'past',es:'pasado'},{w:'过来',py:'guò lái',en:'come over',es:'venir'}],cat:'动作动词'},
+  {c:'发',py:'fā',en:'send; issue',es:'enviar; emitir',x:[{w:'发生',py:'fā shēng',en:'happen',es:'suceder'},{w:'发现',py:'fā xiàn',en:'discover',es:'descubrir'}],cat:'动作动词'},
+  {c:'玩',py:'wán',en:'play',es:'jugar',x:[{w:'玩耍',py:'wán shuǎ',en:'play',es:'jugar'},{w:'玩笑',py:'wán xiào',en:'joke',es:'broma'}],cat:'动作动词'},
+  {c:'吹',py:'chuī',en:'blow',es:'soplar',x:[{w:'吹风',py:'chuī fēng',en:'blow wind',es:'soplar viento'},{w:'吹气',py:'chuī qì',en:'blow air',es:'soplar aire'}],cat:'动作动词'},
+  {c:'交',py:'jiāo',en:'hand in; intersect',es:'entregar; cruzar',x:[{w:'交通',py:'jiāo tōng',en:'traffic',es:'tráfico'},{w:'交流',py:'jiāo liú',en:'exchange',es:'intercambio'}],cat:'动作动词'},
+
+  {c:'尺',py:'chǐ',en:'ruler',es:'regla',x:[{w:'尺寸',py:'chǐ cùn',en:'size',es:'tamaño'},{w:'尺码',py:'chǐ mǎ',en:'size (shoes)',es:'talla'}],cat:'食物/器物'},
+  {c:'米',py:'mǐ',en:'rice; meter',es:'arroz; metro',x:[{w:'米饭',py:'mǐ fàn',en:'cooked rice',es:'arroz cocido'},{w:'大米',py:'dà mǐ',en:'uncooked rice',es:'arroz crudo'}],cat:'食物/器物'},
+  {c:'巾',py:'jīn',en:'towel',es:'toalla',x:[{w:'毛巾',py:'máo jīn',en:'towel',es:'toalla'},{w:'头巾',py:'tóu jīn',en:'headscarf',es:'pañuelo'}],cat:'食物/器物'},
+  {c:'灯',py:'dēng',en:'lamp',es:'lámpara',x:[{w:'灯光',py:'dēng guāng',en:'lamplight',es:'luz de lámpara'},{w:'灯泡',py:'dēng pào',en:'light bulb',es:'bombilla'}],cat:'食物/器物'},
+  {c:'机',py:'jī',en:'machine',es:'máquina',x:[{w:'机器',py:'jī qì',en:'machine',es:'máquina'},{w:'机会',py:'jī huì',en:'opportunity',es:'oportunidad'}],cat:'食物/器物'},
+  {c:'饭',py:'fàn',en:'meal',es:'comida',x:[{w:'饭菜',py:'fàn cài',en:'food / meal',es:'comida'},{w:'饭店',py:'fàn diàn',en:'restaurant',es:'restaurante'}],cat:'食物/器物'},
+  {c:'房',py:'fáng',en:'house',es:'casa',x:[{w:'房子',py:'fáng zi',en:'house',es:'casa'},{w:'房东',py:'fáng dōng',en:'landlord',es:'casero'}],cat:'食物/器物'},
+  {c:'金',py:'jīn',en:'gold',es:'oro',x:[{w:'金子',py:'jīn zi',en:'gold',es:'oro'},{w:'金色',py:'jīn sè',en:'golden',es:'dorado'}],cat:'食物/器物'},
+  {c:'银',py:'yín',en:'silver',es:'plata',x:[{w:'银子',py:'yín zi',en:'silver',es:'plata'},{w:'银行',py:'yín háng',en:'bank',es:'banco'}],cat:'食物/器物'},
+
+  {c:'大',py:'dà',en:'big',es:'grande',x:[{w:'大小',py:'dà xiǎo',en:'size',es:'tamaño'},{w:'大方',py:'dà fang',en:'generous',es:'generoso'}],cat:'形容词'},
+  {c:'小',py:'xiǎo',en:'small',es:'pequeño',x:[{w:'小说',py:'xiǎo shuō',en:'novel',es:'novela'},{w:'小心',py:'xiǎo xīn',en:'careful',es:'cuidadoso'}],cat:'形容词'},
+  {c:'方',py:'fāng',en:'square; direction',es:'cuadrado; dirección',x:[{w:'方法',py:'fāng fǎ',en:'method',es:'método'},{w:'方向',py:'fāng xiàng',en:'direction',es:'dirección'}],cat:'形容词'},
+  {c:'白',py:'bái',en:'white',es:'blanco',x:[{w:'白色',py:'bái sè',en:'white color',es:'color blanco'},{w:'白天',py:'bái tiān',en:'daytime',es:'día'}],cat:'形容词'},
+  {c:'平',py:'píng',en:'flat; peaceful',es:'plano; pacífico',x:[{w:'平安',py:'píng ān',en:'safe',es:'seguro'},{w:'平面',py:'píng miàn',en:'flat surface',es:'superficie plana'}],cat:'形容词'},
+  {c:'长',py:'cháng',en:'long',es:'largo',x:[{w:'长久',py:'cháng jiǔ',en:'long-term',es:'a largo plazo'},{w:'长度',py:'cháng dù',en:'length',es:'longitud'}],cat:'形容词'},
+  {c:'短',py:'duǎn',en:'short',es:'corto',x:[{w:'短裤',py:'duǎn kù',en:'shorts',es:'pantalones cortos'},{w:'长短',py:'cháng duǎn',en:'length',es:'longitud'}],cat:'形容词'},
+  {c:'快',py:'kuài',en:'fast; happy',es:'rápido; feliz',x:[{w:'快乐',py:'kuài lè',en:'happy',es:'feliz'},{w:'快速',py:'kuài sù',en:'fast',es:'rápido'}],cat:'形容词'},
+  {c:'全',py:'quán',en:'complete; entire',es:'completo; entero',x:[{w:'全部',py:'quán bù',en:'whole',es:'todo'},{w:'全家',py:'quán jiā',en:'whole family',es:'toda la familia'}],cat:'形容词'},
+  {c:'安',py:'ān',en:'safe; calm',es:'seguro; tranquilo',x:[{w:'安全',py:'ān quán',en:'safe',es:'seguro'},{w:'安静',py:'ān jìng',en:'quiet',es:'tranquilo'}],cat:'形容词'},
+  {c:'乐',py:'lè',en:'happy',es:'feliz',x:[{w:'乐意',py:'lè yì',en:'willing',es:'dispuesto'},{w:'乐园',py:'lè yuán',en:'paradise',es:'paraíso'}],cat:'形容词'},
+
+  {c:'这',py:'zhè',en:'this',es:'este/esta',x:[{w:'这里',py:'zhè lǐ',en:'here',es:'aquí'},{w:'这个',py:'zhè ge',en:'this one',es:'este'}],cat:'指示/量词'},
+  {c:'那',py:'nà',en:'that',es:'ese/aquel',x:[{w:'那里',py:'nà lǐ',en:'there',es:'allí'},{w:'那个',py:'nà ge',en:'that one',es:'ese/aquel'}],cat:'指示/量词'},
+  {c:'只',py:'zhī',en:'MW; only',es:'clasif.; solo',x:[{w:'一只',py:'yī zhī',en:'one (animal)',es:'un (animal)'},{w:'只好',py:'zhǐ hǎo',en:'have to',es:'tener que'}],cat:'指示/量词'},
+
+  {c:'午',py:'wǔ',en:'noon',es:'mediodía',x:[{w:'中午',py:'zhōng wǔ',en:'noon',es:'mediodía'},{w:'午饭',py:'wǔ fàn',en:'lunch',es:'almuerzo'}],cat:'时间'},
+  {c:'早',py:'zǎo',en:'early',es:'temprano',x:[{w:'早上',py:'zǎo shang',en:'morning',es:'mañana'},{w:'早点',py:'zǎo diǎn',en:'breakfast',es:'desayuno'}],cat:'时间'},
+  {c:'时',py:'shí',en:'time; hour',es:'tiempo; hora',x:[{w:'时间',py:'shí jiān',en:'time',es:'tiempo'},{w:'小时',py:'xiǎo shí',en:'hour',es:'hora'}],cat:'时间'},
+
+  {c:'是',py:'shì',en:'to be; yes',es:'ser; sí',x:[{w:'是否',py:'shì fǒu',en:'whether',es:'si'},{w:'是的',py:'shì de',en:'yes',es:'sí'}],cat:'名词/其他'},
+  {c:'名',py:'míng',en:'name; fame',es:'nombre; fama',x:[{w:'名字',py:'míng zi',en:'name',es:'nombre'},{w:'名人',py:'míng rén',en:'celebrity',es:'celebridad'}],cat:'名词/其他'},
+  {c:'文',py:'wén',en:'writing; culture',es:'escritura; cultura',x:[{w:'文化',py:'wén huà',en:'culture',es:'cultura'},{w:'文字',py:'wén zì',en:'writing',es:'escritura'}],cat:'名词/其他'},
+  {c:'欢',py:'huān',en:'happy; joyful',es:'feliz; alegre',x:[{w:'欢乐',py:'huān lè',en:'happy',es:'feliz'},{w:'喜欢',py:'xǐ huān',en:'like',es:'gustar'}],cat:'名词/其他'},
+  {c:'庆',py:'qìng',en:'celebrate',es:'celebrar',x:[{w:'庆祝',py:'qìng zhù',en:'celebrate',es:'celebrar'},{w:'国庆',py:'guó qìng',en:'National Day',es:'Día Nacional'}],cat:'名词/其他'},
+  {c:'汽',py:'qì',en:'steam; vapour',es:'vapor',x:[{w:'汽车',py:'qì chē',en:'car',es:'coche'},{w:'汽水',py:'qì shuǐ',en:'soda water',es:'refresco'}],cat:'名词/其他'},
+  {c:'话',py:'huà',en:'speech; talk',es:'habla',x:[{w:'话语',py:'huà yǔ',en:'speech',es:'discurso'},{w:'电话',py:'diàn huà',en:'telephone',es:'teléfono'}],cat:'名词/其他'}
+];
+
+// ============ STATE ============
+var currentLang = 'zh';
+var orderedCards = cardsData.slice();
+var cards = cardsData.slice();
+var currentIndex = 0;
+var isFlipped = false;
+var activeCategory = '全部';
+var strokeMode = false;
+var hanziWriter = null;
+var hanziWriterLoading = false;
+var toastTimer = null;
+
+// ============ DOM REFS ============
+function $(id) { return document.getElementById(id); }
+var catWrap = $('catWrap');
+var cardScene = $('cardScene');
+var cardInner = $('cardInner');
+var charText = $('charText');
+var strokeContainer = $('strokeContainer');
+var cardPinyin = $('cardPinyin');
+var cardCatTag = $('cardCatTag');
+var playBtn = $('playBtn');
+var backEng = $('backEng');
+var backPinyinMain = $('backPinyinMain');
+var backExamples = $('backExamples');
+var counter = $('counter');
+var searchInput = $('searchInput');
+var progressFill = $('progressFill');
+var progressLabel = $('progressLabel');
+var langSelect = $('langSelect');
+var toast = $('toast');
+var strokeBtn = $('strokeBtn');
+
+// ============ HELPERS ============
+function tr() { return getI18n(currentLang); }
+function catName(key) { return tr().cats[key] || key; }
+
+function showToast(msg, duration) {
+  duration = duration || 2000;
+  toast.textContent = msg;
+  toast.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () { toast.classList.remove('show'); }, duration);
+}
+
+// ============ AUDIO ============
+function playAudio() {
+  if (cards.length === 0) return;
+  var card = cards[currentIndex];
+  if (!('speechSynthesis' in window)) { showToast(tr().toastNoSpeech); return; }
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(card.c);
+  u.lang = 'zh-CN';
+  u.rate = 0.75;
+  u.pitch = 1;
+  playBtn.classList.add('playing');
+  u.onend = function () { playBtn.classList.remove('playing'); };
+  u.onerror = function () { playBtn.classList.remove('playing'); };
+  window.speechSynthesis.speak(u);
+}
+
+function cancelSpeech() {
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  playBtn.classList.remove('playing');
+}
+
+// ============ STROKE ORDER ============
+function loadHanziWriter(callback) {
+  if (typeof HanziWriter !== 'undefined') { callback(); return; }
+  if (hanziWriterLoading) return;
+  hanziWriterLoading = true;
+  var script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js';
+  script.onload = function () { hanziWriterLoading = false; callback(); };
+  script.onerror = function () {
+    hanziWriterLoading = false;
+    showToast(tr().toastNoStroke);
+    strokeMode = false;
+    strokeBtn.classList.remove('active');
+    charText.classList.remove('hidden');
+    strokeContainer.classList.remove('active');
+  };
+  document.head.appendChild(script);
+}
+
+function toggleStroke() {
+  if (cards.length === 0) return;
+  strokeMode = !strokeMode;
+  strokeBtn.classList.toggle('active', strokeMode);
+  if (strokeMode) {
+    showToast(tr().toastStrokeOn);
+    loadHanziWriter(function () {
+      if (!strokeMode) return;
+      loadStrokeAnimation();
+    });
+  } else {
+    showToast(tr().toastStrokeOff);
+    destroyStroke();
+  }
+}
+
+function destroyStroke() {
+  hanziWriter = null;
+  strokeContainer.innerHTML = '';
+  strokeContainer.classList.remove('active');
+  charText.classList.remove('hidden');
+}
+
+function loadStrokeAnimation() {
+  if (!strokeMode || cards.length === 0) return;
+  var card = cards[currentIndex];
+
+  hanziWriter = null;
+  strokeContainer.innerHTML = '';
+  charText.classList.add('hidden');
+  strokeContainer.classList.add('active');
+
+  if (typeof HanziWriter === 'undefined') {
+    showToast(tr().toastNoStroke);
+    strokeMode = false;
+    strokeBtn.classList.remove('active');
+    charText.classList.remove('hidden');
+    strokeContainer.classList.remove('active');
+    return;
+  }
+
+  requestAnimationFrame(function () {
+    if (!strokeMode) return;
+    var w = strokeContainer.clientWidth || 280;
+    var h = strokeContainer.clientHeight || 280;
+    var size = Math.min(w, h) * 0.85;
+    if (size < 100) size = 240;
+
+    var svgNS = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('width', size);
+    svg.setAttribute('height', size);
+    svg.style.display = 'block';
+    strokeContainer.appendChild(svg);
+
+    try {
+      hanziWriter = HanziWriter.create(svg, card.c, {
+        width: size, height: size, padding: 5,
+        strokeAnimationSpeed: 1.5, delayBetweenStrokes: 120,
+        strokeColor: '#333', radicalColor: '#c43a31',
+        showCharacter: true, showOutline: true,
+        outlineColor: '#ddd',
+        charDataLoader: HanziWriter.loadCharData
+      });
+      hanziWriter.loopCharacterAnimation();
+    } catch (e) {
+      showToast(tr().toastNoStroke);
+      destroyStroke();
+      strokeMode = false;
+      strokeBtn.classList.remove('active');
+    }
+  });
+}
+
+cardScene.addEventListener('click', function (e) {
+  if (strokeMode && hanziWriter) {
+    e.stopPropagation();
+    try { hanziWriter.loopCharacterAnimation(); } catch (ignore) {}
+    return;
+  }
+  flipCard();
+});
+
+// ============ CARD RENDERING ============
+function updateCard() {
+  if (cards.length === 0) {
+    document.title = '汉库 - 字卡 Flashcard';
+    charText.textContent = '?';
+    charText.classList.remove('hidden');
+    cardPinyin.textContent = '-';
+    cardCatTag.textContent = '';
+    backEng.textContent = '';
+    backPinyinMain.textContent = '';
+    backExamples.innerHTML = '';
+    counter.textContent = '0/0';
+    progressFill.style.width = '0%';
+    progressLabel.textContent = '0/0';
+    destroyStroke();
+    strokeMode = false;
+    strokeBtn.classList.remove('active');
+    cancelSpeech();
+    return;
+  }
+
+  var card = cards[currentIndex];
+  var L = tr();
+
+  document.title = card.c + ' - 汉库';
+
+  // Front
+  charText.textContent = card.c;
+  charText.classList.remove('hidden');
+  cardPinyin.textContent = card.py;
+  cardCatTag.textContent = catName(card.cat);
+
+  // Back
+  var field = (currentLang === 'es') ? 'es' : 'en';
+  backEng.textContent = card[field];
+  backPinyinMain.textContent = card.py;
+  backExamples.innerHTML = card.x.map(function (ex) {
+    return '<div class="ex-item"><div class="word">' + ex.w + '</div>' +
+      '<div class="pinyin-ex">' + ex.py + '</div>' +
+      '<div class="eng-ex">' + ex[field] + '</div></div>';
+  }).join('');
+
+  // Reset flip + stroke + speech
+  cardInner.classList.remove('flipped');
+  isFlipped = false;
+  destroyStroke();
+  strokeMode = false;
+  strokeBtn.classList.remove('active');
+  cancelSpeech();
+
+  // Counter + progress
+  counter.textContent = (currentIndex + 1) + ' / ' + cards.length;
+  var pct = ((currentIndex + 1) / cards.length) * 100;
+  progressFill.style.width = pct + '%';
+  progressLabel.textContent = (currentIndex + 1) + '/' + cards.length;
+}
+
+function flipCard() {
+  if (cards.length === 0) return;
+  isFlipped = !isFlipped;
+  cardInner.classList.toggle('flipped', isFlipped);
+}
+function nextCard() {
+  if (cards.length === 0) return;
+  currentIndex = (currentIndex + 1) % cards.length;
+  updateCard();
+}
+function prevCard() {
+  if (cards.length === 0) return;
+  currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+  updateCard();
+}
+
+function shuffleCards() {
+  if (cards.length === 0) return;
+  for (var i = cards.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = cards[i]; cards[i] = cards[j]; cards[j] = tmp;
+  }
+  currentIndex = 0;
+  updateCard();
+  bumpCard();
+}
+
+function orderCards() {
+  if (cards.length === 0) return;
+  cards = filterCardsFrom(orderedCards);
+  currentIndex = 0;
+  updateCard();
+  bumpCard();
+}
+
+function bumpCard() {
+  cardScene.style.transform = 'scale(1.03)';
+  setTimeout(function () { cardScene.style.transform = ''; }, 150);
+}
+
+function filterCardsFrom(source) {
+  var filtered = (activeCategory === '全部') ? source.slice() : source.filter(function (c) { return c.cat === activeCategory; });
+  var q = searchInput.value.trim();
+  if (q) {
+    var ql = q.toLowerCase();
+    filtered = filtered.filter(function (c) {
+      return c.c.indexOf(q) !== -1 ||
+        c.py.toLowerCase().indexOf(ql) !== -1 ||
+        c.en.toLowerCase().indexOf(ql) !== -1 ||
+        c.es.toLowerCase().indexOf(ql) !== -1 ||
+        c.x.some(function (ex) {
+          return ex.w.indexOf(q) !== -1 ||
+            ex.py.toLowerCase().indexOf(ql) !== -1 ||
+            ex.en.toLowerCase().indexOf(ql) !== -1 ||
+            ex.es.toLowerCase().indexOf(ql) !== -1;
+        });
+    });
+  }
+  return filtered;
+}
+
+function setCategory(cat) {
+  activeCategory = cat;
+  currentIndex = 0;
+  cards = filterCardsFrom(cardsData);
+  updateCard();
+  renderCategories();
+}
+
+// ============ CATEGORIES ============
+function getCategories() {
+  var seen = {};
+  var cats = [];
+  cardsData.forEach(function (c) { if (!seen[c.cat]) { seen[c.cat] = true; cats.push(c.cat); } });
+  return ['全部'].concat(cats);
+}
+
+function renderCategories() {
+  var cats = getCategories();
+  var allLabel = tr().all;
+  catWrap.innerHTML = cats.map(function (c) {
+    var label = (c === '全部') ? allLabel : catName(c);
+    var active = (c === activeCategory) ? ' active' : '';
+    return '<button class="cat-btn' + active + '" data-cat="' + c + '">' + label + '</button>';
+  }).join('');
+  var btns = catWrap.querySelectorAll('.cat-btn');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].addEventListener('click', function () { setCategory(this.dataset.cat); });
+  }
+}
+
+// ============ LANGUAGE ============
+function setLanguage(lang) {
+  currentLang = lang;
+  langSelect.value = lang;
+  document.documentElement.lang = (lang === 'es') ? 'es' : (lang === 'en') ? 'en' : 'zh-CN';
+  var L = tr();
+  $('headerSub').textContent = L.headerSub;
+  $('statChars').textContent = L.statChars;
+  $('statCats').textContent = L.statCats;
+  $('statWords').textContent = L.statWords;
+  searchInput.placeholder = L.search;
+  $('txtOrder').textContent = L.txtOrder;
+  $('txtShuffle').textContent = L.txtShuffle;
+  $('txtStroke').textContent = L.txtStroke;
+  $('kbdHint').innerHTML = L.kbd;
+  cancelSpeech();
+  renderCategories();
+  updateCard();
+}
+
+langSelect.addEventListener('change', function () { setLanguage(langSelect.value); });
+
+// ============ SEARCH ============
+searchInput.addEventListener('input', function () {
+  currentIndex = 0;
+  cards = filterCardsFrom(cardsData);
+  updateCard();
+});
+
+// ============ CONTROLS ============
+$('prevBtn').addEventListener('click', prevCard);
+$('nextBtn').addEventListener('click', nextCard);
+$('orderBtn').addEventListener('click', orderCards);
+$('shuffleBtn').addEventListener('click', shuffleCards);
+$('strokeBtn').addEventListener('click', toggleStroke);
+playBtn.addEventListener('click', function (e) { e.stopPropagation(); playAudio(); });
+
+// ============ KEYBOARD ============
+document.addEventListener('keydown', function (e) {
+  var tag = e.target.tagName;
+  if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
+  if (e.key === 'ArrowLeft') { e.preventDefault(); prevCard(); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); nextCard(); }
+  else if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); flipCard(); }
+  else if (e.key === 'p' || e.key === 'P') { e.preventDefault(); playAudio(); }
+  else if (e.key === 's' || e.key === 'S') { e.preventDefault(); toggleStroke(); }
+});
+
+// ============ TOUCH SWIPE ============
+var touchStartX = 0, touchStartY = 0, touchStartTime = 0;
+cardScene.addEventListener('touchstart', function (e) {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+  touchStartTime = Date.now();
+}, { passive: true });
+
+cardScene.addEventListener('touchend', function (e) {
+  if (strokeMode) return;
+  var dx = e.changedTouches[0].screenX - touchStartX;
+  var dy = e.changedTouches[0].screenY - touchStartY;
+  var dt = Date.now() - touchStartTime;
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40 && dt < 500) {
+    if (dx < 0) nextCard(); else prevCard();
+  }
+});
+
+// ============ RESIZE / ORIENTATION ============
+var resizeTimeout;
+window.addEventListener('resize', function () {
+  if (resizeTimeout) clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(function () {
+    if (strokeMode && cards.length > 0) loadStrokeAnimation();
+  }, 200);
+});
+window.addEventListener('orientationchange', function () {
+  setTimeout(function () {
+    if (strokeMode && cards.length > 0) loadStrokeAnimation();
+  }, 400);
+});
+
+// ============ INIT ============
+function init() {
+  orderedCards = cardsData.slice();
+  renderCategories();
+  cards = filterCardsFrom(cardsData);
+  updateCard();
+  setLanguage('zh');
+}
+init();
+</script>
+</body>
+</html>
