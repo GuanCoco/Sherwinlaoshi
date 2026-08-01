@@ -308,6 +308,8 @@ header .sub { font-size: clamp(.7rem,3vw,.9rem); opacity: .85; margin-top: 2px; 
   </div>
 </div>
 
+<script src="hanzi-writer.min.js"></script>
+<script src="hanzi-data.js"></script>
 <script>
 "use strict";
 
@@ -572,21 +574,37 @@ function cancelSpeech() {
 
 // ============ STROKE ORDER ============
 function loadHanziWriter(callback) {
-  if (typeof HanziWriter !== 'undefined') { callback(); return; }
-  if (hanziWriterLoading) return;
-  hanziWriterLoading = true;
-  var script = document.createElement('script');
-  script.src = 'https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js';
-  script.onload = function () { hanziWriterLoading = false; callback(); };
-  script.onerror = function () {
-    hanziWriterLoading = false;
+  // Library is loaded via local <script src="hanzi-writer.min.js">
+  if (typeof HanziWriter === 'undefined') {
     showToast(tr().toastNoStroke);
     strokeMode = false;
     strokeBtn.classList.remove('active');
     charText.classList.remove('hidden');
     strokeContainer.classList.remove('active');
-  };
-  document.head.appendChild(script);
+    return;
+  }
+  callback();
+}
+
+// Load stroke data: prefer inline bundled data (works under file://), else fetch local JSON
+function localCharDataLoader(char, onComplete) {
+  if (window.__hanziData && window.__hanziData[char]) {
+    onComplete(window.__hanziData[char]);
+    return;
+  }
+  fetch('hanzi-writer-data/' + char + '.json')
+    .then(function (r) {
+      if (!r.ok) throw new Error('no data');
+      return r.json();
+    })
+    .then(function (data) { onComplete(data); })
+    .catch(function () {
+      showToast(tr().toastNoStroke);
+      strokeMode = false;
+      strokeBtn.classList.remove('active');
+      charText.classList.remove('hidden');
+      strokeContainer.classList.remove('active');
+    });
 }
 
 function toggleStroke() {
@@ -651,7 +669,7 @@ function loadStrokeAnimation() {
         strokeColor: '#333', radicalColor: '#c43a31',
         showCharacter: true, showOutline: true,
         outlineColor: '#ddd',
-        charDataLoader: HanziWriter.loadCharData
+        charDataLoader: localCharDataLoader
       });
       hanziWriter.loopCharacterAnimation();
     } catch (e) {
