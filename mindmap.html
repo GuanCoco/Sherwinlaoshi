@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>词组海报生成器 | Word Cluster Poster Generator</title>
+    <style>
+        :root {
+            --c-bg: #f5f0eb;
+            --c-surface: #fffdf9;
+            --c-primary: #d4734a;
+            --c-primary-l: #fdf0e8;
+            --c-accent-1: #c96442;
+            --c-accent-2: #e8925e;
+            --c-accent-3: #d4a06a;
+            --c-text: #2c2416;
+            --c-text2: #6b5e4f;
+            --c-text3: #9b8e7f;
+            --c-border: #e8dfd3;
+            --c-soft: #faf6f0;
+            --c-danger: #c45252;
+            --r: 10px;
+            --r-lg: 16px;
+            --r-xl: 20px;
+            --tf: 0.25s ease;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,.06);
+            --shadow-md: 0 6px 24px rgba(0,0,0,.08);
+            --shadow-lg: 0 12px 40px rgba(0,0,0,.10);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                         "Microsoft YaHei", "Noto Sans SC", sans-serif;
+            background: linear-gradient(160deg, #f9f4ec 0%, #efe6d8 40%, #f2ebe0 100%);
+            min-height: 100vh;
+            padding: 24px;
+            color: var(--c-text);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .page-header .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--c-text);
+            letter-spacing: -0.02em;
+        }
+        .page-header .brand .dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: var(--c-primary);
+            display: inline-block;
+            box-shadow: 0 0 0 4px rgba(212,115,74,.15);
+        }
+        .page-header .subtitle {
+            font-size: .88rem;
+            color: var(--c-text2);
+            margin-top: 4px;
+            font-weight: 400;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 28px;
+            align-items: start;
+        }
+
+        @media (max-width: 920px) {
+            .main-layout { grid-template-columns: 1fr; }
+        }
+
+        /* ========== 输入面板 ========== */
+        .input-panel {
+            background: var(--c-surface);
+            border-radius: var(--r-xl);
+            padding: 26px 24px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--c-border);
+        }
+        .input-panel .section-label {
+            font-size: .78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--c-primary);
+            margin-bottom: 6px;
+        }
+        .input-group { margin-bottom: 18px; }
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            font-size: .88rem;
+            color: var(--c-text2);
+            margin-bottom: 6px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1.5px solid var(--c-border);
+            border-radius: var(--r);
+            font-size: 1rem;
+            font-family: inherit;
+            background: var(--c-soft);
+            transition: all var(--tf);
+            color: var(--c-text);
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--c-primary);
+            box-shadow: 0 0 0 3px rgba(212,115,74,.08);
+            background: #fff;
+        }
+        .input-group input.center-input {
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-align: center;
+            color: var(--c-primary);
+            background: var(--c-primary-l);
+            border-color: rgba(212,115,74,.25);
+        }
+
+        .branches-section { margin-top: 22px; }
+        .branches-section .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 2px dashed var(--c-border);
+        }
+        .branches-section .section-header h3 {
+            font-size: .92rem;
+            color: var(--c-text);
+            font-weight: 700;
+        }
+
+        .branch-item {
+            background: var(--c-soft);
+            border-radius: var(--r-lg);
+            padding: 14px;
+            margin-bottom: 10px;
+            border: 1.5px solid transparent;
+            transition: all var(--tf);
+            position: relative;
+        }
+        .branch-item:hover {
+            border-color: var(--c-primary);
+            box-shadow: var(--shadow-sm);
+        }
+        .branch-item .branch-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .branch-item .branch-num {
+            font-weight: 700;
+            color: var(--c-primary);
+            font-size: .82rem;
+            background: var(--c-primary-l);
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+        .branch-item .delete-btn {
+            background: none;
+            border: 1.5px solid transparent;
+            color: var(--c-text3);
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all var(--tf);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .branch-item .delete-btn:hover {
+            background: #fef0f0;
+            border-color: var(--c-danger);
+            color: var(--c-danger);
+        }
+        .branch-item input {
+            width: 100%;
+            padding: 9px 12px;
+            margin-bottom: 6px;
+            border: 1px solid var(--c-border);
+            border-radius: 8px;
+            font-size: .88rem;
+            font-family: inherit;
+            background: #fff;
+            transition: all var(--tf);
+        }
+        .branch-item input:focus {
+            outline: none;
+            border-color: var(--c-primary);
+            box-shadow: 0 0 0 2px rgba(212,115,74,.06);
+        }
+        .branch-item input.chinese-input { font-weight: 600; font-size: .95rem; }
+        .branch-item input.pinyin-input { color: var(--c-text2); font-style: italic; }
+        .branch-item input.english-input { color: var(--c-text3); font-size: .84rem; }
+
+        .btn {
+            width: 100%;
+            padding: 13px 18px;
+            border: none;
+            border-radius: var(--r);
+            font-size: .93rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--tf);
+            font-family: inherit;
+            letter-spacing: 0.01em;
+        }
+        .btn-add {
+            background: var(--c-primary-l);
+            color: var(--c-primary);
+            margin-bottom: 10px;
+            border: 1.5px dashed rgba(212,115,74,.3);
+        }
+        .btn-add:hover {
+            background: var(--c-primary);
+            color: #fff;
+            border-color: var(--c-primary);
+            transform: translateY(-1px);
+        }
+        .btn-generate {
+            background: var(--c-primary);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(212,115,74,.30);
+        }
+        .btn-generate:hover {
+            background: var(--c-accent-1);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(212,115,74,.35);
+        }
+        .btn-download {
+            background: #4a906c;
+            color: #fff;
+            margin-top: 10px;
+            box-shadow: 0 4px 14px rgba(74,144,108,.25);
+        }
+        .btn-download:hover {
+            background: #3b7457;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(74,144,108,.30);
+        }
+
+        .template-section {
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 2px dashed var(--c-border);
+        }
+        .template-section h3 {
+            font-size: .86rem;
+            color: var(--c-text2);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .template-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+        .template-btn {
+            padding: 7px 15px;
+            background: #fff;
+            border: 1.5px solid var(--c-border);
+            border-radius: 20px;
+            font-size: .82rem;
+            cursor: pointer;
+            transition: all var(--tf);
+            font-family: inherit;
+            color: var(--c-text2);
+        }
+        .template-btn:hover {
+            background: var(--c-primary-l);
+            border-color: var(--c-primary);
+            color: var(--c-primary);
+        }
+
+        .tips {
+            margin-top: 18px;
+            padding: 14px;
+            background: #fef9f0;
+            border-radius: var(--r);
+            font-size: .8rem;
+            color: #8a6d3b;
+            line-height: 1.7;
+            border-left: 3px solid var(--c-accent-3);
+        }
+
+        /* ========== 预览面板 ========== */
+        .preview-panel {
+            background: var(--c-surface);
+            border-radius: var(--r-xl);
+            padding: 28px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--c-border);
+            min-height: 620px;
+        }
+        .preview-panel h2 {
+            font-size: 1.05rem;
+            color: var(--c-text);
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+        }
+        .canvas-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 540px;
+            background: linear-gradient(160deg, #fdfbf8 0%, #f9f4ec 100%);
+            border-radius: var(--r-lg);
+            border: 2px dashed var(--c-border);
+        }
+        #mindmapCanvas {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        .empty-state {
+            text-align: center;
+            color: var(--c-text3);
+            padding: 80px 20px;
+        }
+        .empty-state .icon { font-size: 3.5rem; margin-bottom: 12px; opacity: .7; }
+        .empty-state p { font-size: .9rem; line-height: 1.7; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <div class="brand"><span class="dot"></span>词组海报生成器</div>
+            <div class="subtitle">Word Cluster Poster Generator · 输入中心词和关联词组，生成精美海报</div>
+        </div>
+
+        <div class="main-layout">
+            <!-- 左侧输入面板 -->
+            <div class="input-panel">
+                <div class="section-label">🎯 中心词</div>
+                <div class="input-group">
+                    <label>中文</label>
+                    <input type="text" id="centerChar" class="center-input" placeholder="例如：去" value="去">
+                </div>
+                <div class="input-group">
+                    <label>拼音</label>
+                    <input type="text" id="centerPinyin" placeholder="例如：qù" value="qù">
+                </div>
+
+                <div class="branches-section">
+                    <div class="section-header">
+                        <h3>📎 关联词组</h3>
+                        <span style="font-size:.78rem;color:var(--c-text3);">最多8个</span>
+                    </div>
+                    <div id="branchesContainer"></div>
+                    <button class="btn btn-add" onclick="addBranch()">+ 添加词组</button>
+                </div>
+
+                <button class="btn btn-generate" onclick="generateImage()">🎨 生成海报</button>
+                <button class="btn btn-download" onclick="downloadImage()" style="display:none;" id="downloadBtn">💾 下载图片</button>
+
+                <div class="template-section">
+                    <h3>📦 快速模板</h3>
+                    <div class="template-btns">
+                        <button class="template-btn" onclick="loadTemplate('去')">去 qù</button>
+                        <button class="template-btn" onclick="loadTemplate('吃')">吃 chī</button>
+                        <button class="template-btn" onclick="loadTemplate('学')">学 xué</button>
+                        <button class="template-btn" onclick="loadTemplate('说')">说 shuō</button>
+                        <button class="template-btn" onclick="loadTemplate('看')">看 kàn</button>
+                    </div>
+                </div>
+
+                <div class="tips">
+                    <strong>💡 使用提示：</strong><br>
+                    1. 中心词建议用单个汉字<br>
+                    2. 每个词组可输入中文、拼音和英文<br>
+                    3. 点击"生成海报"预览，再点击"下载图片"保存
+                </div>
+            </div>
+
+            <!-- 右侧预览面板 -->
+            <div class="preview-panel">
+                <h2>🖼️ 海报预览</h2>
+                <div class="canvas-container">
+                    <div class="empty-state" id="emptyState">
+                        <div class="icon">🎨</div>
+                        <p>点击"生成海报"按钮<br>查看预览效果</p>
+                    </div>
+                    <canvas id="mindmapCanvas" style="display:none;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+let branchCount = 0;
+const maxBranches = 8;
+
+// ========== 模板数据 ==========
+const templates = {
+    '去': {
+        pinyin: 'qù',
+        branches: [
+            { cn: '去旅行', py: 'qù lǚ xíng', en: 'go travel' },
+            { cn: '去中国', py: 'qù Zhōng guó', en: 'go to China' },
+            { cn: '去上班', py: 'qù shàng bān', en: 'go to work' },
+            { cn: '去看朋友', py: 'qù kàn péng you', en: 'see a friend' },
+            { cn: '去学校', py: 'qù xué xiào', en: 'go to school' }
+        ]
+    },
+    '吃': {
+        pinyin: 'chī',
+        branches: [
+            { cn: '吃面条', py: 'chī miàn tiáo', en: 'eat noodles' },
+            { cn: '吃饺子', py: 'chī jiǎo zi', en: 'eat dumplings' },
+            { cn: '吃早餐', py: 'chī zǎo cān', en: 'have breakfast' },
+            { cn: '吃火锅', py: 'chī huǒ guō', en: 'eat hot pot' },
+            { cn: '吃水果', py: 'chī shuǐ guǒ', en: 'eat fruit' }
+        ]
+    },
+    '学': {
+        pinyin: 'xué',
+        branches: [
+            { cn: '学中文', py: 'xué Zhōng wén', en: 'learn Chinese' },
+            { cn: '学拼音', py: 'xué pīn yīn', en: 'learn pinyin' },
+            { cn: '学汉字', py: 'xué Hàn zì', en: 'learn characters' },
+            { cn: '学说话', py: 'xué shuō huà', en: 'learn speaking' },
+            { cn: '学文化', py: 'xué wén huà', en: 'learn culture' }
+        ]
+    },
+    '说': {
+        pinyin: 'shuō',
+        branches: [
+            { cn: '说中文', py: 'shuō Zhōng wén', en: 'speak Chinese' },
+            { cn: '说再见', py: 'shuō zài jiàn', en: 'say goodbye' },
+            { cn: '说谢谢', py: 'shuō xiè xie', en: 'say thanks' },
+            { cn: '说你好', py: 'shuō nǐ hǎo', en: 'say hello' },
+            { cn: '说对不起', py: 'shuō duì bu qǐ', en: 'say sorry' }
+        ]
+    },
+    '看': {
+        pinyin: 'kàn',
+        branches: [
+            { cn: '看电影', py: 'kàn diàn yǐng', en: 'watch movie' },
+            { cn: '看书', py: 'kàn shū', en: 'read books' },
+            { cn: '看电视', py: 'kàn diàn shì', en: 'watch TV' },
+            { cn: '看朋友', py: 'kàn péng you', en: 'visit friend' },
+            { cn: '看风景', py: 'kàn fēng jǐng', en: 'see scenery' }
+        ]
+    }
+};
+
+// ========== 分支管理 ==========
+function addBranch(data = null) {
+    if (branchCount >= maxBranches) {
+        alert('最多支持8个词组 / Maximum 8 branches');
+        return;
+    }
+    branchCount++;
+    const container = document.getElementById('branchesContainer');
+    const div = document.createElement('div');
+    div.className = 'branch-item';
+    div.id = `branch-${branchCount}`;
+    div.innerHTML = `
+        <div class="branch-header">
+            <span class="branch-num">词组 ${branchCount}</span>
+            <button class="delete-btn" onclick="deleteBranch(${branchCount})">×</button>
+        </div>
+        <input type="text" class="chinese-input" placeholder="中文" value="${data ? data.cn : ''}">
+        <input type="text" class="pinyin-input" placeholder="拼音 Pinyin" value="${data ? data.py : ''}">
+        <input type="text" class="english-input" placeholder="英文 English" value="${data ? data.en : ''}">
+    `;
+    container.appendChild(div);
+}
+
+function deleteBranch(id) {
+    const branch = document.getElementById(`branch-${id}`);
+    if (branch) {
+        branch.remove();
+        branchCount--;
+        // renumber
+        document.querySelectorAll('.branch-item').forEach((b, i) => {
+            b.querySelector('.branch-num').textContent = `词组 ${i + 1}`;
+        });
+    }
+}
+
+function loadTemplate(char) {
+    const t = templates[char];
+    if (!t) return;
+    document.getElementById('centerChar').value = char;
+    document.getElementById('centerPinyin').value = t.pinyin;
+    document.getElementById('branchesContainer').innerHTML = '';
+    branchCount = 0;
+    t.branches.forEach(b => addBranch(b));
+}
+
+// ========== 生成与绘制 ==========
+function generateImage() {
+    const centerChar = document.getElementById('centerChar').value.trim();
+    const centerPinyin = document.getElementById('centerPinyin').value.trim();
+    if (!centerChar) {
+        alert('请输入中心词 / Please enter center word');
+        return;
+    }
+
+    const branches = [];
+    document.querySelectorAll('.branch-item').forEach(item => {
+        const cn = item.querySelector('.chinese-input').value.trim();
+        const py = item.querySelector('.pinyin-input').value.trim();
+        const en = item.querySelector('.english-input').value.trim();
+        if (cn || py || en) branches.push({ cn, py, en });
+    });
+
+    if (branches.length === 0) {
+        alert('请至少添加一个词组 / Please add at least one phrase');
+        return;
+    }
+
+    drawPoster(centerChar, centerPinyin, branches);
+    document.getElementById('downloadBtn').style.display = 'block';
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('mindmapCanvas').style.display = 'block';
+}
+
+// ==================== Canvas 绘制核心 ====================
+const COLORS = [
+    { line: '#d4734a', nodeBg: '#fef5f0', nodeBd: '#f0cbba', titleBg: '#fde8dd' },
+    { line: '#c96442', nodeBg: '#fdf5f2', nodeBd: '#f0c8ba', titleBg: '#fce5db' },
+    { line: '#b8553a', nodeBg: '#fcf4f1', nodeBd: '#eec4b6', titleBg: '#fbe2d6' },
+    { line: '#e07d53', nodeBg: '#fef6f1', nodeBd: '#f2cdbc', titleBg: '#fdeaeb' },
+    { line: '#cc6b49', nodeBg: '#fdf5f1', nodeBd: '#f1c9b8', titleBg: '#fce6de' },
+    { line: '#db6e46', nodeBg: '#fef4ef', nodeBd: '#f0c8b6', titleBg: '#fde5d9' },
+    { line: '#c15d3f', nodeBg: '#fcf3f0', nodeBd: '#edc2b3', titleBg: '#fbe0d3' },
+    { line: '#e98b60', nodeBg: '#fef7f2', nodeBd: '#f3d0c0', titleBg: '#feede5' },
+];
+
+function drawPoster(centerChar, centerPinyin, branches) {
+    const canvas = document.getElementById('mindmapCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const count = branches.length;
+    const size = count <= 4 ? 750 : count <= 6 ? 850 : 950;
+    const pad = 70;
+    const centerX = size / 2;
+    const centerY = size / 2;
+    const orbitR = size * 0.29;
+
+    canvas.width = size;
+    canvas.height = size;
+
+    // 背景 — 柔和暖色
+    const bgGrad = ctx.createLinearGradient(0, 0, 0, size);
+    bgGrad.addColorStop(0, '#fefcf9');
+    bgGrad.addColorStop(0.5, '#fdf8f2');
+    bgGrad.addColorStop(1, '#fefcf9');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, size, size);
+
+    // 装饰性背景圆环
+    ctx.save();
+    ctx.globalAlpha = 0.06;
+    ctx.fillStyle = '#d4734a';
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, orbitR * 1.35, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#c96442';
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, orbitR * 1.15, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // 细虚线轨道环
+    ctx.save();
+    ctx.setLineDash([6, 18]);
+    ctx.strokeStyle = 'rgba(180,140,110,.12)';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, orbitR, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+
+    // 绘制连接线
+    branches.forEach((_, i) => {
+        const angle = (Math.PI * 2 / count) * i - Math.PI / 2;
+        const bx = centerX + Math.cos(angle) * orbitR;
+        const by = centerY + Math.sin(angle) * orbitR;
+        drawConnector(ctx, centerX, centerY, bx, by, angle, COLORS[i]);
+    });
+
+    // 绘制分支节点
+    branches.forEach((branch, i) => {
+        const angle = (Math.PI * 2 / count) * i - Math.PI / 2;
+        const bx = centerX + Math.cos(angle) * orbitR;
+        const by = centerY + Math.sin(angle) * orbitR;
+        drawBranchNode(ctx, bx, by, branch, COLORS[i], i + 1);
+    });
+
+    // 绘制中心节点
+    drawCenterNode(ctx, centerX, centerY, centerChar, centerPinyin);
+}
+
+function drawConnector(ctx, x1, y1, x2, y2, angle, color) {
+    const headLen = 14;
+    const startOff = 62;
+    const endOff = 108;
+    const sx = x1 + Math.cos(angle) * startOff;
+    const sy = y1 + Math.sin(angle) * startOff;
+    const ex = x2 - Math.cos(angle) * endOff;
+    const ey = y2 - Math.sin(angle) * endOff;
+
+    // 主线
+    const grad = ctx.createLinearGradient(sx, sy, ex, ey);
+    grad.addColorStop(0, color.line);
+    grad.addColorStop(0.5, color.line);
+    grad.addColorStop(1, color.line + 'cc');
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(sx, sy);
+    const mx = (sx + ex) / 2;
+    const my = (sy + ey) / 2;
+    const bulge = 12;
+    ctx.quadraticCurveTo(
+        mx + Math.cos(angle + Math.PI / 2) * bulge,
+        my + Math.sin(angle + Math.PI / 2) * bulge,
+        ex, ey
+    );
+    ctx.stroke();
+
+    // 小圆点标记（起点处）
+    ctx.fillStyle = color.line;
+    ctx.beginPath();
+    ctx.arc(sx, sy, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 箭头
+    ctx.fillStyle = color.line;
+    ctx.beginPath();
+    ctx.moveTo(ex, ey);
+    ctx.lineTo(
+        ex - headLen * Math.cos(angle - Math.PI / 8),
+        ey - headLen * Math.sin(angle - Math.PI / 8)
+    );
+    ctx.lineTo(
+        ex - headLen * Math.cos(angle + Math.PI / 8),
+        ey - headLen * Math.sin(angle + Math.PI / 8)
+    );
+    ctx.closePath();
+    ctx.fill();
+}
+
+function drawBranchNode(ctx, x, y, branch, color, num) {
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // 测量文字宽度确定卡片大小
+    ctx.font = 'bold 26px -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif';
+    const cnW = Math.max(ctx.measureText(branch.cn || '词组').width + 50, 110);
+    const cardW = cnW + 24;
+    const cardH = 88;
+    const cardX = x - cardW / 2;
+    const cardY = y - cardH / 2;
+
+    // 卡片阴影
+    ctx.shadowColor = 'rgba(0,0,0,.07)';
+    ctx.shadowBlur = 14;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 4;
+
+    // 卡片背景
+    const cardGrad = ctx.createLinearGradient(cardX, cardY, cardX, cardY + cardH);
+    cardGrad.addColorStop(0, '#ffffff');
+    cardGrad.addColorStop(1, color.nodeBg);
+    ctx.fillStyle = cardGrad;
+    roundRect(ctx, cardX, cardY, cardW, cardH, 14);
+    ctx.fill();
+
+    // 清除阴影用于描边
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetY = 0;
+
+    // 卡片边框
+    ctx.strokeStyle = color.nodeBd;
+    ctx.lineWidth = 1.6;
+    roundRect(ctx, cardX, cardY, cardW, cardH, 14);
+    ctx.stroke();
+
+    // 顶部色条
+    const topHeight = 4;
+    ctx.fillStyle = color.line;
+    roundRectTop(ctx, cardX + 6, cardY + 1, cardW - 12, topHeight, 2);
+    ctx.fill();
+
+    // 编号小圆
+    ctx.fillStyle = color.line;
+    ctx.beginPath();
+    ctx.arc(x, cardY + cardH - 12, 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 8px -apple-system, sans-serif';
+    ctx.fillText(num, x, cardY + cardH - 12);
+
+    // 中文
+    ctx.fillStyle = '#2c2416';
+    ctx.font = 'bold 26px -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif';
+    ctx.fillText(branch.cn || '', x, y - 26);
+
+    // 拼音
+    if (branch.py) {
+        ctx.fillStyle = '#8b7a6a';
+        ctx.font = 'italic 14px -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif';
+        ctx.fillText(branch.py, x, y + 2);
+    }
+
+    // 英文
+    if (branch.en) {
+        ctx.fillStyle = '#b0a394';
+        ctx.font = '13px -apple-system, "Segoe UI", sans-serif';
+        ctx.fillText(branch.en, x, y + 24);
+    }
+
+    ctx.restore();
+}
+
+function drawCenterNode(ctx, x, y, char, pinyin) {
+    const r = 58;
+
+    // 外发光
+    ctx.save();
+    ctx.shadowColor = 'rgba(212,115,74,.18)';
+    ctx.shadowBlur = 28;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 4;
+
+    // 背景圆
+    const grad = ctx.createRadialGradient(x - 6, y - 8, r * 0.1, x, y, r);
+    grad.addColorStop(0, '#fffdfb');
+    grad.addColorStop(0.6, '#fef5ee');
+    grad.addColorStop(1, '#fde8d9');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // 双层边框
+    ctx.strokeStyle = 'rgba(212,115,74,.45)';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.strokeStyle = 'rgba(212,115,74,.18)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(x, y, r + 6, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // 大字
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#4a3020';
+    ctx.font = 'bold 68px -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", serif';
+    ctx.fillText(char, x, y - 10);
+
+    // 拼音
+    if (pinyin) {
+        ctx.fillStyle = '#9b7e65';
+        ctx.font = 'italic 18px -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif';
+        ctx.fillText(`(${pinyin})`, x, y + 54);
+    }
+}
+
+// ========== 辅助绘制函数 ==========
+function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+}
+
+function roundRectTop(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h);
+    ctx.lineTo(x, y + h);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+}
+
+// ========== 下载 ==========
+function downloadImage() {
+    const canvas = document.getElementById('mindmapCanvas');
+    const pad = n => ('0' + n).slice(-2);
+    const now = new Date();
+    const dateStr = now.getFullYear() + pad(now.getMonth() + 1) + pad(now.getDate());
+    const link = document.createElement('a');
+    link.download = `word-cluster_${dateStr}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+}
+
+// ========== 初始化 ==========
+window.onload = () => loadTemplate('去');
+</script>
+
+<!-- Koalendar Popup Widget Start -->
+<script>window.Koalendar = window.Koalendar || function(){(Koalendar.props = Koalendar.props || []).push(arguments)};</script>
+<script async src="https://koalendar.com/assets/widget.js"></script>
+<script>
+  Koalendar('widget', {
+    "url": "https://koalendar.com/e/meet-with-sherwinlaoshi",
+    "text": "Schedule a meeting",
+    "shape": "rounded-full",
+    "backgroundColor": "#5145CD",
+    "textColor": "#FFFFFF",
+    "position": "bottom-right",
+    "icon": "calendar"
+  });
+</script>
+<!-- Koalendar Popup Widget End -->
+</body>
+</html>

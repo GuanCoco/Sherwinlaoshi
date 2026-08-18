@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>汉库字基 | Han Basis — 100 个汉语基础字基</title>
+    <meta name="description" content="Han Basis — 汉库字基体系，100 个核心语义字基，对接 HSK 1-9 级高频词汇。从字基到 HSK，一字通万词。">
+    <style>
+        :root {
+            --c-bg: #f5f0eb;
+            --c-surface: #fffdf9;
+            --c-primary: #c4523e;
+            --c-primary-l: #fdf0ec;
+            --c-accent: #d4734a;
+            --c-accent2: #b8945a;
+            --c-text: #2c2416;
+            --c-text2: #6b5e4f;
+            --c-text3: #9b8e7f;
+            --c-border: #e8dfd3;
+            --c-soft: #faf6f0;
+            --c-success: #4a906c;
+            --c-success-l: #eef6f1;
+            --c-hsk1: #4a906c;
+            --c-hsk2: #5b9ebd;
+            --c-hsk3: #d4734a;
+            --c-hsk4: #b8587a;
+            --c-hsk5: #7b5ba8;
+            --c-hsk6: #c4523e;
+            --c-hsk79: #2c2416;
+            --c-radical: #9b8e7f;
+            --r: 10px;
+            --r-lg: 16px;
+            --r-xl: 20px;
+            --tf: 0.25s ease;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,.05);
+            --shadow-md: 0 6px 24px rgba(0,0,0,.08);
+            --shadow-lg: 0 12px 40px rgba(0,0,0,.10);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                         "Microsoft YaHei", "Noto Sans SC", sans-serif;
+            background: linear-gradient(160deg, #f9f4ec 0%, #efe6d8 40%, #f2ebe0 100%);
+            min-height: 100vh;
+            color: var(--c-text);
+            -webkit-font-smoothing: antialiased;
+            padding-bottom: 60px;
+        }
+
+        /* ====== Header ====== */
+        .site-header {
+            background: var(--c-surface);
+            border-bottom: 1px solid var(--c-border);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-inner {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 24px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .logo {
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: var(--c-primary);
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+        .logo .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--c-primary);
+            box-shadow: 0 0 0 3px rgba(196,82,62,.12);
+        }
+        .header-nav { display: flex; gap: 4px; margin-left: auto; }
+        .header-nav a {
+            text-decoration: none;
+            color: var(--c-text2);
+            font-size: .84rem;
+            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: 8px;
+            transition: all var(--tf);
+        }
+        .header-nav a:hover {
+            background: var(--c-soft);
+            color: var(--c-text);
+        }
+        .header-nav a.active {
+            background: var(--c-primary-l);
+            color: var(--c-primary);
+            font-weight: 600;
+        }
+
+        /* ====== Hero ====== */
+        .hero {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 40px 24px 32px;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--c-text);
+            line-height: 1.3;
+        }
+        .hero h1 .brand-cn { color: var(--c-primary); }
+        .hero .subtitle {
+            font-size: .98rem;
+            color: var(--c-text2);
+            margin-top: 8px;
+            font-weight: 400;
+            max-width: 620px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 36px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+        .hero-stat {
+            text-align: center;
+        }
+        .hero-stat .num {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--c-primary);
+            line-height: 1;
+        }
+        .hero-stat .num.alt { color: var(--c-accent2); }
+        .hero-stat .num.alt2 { color: var(--c-success); }
+        .hero-stat .num.alt3 { color: var(--c-hsk4); }
+        .hero-stat .label {
+            font-size: .74rem;
+            color: var(--c-text3);
+            margin-top: 4px;
+        }
+
+        /* ====== Main Content ====== */
+        .main-content {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Filter bar */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .filter-bar .search-input {
+            flex: 1;
+            min-width: 200px;
+            max-width: 320px;
+            padding: 9px 14px;
+            border: 1.5px solid var(--c-border);
+            border-radius: var(--r);
+            font-size: .88rem;
+            font-family: inherit;
+            background: var(--c-surface);
+            color: var(--c-text);
+            outline: none;
+            transition: all var(--tf);
+        }
+        .filter-bar .search-input:focus {
+            border-color: var(--c-primary);
+            box-shadow: 0 0 0 3px rgba(196,82,62,.07);
+        }
+        .filter-bar .cat-btn {
+            padding: 7px 14px;
+            border: 1.5px solid var(--c-border);
+            border-radius: 20px;
+            background: var(--c-surface);
+            color: var(--c-text2);
+            font-size: .78rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--tf);
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        .filter-bar .cat-btn:hover {
+            border-color: var(--c-primary);
+            color: var(--c-primary);
+            background: var(--c-primary-l);
+        }
+        .filter-bar .cat-btn.active {
+            background: var(--c-primary);
+            color: #fff;
+            border-color: var(--c-primary);
+        }
+        .filter-bar .hsk-select {
+            padding: 7px 12px;
+            border: 1.5px solid var(--c-border);
+            border-radius: 20px;
+            background: var(--c-surface);
+            color: var(--c-text2);
+            font-size: .78rem;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+            outline: none;
+            transition: all var(--tf);
+            margin-left: auto;
+        }
+        .filter-bar .hsk-select:focus {
+            border-color: var(--c-primary);
+        }
+        .filter-bar .type-toggle {
+            display: flex;
+            gap: 4px;
+            background: var(--c-border);
+            border-radius: 20px;
+            padding: 3px;
+        }
+        .filter-bar .type-toggle button {
+            padding: 6px 16px;
+            border: none;
+            border-radius: 18px;
+            background: transparent;
+            color: var(--c-text2);
+            font-size: .78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--tf);
+            font-family: inherit;
+        }
+        .filter-bar .type-toggle button.active {
+            background: #fff;
+            color: var(--c-text);
+            box-shadow: var(--shadow-sm);
+        }
+        .filter-count {
+            font-size: .76rem;
+            color: var(--c-text3);
+            white-space: nowrap;
+        }
+
+        /* Category section */
+        .category-section {
+            margin-bottom: 32px;
+        }
+        .category-heading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .category-heading .cat-icon {
+            width: 34px; height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.05rem;
+            background: var(--c-soft);
+        }
+        .category-heading h2 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--c-text);
+        }
+        .category-heading .cat-en {
+            font-size: .74rem;
+            color: var(--c-text3);
+            font-weight: 400;
+        }
+        .category-heading .cat-count {
+            font-size: .74rem;
+            color: var(--c-text3);
+            background: var(--c-soft);
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+
+        /* Basis grid */
+        .basis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+        }
+        .basis-card {
+            background: var(--c-surface);
+            border: 1.5px solid var(--c-border);
+            border-radius: var(--r-lg);
+            padding: 14px 10px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--tf);
+            position: relative;
+            overflow: hidden;
+        }
+        .basis-card:hover {
+            border-color: var(--c-primary);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        .basis-card .char-lg {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--c-text);
+            line-height: 1.2;
+            font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", serif;
+        }
+        .basis-card .pinyin {
+            font-size: .7rem;
+            color: var(--c-primary);
+            margin-top: 2px;
+            font-style: italic;
+        }
+        .basis-card .meaning {
+            font-size: .72rem;
+            color: var(--c-text2);
+            margin-top: 3px;
+            line-height: 1.3;
+        }
+        .basis-card .card-badges {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+        .badge {
+            display: inline-block;
+            font-size: .64rem;
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .badge-solid {
+            background: var(--c-success-l);
+            color: var(--c-success);
+        }
+        .badge-affix {
+            background: var(--c-primary-l);
+            color: var(--c-primary);
+        }
+        .badge-radical {
+            background: #f0f0f0;
+            color: var(--c-text3);
+        }
+        .badge-hsk1 { background: #e8f5e9; color: #2e7d32; }
+        .badge-hsk2 { background: #e3f2fd; color: #1565c0; }
+        .badge-hsk3 { background: #fdf0ec; color: #d4734a; }
+        .badge-hsk4 { background: #fce4ec; color: #b8587a; }
+        .badge-hsk5 { background: #ede7f6; color: #5c3d99; }
+        .badge-hsk6 { background: #fdf0ec; color: #c4523e; }
+        .badge-hsk79 { background: #e8e5df; color: #3e3a34; }
+
+        /* Modal */
+        .basis-modal-overlay {
+            display: none;
+            position: fixed;
+            z-index: 200;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,.4);
+            align-items: center;
+            justify-content: center;
+        }
+        .basis-modal-overlay.show { display: flex; }
+        .basis-modal {
+            background: var(--c-surface);
+            border-radius: var(--r-xl);
+            padding: 32px;
+            max-width: 380px;
+            width: 90%;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            animation: modalIn .25s ease;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(16px) scale(.96); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .basis-modal .modal-char {
+            font-size: 4.5rem;
+            font-weight: 800;
+            color: var(--c-text);
+            font-family: "PingFang SC", "Noto Sans SC", serif;
+        }
+        .basis-modal .modal-pinyin {
+            font-size: 1.05rem;
+            color: var(--c-primary);
+            font-style: italic;
+        }
+        .basis-modal .modal-meaning {
+            font-size: .92rem;
+            color: var(--c-text2);
+            margin-top: 6px;
+        }
+        .basis-modal .modal-hsk {
+            font-size: .8rem;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+        .basis-modal .modal-type-badge {
+            margin-top: 6px;
+        }
+        .basis-modal .modal-examples {
+            margin-top: 12px;
+            font-size: .82rem;
+            color: var(--c-text3);
+            line-height: 1.6;
+        }
+        .basis-modal .modal-close {
+            margin-top: 16px;
+            padding: 8px 28px;
+            border: 1.5px solid var(--c-border);
+            border-radius: var(--r);
+            background: #fff;
+            font-size: .88rem;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+            transition: all var(--tf);
+            color: var(--c-text2);
+        }
+        .basis-modal .modal-close:hover {
+            border-color: var(--c-primary);
+            color: var(--c-primary);
+        }
+
+        /* ====== HSK Learning Path Section ====== */
+        .hsk-path {
+            max-width: 1300px;
+            margin: 48px auto 0;
+            padding: 0 24px;
+        }
+        .hsk-path h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            text-align: center;
+            color: var(--c-text);
+        }
+        .hsk-path .path-intro {
+            text-align: center;
+            color: var(--c-text3);
+            font-size: .88rem;
+            margin-bottom: 22px;
+        }
+        .hsk-levels-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+        @media (max-width: 768px) {
+            .hsk-levels-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        .hsk-level-card {
+            background: var(--c-surface);
+            border: 1px solid var(--c-border);
+            border-radius: var(--r-lg);
+            padding: 20px 16px;
+        }
+        .hsk-level-card .level-tag {
+            display: inline-block;
+            font-size: .72rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+        .hsk-level-card h4 {
+            font-size: .92rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--c-text);
+        }
+        .hsk-level-card p {
+            font-size: .76rem;
+            color: var(--c-text3);
+            line-height: 1.5;
+        }
+        .hsk-level-card .basis-list {
+            font-size: .76rem;
+            color: var(--c-text2);
+            margin-top: 6px;
+            line-height: 1.5;
+            word-break: keep-all;
+        }
+
+        /* ====== 5-layer learning path ====== */
+        .five-layer {
+            max-width: 1300px;
+            margin: 44px auto 0;
+            padding: 0 24px;
+        }
+        .five-layer h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            text-align: center;
+            color: var(--c-text);
+        }
+        .five-layer .layer-intro {
+            text-align: center;
+            color: var(--c-text3);
+            font-size: .88rem;
+            margin-bottom: 20px;
+        }
+        .layers-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 14px;
+        }
+        @media (max-width: 768px) {
+            .layers-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        .layer-card {
+            background: var(--c-surface);
+            border: 1px solid var(--c-border);
+            border-radius: var(--r-lg);
+            padding: 18px 14px;
+            text-align: center;
+            position: relative;
+        }
+        .layer-card .step-num {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            background: var(--c-primary);
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: .82rem;
+            margin-bottom: 8px;
+        }
+        .layer-card h4 { font-size: .88rem; margin-bottom: 3px; color: var(--c-text); }
+        .layer-card p { font-size: .74rem; color: var(--c-text3); line-height: 1.5; }
+
+        /* ====== Footer ====== */
+        .page-footer {
+            text-align: center;
+            padding: 36px 24px 24px;
+            color: var(--c-text3);
+            font-size: .76rem;
+        }
+        .page-footer a {
+            color: var(--c-primary);
+            text-decoration: none;
+        }
+        .page-footer a:hover { text-decoration: underline; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 1.6rem; }
+            .hero-stats { gap: 16px; }
+            .basis-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+            .filter-bar .type-toggle { margin-left: 0; }
+            .filter-bar .hsk-select { margin-left: 0; }
+            .layers-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: var(--c-text3);
+            grid-column: 1 / -1;
+        }
+
+        /* ====== Variant Table ====== */
+        .variant-section {
+            max-width: 1300px;
+            margin: 44px auto 0;
+            padding: 0 24px;
+        }
+        .variant-section h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            text-align: center;
+            color: var(--c-text);
+        }
+        .variant-section .sec-intro {
+            text-align: center;
+            color: var(--c-text3);
+            font-size: .88rem;
+            margin-bottom: 22px;
+        }
+        .variant-table-wrap {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+        }
+        .variant-card {
+            background: var(--c-surface);
+            border: 1px solid var(--c-border);
+            border-radius: var(--r-lg);
+            padding: 16px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all var(--tf);
+        }
+        .variant-card:hover {
+            border-color: var(--c-primary);
+            box-shadow: var(--shadow-sm);
+        }
+        .variant-card .source-char {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--c-primary);
+            font-family: "PingFang SC", "Noto Sans SC", serif;
+        }
+        .variant-card .arrow {
+            color: var(--c-text3);
+            font-size: 1.1rem;
+        }
+        .variant-card .target-char {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--c-accent2);
+            font-family: "PingFang SC", "Noto Sans SC", serif;
+        }
+        .variant-card .variant-label {
+            display: block;
+            font-size: .68rem;
+            color: var(--c-text3);
+            margin-top: 4px;
+        }
+
+        /* ====== DB Architecture ====== */
+        .db-section {
+            max-width: 1300px;
+            margin: 44px auto 0;
+            padding: 0 24px;
+        }
+        .db-section h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            text-align: center;
+            color: var(--c-text);
+        }
+        .db-section .sec-intro {
+            text-align: center;
+            color: var(--c-text3);
+            font-size: .88rem;
+            margin-bottom: 22px;
+        }
+        .db-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+        @media (max-width: 768px) {
+            .db-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        .db-card {
+            background: var(--c-surface);
+            border: 1px solid var(--c-border);
+            border-radius: var(--r-lg);
+            padding: 18px 14px;
+        }
+        .db-card .table-name {
+            font-size: .76rem;
+            font-weight: 700;
+            color: var(--c-primary);
+            font-family: "SF Mono", "Consolas", monospace;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .db-card .table-desc {
+            font-size: .72rem;
+            color: var(--c-text2);
+            line-height: 1.4;
+            margin-bottom: 6px;
+        }
+        .db-card .table-fields {
+            font-size: .68rem;
+            color: var(--c-text3);
+            line-height: 1.6;
+            font-family: "SF Mono", "Consolas", monospace;
+        }
+
+        /* ====== Linkage Table ====== */
+        .linkage-section {
+            max-width: 1300px;
+            margin: 44px auto 0;
+            padding: 0 24px;
+        }
+        .linkage-section h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            text-align: center;
+            color: var(--c-text);
+        }
+        .linkage-section .sec-intro {
+            text-align: center;
+            color: var(--c-text3);
+            font-size: .88rem;
+            margin-bottom: 22px;
+        }
+        .linkage-scroll {
+            overflow-x: auto;
+            border-radius: var(--r-lg);
+            border: 1px solid var(--c-border);
+        }
+        .linkage-scroll table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .8rem;
+            background: var(--c-surface);
+            white-space: nowrap;
+        }
+        .linkage-scroll th {
+            background: var(--c-soft);
+            font-weight: 700;
+            padding: 10px 14px;
+            text-align: center;
+            color: var(--c-text);
+            font-size: .76rem;
+            border-bottom: 2px solid var(--c-border);
+        }
+        .linkage-scroll td {
+            padding: 9px 14px;
+            text-align: center;
+            color: var(--c-text2);
+            border-bottom: 1px solid var(--c-border);
+        }
+        .linkage-scroll tr:last-child td { border-bottom: none; }
+        .linkage-scroll tr:hover td { background: var(--c-soft); }
+        .linkage-scroll .basis-cell {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--c-primary);
+            font-family: "PingFang SC", "Noto Sans SC", serif;
+        }
+        .linkage-scroll .char-cell {
+            font-weight: 600;
+            color: var(--c-text);
+            font-family: "PingFang SC", "Noto Sans SC", serif;
+        }
+        .linkage-scroll .badge-inline {
+            font-size: .64rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        /* ====== Site Plan ====== */
+        .plan-section {
+            max-width: 1300px;
+            margin: 44px auto 0;
+            padding: 0 24px;
+        }
+        .plan-section h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            text-align: center;
+            color: var(--c-text);
+        }
+        .plan-section .sec-intro {
+            text-align: center;
+            color: var(--c-text3);
+            font-size: .88rem;
+            margin-bottom: 22px;
+        }
+        .plan-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+        @media (max-width: 768px) {
+            .plan-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        .plan-card {
+            background: var(--c-surface);
+            border: 1px solid var(--c-border);
+            border-radius: var(--r-lg);
+            padding: 18px 14px;
+            text-align: center;
+        }
+        .plan-card .plan-icon {
+            font-size: 1.4rem;
+            margin-bottom: 6px;
+        }
+        .plan-card h4 { font-size: .88rem; font-weight: 700; color: var(--c-text); margin-bottom: 4px; }
+        .plan-card p { font-size: .72rem; color: var(--c-text3); line-height: 1.4; }
+
+        /* ====== Roadmap ====== */
+        .roadmap-section {
+            max-width: 1300px;
+            margin: 44px auto 0;
+            padding: 0 24px;
+        }
+        .roadmap-section h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            text-align: center;
+            color: var(--c-text);
+        }
+        .roadmap-section .sec-intro {
+            text-align: center;
+            color: var(--c-text3);
+            font-size: .88rem;
+            margin-bottom: 22px;
+        }
+        .roadmap-list {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 14px;
+        }
+        @media (max-width: 768px) {
+            .roadmap-list { grid-template-columns: repeat(2, 1fr); }
+        }
+        .roadmap-card {
+            background: var(--c-surface);
+            border: 1px solid var(--c-border);
+            border-radius: var(--r-lg);
+            padding: 18px 14px;
+            text-align: center;
+            position: relative;
+        }
+        .roadmap-card .step-num {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            background: var(--c-accent2);
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: .82rem;
+            margin-bottom: 8px;
+        }
+        .roadmap-card h4 { font-size: .88rem; font-weight: 700; color: var(--c-text); margin-bottom: 4px; }
+        .roadmap-card p { font-size: .72rem; color: var(--c-text3); line-height: 1.5; }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="site-header">
+    <div class="header-inner">
+        <a href="index.html" class="logo"><span class="dot"></span>汉库 Hanku</a>
+        <nav class="header-nav">
+            <a href="index.html">首页</a>
+            <a href="hanku-roots.html" class="active">字基总库</a>
+            <a href="mindmap.html">词组海报</a>
+            <a href="vark-test.html">VARK 测试</a>
+        </nav>
+    </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+    <h1><span class="brand-cn">汉库字基</span> · Han Basis</h1>
+    <p class="subtitle">
+        100 个核心语义字基 — 可独立使用的实体字基 + 纯构字的附形字基<br>
+        对接 HSK 1-9 级高频词体系，扎根字基，一字通万词
+    </p>
+    <div class="hero-stats">
+        <div class="hero-stat">
+            <div class="num">100</div>
+            <div class="label">核心字基</div>
+        </div>
+        <div class="hero-stat">
+            <div class="num alt">6</div>
+            <div class="label">语义大类</div>
+        </div>
+        <div class="hero-stat">
+            <div class="num alt2">9</div>
+            <div class="label">HSK 级别</div>
+        </div>
+        <div class="hero-stat">
+            <div class="num alt3">95%</div>
+            <div class="label">HSK 覆盖率</div>
+        </div>
+    </div>
+</section>
+
+<!-- Filter -->
+<div class="main-content">
+    <div class="filter-bar">
+        <input type="text" class="search-input" id="searchInput" placeholder="🔍 搜索字基、拼音、释义或组词..." oninput="filterBasis()">
+        <button class="cat-btn active" onclick="setCategory('all', this)">全部</button>
+        <button class="cat-btn" onclick="setCategory('body', this)">🏃 人体</button>
+        <button class="cat-btn" onclick="setCategory('nature', this)">🌿 自然</button>
+        <button class="cat-btn" onclick="setCategory('space', this)">🏠 空间</button>
+        <button class="cat-btn" onclick="setCategory('tools', this)">🍽️ 器物</button>
+        <button class="cat-btn" onclick="setCategory('living', this)">🐾 生灵</button>
+        <button class="cat-btn" onclick="setCategory('other', this)">📐 基础</button>
+        <select class="hsk-select" id="hskSelect" onchange="filterBasis()">
+            <option value="all">全部 HSK 级别</option>
+            <option value="1">HSK 1 级</option>
+            <option value="2">HSK 2 级</option>
+            <option value="3">HSK 3 级</option>
+            <option value="4">HSK 4 级</option>
+            <option value="5">HSK 5 级</option>
+            <option value="6">HSK 6 级</option>
+            <option value="79">HSK 7-9 级</option>
+            <option value="0">附形字基（无独立级别）</option>
+        </select>
+        <div class="type-toggle">
+            <button class="active" onclick="setType('all', this)">全部</button>
+            <button onclick="setType('solid', this)">实体</button>
+            <button onclick="setType('affix', this)">附形</button>
+        </div>
+        <span class="filter-count" id="filterCount">显示 100 个字基</span>
+    </div>
+</div>
+
+<!-- Basis Grid -->
+<div class="main-content" id="basisContainer">
+    <!-- Generated by JS -->
+</div>
+
+<!-- HSK Level Learning Path -->
+<section class="hsk-path">
+    <h2>📖 汉库字基 × HSK 分级学习路径</h2>
+    <p class="path-intro">从字基出发，由浅入深，覆盖 HSK 1-9 全级别高频词</p>
+    <div class="hsk-levels-grid" id="hskLevelsGrid">
+        <!-- Generated by JS -->
+    </div>
+</section>
+
+<!-- 5-Layer System -->
+<section class="five-layer">
+    <h2>🏗️ 汉库字基五层学习体系</h2>
+    <p class="layer-intro">认字基 → 学组合 → 拆汉字 → 串词汇 → 造句子，完整闭环</p>
+    <div class="layers-grid">
+        <div class="layer-card">
+            <div class="step-num">1</div>
+            <h4>认全字基</h4>
+            <p>熟记 100 个标准字基的字形、本义、读音与形态变体</p>
+        </div>
+        <div class="layer-card">
+            <div class="step-num">2</div>
+            <h4>组合法则</h4>
+            <p>学习左右、上下、内外、包围等拼字结构，掌握造字逻辑</p>
+        </div>
+        <div class="layer-card">
+            <div class="step-num">3</div>
+            <h4>拆解认读</h4>
+            <p>任意汉字反向拆分溯源，快速知字义、记字形</p>
+        </div>
+        <div class="layer-card">
+            <div class="step-num">4</div>
+            <h4>串联组词</h4>
+            <p>字基本义延伸词义，对接 HSK 全等级高频词汇</p>
+        </div>
+        <div class="layer-card">
+            <div class="step-num">5</div>
+            <h4>句式实战</h4>
+            <p>从字→词→句完整闭环，落地日常使用</p>
+        </div>
+    </div>
+</section>
+
+<!-- 字基同源变形对照表 -->
+<section class="variant-section">
+    <h2>🔗 字基同源变形对照表</h2>
+    <p class="sec-intro">同一本源字的不同书写形态 — 实体字基作为独立汉字使用，附形字基作为偏旁参与构字</p>
+    <div class="variant-table-wrap">
+        <div class="variant-card">
+            <span class="source-char">人</span>
+            <span class="arrow">→</span>
+            <span class="target-char">亻</span>
+            <span class="variant-label">person (独立字 → 单人旁)</span>
+        </div>
+        <div class="variant-card">
+            <span class="source-char">心</span>
+            <span class="arrow">→</span>
+            <span class="target-char">忄</span>
+            <span class="variant-label">heart (独立字 → 竖心旁)</span>
+        </div>
+        <div class="variant-card">
+            <span class="source-char">手</span>
+            <span class="arrow">→</span>
+            <span class="target-char">扌</span>
+            <span class="variant-label">hand (独立字 → 提手旁)</span>
+        </div>
+        <div class="variant-card">
+            <span class="source-char">水</span>
+            <span class="arrow">→</span>
+            <span class="target-char">氵</span>
+            <span class="variant-label">water (独立字 → 三点水)</span>
+        </div>
+        <div class="variant-card">
+            <span class="source-char">火</span>
+            <span class="arrow">→</span>
+            <span class="target-char">灬</span>
+            <span class="variant-label">fire (独立字 → 四点底)</span>
+        </div>
+        <div class="variant-card">
+            <span class="source-char">刀</span>
+            <span class="arrow">→</span>
+            <span class="target-char">刂</span>
+            <span class="variant-label">knife (独立字 → 立刀旁)</span>
+        </div>
+        <div class="variant-card">
+            <span class="source-char">言</span>
+            <span class="arrow">→</span>
+            <span class="target-char">讠</span>
+            <span class="variant-label">speech (独立字 → 言字旁)</span>
+        </div>
+        <div class="variant-card">
+            <span class="source-char">衣</span>
+            <span class="arrow">→</span>
+            <span class="target-char">衤</span>
+            <span class="variant-label">clothing (独立字 → 衣字旁)</span>
+        </div>
+        <div class="variant-card">
+            <span class="source-char">食</span>
+            <span class="arrow">→</span>
+            <span class="target-char">饣</span>
+            <span class="variant-label">food (独立字 → 食字旁)</span>
+        </div>
+        <div class="variant-card">
+            <span class="source-char">金</span>
+            <span class="arrow">→</span>
+            <span class="target-char">钅</span>
+            <span class="variant-label">metal (独立字 → 金字旁)</span>
+        </div>
+        <div class="variant-card">
+            <span class="source-char">丝</span>
+            <span class="arrow">→</span>
+            <span class="target-char">纟</span>
+            <span class="variant-label">silk (由丝简化 → 绞丝旁)</span>
+        </div>
+        <div class="variant-card">
+            <span class="source-char">犬</span>
+            <span class="arrow">→</span>
+            <span class="target-char">犭</span>
+            <span class="variant-label">dog (独立字 → 反犬旁)</span>
+        </div>
+    </div>
+</section>
+
+<!-- 数据库后台架构 -->
+<section class="db-section">
+    <h2>🗄️ 数据库分类架构（后台独立存储）</h2>
+    <p class="sec-intro">四张核心数据表支撑汉库字基完整体系，可直接用于建库开发</p>
+    <div class="db-grid">
+        <div class="db-card">
+            <span class="table-name">basis_main（字基主表）</span>
+            <p class="table-desc">100 个核心字基的基础信息，是体系最底层数据</p>
+            <div class="table-fields">
+                basis_id (1–100)<br>
+                basis_char (如：人、氵)<br>
+                pinyin (拼音)<br>
+                meaning_cn (中文释义)<br>
+                meaning_en (英文释义)<br>
+                type：Solid / Affix<br>
+                category：body/nature/…<br>
+                hsk_level：1–9 / 0
+            </div>
+        </div>
+        <div class="db-card">
+            <span class="table-name">basis_char_map（字基→汉字关联表）</span>
+            <p class="table-desc">每个字基可构成的常用汉字，双向关联</p>
+            <div class="table-fields">
+                map_id (自增)<br>
+                basis_id (关联字基)<br>
+                char (如：他、河、想)<br>
+                char_hsk (该汉字首次出现 HSK 级别)<br>
+                char_pinyin<br>
+                char_meaning
+            </div>
+        </div>
+        <div class="db-card">
+            <span class="table-name">char_hsk_word（汉字→HSK 词汇表）</span>
+            <p class="table-desc">构建汉字与 HSK 高频词的完整映射</p>
+            <div class="table-fields">
+                word_id (自增)<br>
+                char (关联汉字)<br>
+                word (HSK 词)<br>
+                hsk_level (HSK 级别)<br>
+                frequency (高频排序)<br>
+                word_pinyin<br>
+                word_meaning
+            </div>
+        </div>
+        <div class="db-card">
+            <span class="table-name">basis_variant（形态关联库）</span>
+            <p class="table-desc">同一本源字的不同书写形态变体映射</p>
+            <div class="table-fields">
+                variant_id (自增)<br>
+                source_basis_id (实体字基)<br>
+                target_basis_id (附形字基)<br>
+                variant_name (如: 单人旁、三点水)<br>
+                source_char (如: 水)<br>
+                target_char (如: 氵)
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 字基→汉字→HSK 词汇联动示例 -->
+<section class="linkage-section">
+    <h2>📋 字基 → 汉字 → HSK 高频词汇联动示例</h2>
+    <p class="sec-intro">从字基出发，一网打尽 HSK 全级别高频词 — 完整映射链路</p>
+    <div class="linkage-scroll">
+        <table>
+            <thead>
+                <tr>
+                    <th>字基</th><th>拼音/释义</th><th>属性</th><th>HSK 级</th>
+                    <th>可构汉字 (例)</th><th>HSK 高频词 (例)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="basis-cell">人</td><td>rén · person</td><td>实体</td>
+                    <td><span class="badge-inline badge-hsk1">1</span></td>
+                    <td class="char-cell">个、从、众、认</td>
+                    <td>个人、人们、别人、大人</td>
+                </tr>
+                <tr>
+                    <td class="basis-cell">亻</td><td>(rén) · person radical</td><td>附形</td>
+                    <td><span class="badge-inline badge-radical">0</span></td>
+                    <td class="char-cell">你、他、休、住、信</td>
+                    <td>你好、他们、休息、相信</td>
+                </tr>
+                <tr>
+                    <td class="basis-cell">氵</td><td>(shuǐ) · water radical</td><td>附形</td>
+                    <td><span class="badge-inline badge-radical">0</span></td>
+                    <td class="char-cell">江、河、海、洗、泪</td>
+                    <td>长江、河水、大海、洗澡</td>
+                </tr>
+                <tr>
+                    <td class="basis-cell">口</td><td>kǒu · mouth</td><td>实体</td>
+                    <td><span class="badge-inline badge-hsk1">1</span></td>
+                    <td class="char-cell">吃、喝、唱、叫、问</td>
+                    <td>吃饭、喝水、唱歌、问题</td>
+                </tr>
+                <tr>
+                    <td class="basis-cell">讠</td><td>(yán) · speech radical</td><td>附形</td>
+                    <td><span class="badge-inline badge-radical">0</span></td>
+                    <td class="char-cell">说、话、讲、读、记</td>
+                    <td>说话、讲话、读书、记笔记</td>
+                </tr>
+                <tr>
+                    <td class="basis-cell">车</td><td>chē · vehicle</td><td>实体</td>
+                    <td><span class="badge-inline badge-hsk1">1</span></td>
+                    <td class="char-cell">辆、轮、软、载、输</td>
+                    <td>汽车、火车、出租车、车辆</td>
+                </tr>
+                <tr>
+                    <td class="basis-cell">月(肉)</td><td>(ròu) · flesh radical</td><td>附形</td>
+                    <td><span class="badge-inline badge-hsk1">1</span></td>
+                    <td class="char-cell">脑、腿、胖、肝、肚</td>
+                    <td>电脑、大腿、肥胖、肚子</td>
+                </tr>
+                <tr>
+                    <td class="basis-cell">门</td><td>mén · door</td><td>实体</td>
+                    <td><span class="badge-inline badge-hsk1">1</span></td>
+                    <td class="char-cell">间、闭、问、闻、闪</td>
+                    <td>大门、门口、开门、敲门</td>
+                </tr>
+                <tr>
+                    <td class="basis-cell">木</td><td>mù · tree, wood</td><td>实体</td>
+                    <td><span class="badge-inline badge-hsk2">2</span></td>
+                    <td class="char-cell">林、森、桌、椅、桥</td>
+                    <td>树木、木头、桌子、森林</td>
+                </tr>
+                <tr>
+                    <td class="basis-cell">钅</td><td>(jīn) · metal radical</td><td>附形</td>
+                    <td><span class="badge-inline badge-radical">0</span></td>
+                    <td class="char-cell">铁、银、铜、针、钱</td>
+                    <td>地铁、银行、现金、打针</td>
+                </tr>
+                <tr>
+                    <td class="basis-cell">虫</td><td>chóng · insect</td><td>实体</td>
+                    <td><span class="badge-inline badge-hsk3">3</span></td>
+                    <td class="char-cell">蛇、蝶、蜜、蚊、蛋</td>
+                    <td>虫子、蝴蝶、蜂蜜、蛋白质</td>
+                </tr>
+                <tr>
+                    <td class="basis-cell">骨</td><td>gǔ · bone</td><td>实体</td>
+                    <td><span class="badge-inline badge-hsk4">4</span></td>
+                    <td class="char-cell">骼、髓、骼</td>
+                    <td>骨头、骨骼、骨干、骨髓</td>
+                </tr>
+                <tr>
+                    <td class="basis-cell">戈</td><td>gē · spear, weapon</td><td>实体</td>
+                    <td><span class="badge-inline badge-hsk5">5</span></td>
+                    <td class="char-cell">战、或、成、我、戏</td>
+                    <td>战争、或者、成功、游戏</td>
+                </tr>
+                <tr>
+                    <td class="basis-cell">矛</td><td>máo · spear, lance</td><td>实体</td>
+                    <td><span class="badge-inline badge-hsk6">6</span></td>
+                    <td class="char-cell">盾</td>
+                    <td>矛盾、长矛、自相矛盾</td>
+                </tr>
+                <tr>
+                    <td class="basis-cell">文</td><td>wén · writing</td><td>实体</td>
+                    <td><span class="badge-inline badge-hsk2">2</span></td>
+                    <td class="char-cell">字、学、教、料、齐</td>
+                    <td>文化、中文、文学、文明</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- 网站栏目规划 -->
+<section class="plan-section">
+    <h2>🌐 网站 & 课程栏目规划</h2>
+    <p class="sec-intro">围绕汉库字基 Han Basis 统一标准，所有页面、课程、词库归入以下六大栏目</p>
+    <div class="plan-grid">
+        <div class="plan-card">
+            <div class="plan-icon">📚</div>
+            <h4>字基总览 Han Basis Library</h4>
+            <p>100 字基全览、搜索筛选、分级浏览、实体/附形切换、HSK 级别过滤</p>
+        </div>
+        <div class="plan-card">
+            <div class="plan-icon">🔤</div>
+            <h4>实体字基专区 Solid Basis</h4>
+            <p>可独立使用的独体字详解：拼音、本义、组词、可构合体字、HSK 词汇</p>
+        </div>
+        <div class="plan-card">
+            <div class="plan-icon">🧩</div>
+            <h4>附形字基专区 Affix Basis</h4>
+            <p>纯构字偏旁部首详解：形态来源、构字位置、可构常用字一览</p>
+        </div>
+        <div class="plan-card">
+            <div class="plan-icon">🏫</div>
+            <h4>字基拼字课堂</h4>
+            <p>互动拼字练习：用字基组合成汉字，掌握左右/上下/包围等结构</p>
+        </div>
+        <div class="plan-card">
+            <div class="plan-icon">📖</div>
+            <h4>字义溯源手册</h4>
+            <p>任意汉字反向拆解，追溯到 100 个字基本源，知其然更知其所以然</p>
+        </div>
+        <div class="plan-card">
+            <div class="plan-icon">📝</div>
+            <h4>HSK 词库联动专区</h4>
+            <p>每个 HSK 词汇标注所属字基，按级别、主题、字基多维度检索学习</p>
+        </div>
+    </div>
+</section>
+
+<!-- 执行落地顺序 -->
+<section class="roadmap-section">
+    <h2>🚀 执行落地顺序</h2>
+    <p class="sec-intro">从数据到产品，五步走完整落地路径</p>
+    <div class="roadmap-list">
+        <div class="roadmap-card">
+            <div class="step-num">1</div>
+            <h4>完善词条数据</h4>
+            <p>完整 100 个汉库字基的词条信息：注音 + 中英文释义 + 分类标注 + HSK 级别绑定</p>
+        </div>
+        <div class="roadmap-card">
+            <div class="step-num">2</div>
+            <h4>梳理变形对照</h4>
+            <p>完成字基同源变形对照表，建立实体字基与附形字基的关联映射关系</p>
+        </div>
+        <div class="roadmap-card">
+            <div class="step-num">3</div>
+            <h4>搭建联动关系</h4>
+            <p>构建字基 → 汉字 → HSK 词汇三级联动数据表，直接对接建库、网站、课程</p>
+        </div>
+        <div class="roadmap-card">
+            <div class="step-num">4</div>
+            <h4>制作配套资源</h4>
+            <p>制作配套图文、课件、学习题库、互动练习组件、可视化图谱</p>
+        </div>
+        <div class="roadmap-card">
+            <div class="step-num">5</div>
+            <h4>对接教学场景</h4>
+            <p>适配对外汉语教学场景，覆盖零基础到进阶全阶段，线上课程 + 线下资料</p>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="page-footer">
+    <p>汉库 Hanku · <a href="index.html">sherwinlaoshi.com</a> · Han Basis © 2026</p>
+    <p style="margin-top:4px;">扎根汉库字基，吃透造字逻辑，轻松攻克汉字难关</p>
+</footer>
+
+<!-- Modal -->
+<div class="basis-modal-overlay" id="basisModal" onclick="closeModal(event)">
+    <div class="basis-modal" onclick="event.stopPropagation()">
+        <div class="modal-char" id="modalChar">人</div>
+        <div class="modal-pinyin" id="modalPinyin">rén</div>
+        <div class="modal-meaning" id="modalMeaning">人、他人</div>
+        <div class="modal-hsk" id="modalHsk"></div>
+        <div class="modal-type-badge" id="modalTypeBadge"></div>
+        <div class="modal-examples" id="modalExamples"></div>
+        <button class="modal-close" onclick="closeModal()">关闭</button>
+    </div>
+</div>
+
+<script>
+// ==================== DATA: 100 Han Basis (with HSK levels) ====================
+const BASIS = [
+    // 一、人体与人称 (1–20)
+    { char:"人", py:"rén", en:"person, human", cat:"body", type:"solid", hsk:1, examples:"我们、家人、人们" },
+    { char:"亻", py:"(rén)", en:"person radical", cat:"body", type:"affix", hsk:0, examples:"你、他、休、住、信" },
+    { char:"心", py:"xīn", en:"heart, mind", cat:"body", type:"solid", hsk:1, examples:"开心、关心、心里" },
+    { char:"忄", py:"(xīn)", en:"heart radical", cat:"body", type:"affix", hsk:0, examples:"快、慢、怕、情、忙" },
+    { char:"口", py:"kǒu", en:"mouth, opening", cat:"body", type:"solid", hsk:1, examples:"吃饭、说话、入口" },
+    { char:"目", py:"mù", en:"eye, to look", cat:"body", type:"solid", hsk:3, examples:"看见、目光、目前" },
+    { char:"手", py:"shǒu", en:"hand", cat:"body", type:"solid", hsk:1, examples:"手机、握手、手工" },
+    { char:"扌", py:"(shǒu)", en:"hand radical", cat:"body", type:"affix", hsk:0, examples:"打、扫、拉、抓、推" },
+    { char:"女", py:"nǚ", en:"woman, female", cat:"body", type:"solid", hsk:1, examples:"女孩、母女、女士" },
+    { char:"子", py:"zǐ", en:"child, son", cat:"body", type:"solid", hsk:1, examples:"儿子、子女、日子" },
+    { char:"耳", py:"ěr", en:"ear, hearing", cat:"body", type:"solid", hsk:2, examples:"听见、耳朵、耳机" },
+    { char:"足", py:"zú", en:"foot, enough", cat:"body", type:"solid", hsk:2, examples:"足够、足球、足部" },
+    { char:"身", py:"shēn", en:"body, self", cat:"body", type:"solid", hsk:2, examples:"身体、全身、身边" },
+    { char:"力", py:"lì", en:"strength, power", cat:"body", type:"solid", hsk:2, examples:"力气、努力、能力" },
+    { char:"气", py:"qì", en:"air, spirit, mood", cat:"body", type:"solid", hsk:3, examples:"天气、空气、生气" },
+    { char:"月(肉)", py:"(ròu)", en:"flesh/meat radical", cat:"body", type:"affix", hsk:1, examples:"脑、腿、胖、肝、肚" },
+    { char:"毛", py:"máo", en:"hair, feather", cat:"body", type:"solid", hsk:3, examples:"毛巾、羽毛、毛病" },
+    { char:"骨", py:"gǔ", en:"bone, frame", cat:"body", type:"solid", hsk:4, examples:"骨头、骨骼、骨干" },
+    { char:"言", py:"yán", en:"speech, language", cat:"body", type:"solid", hsk:3, examples:"语言、发言、言论" },
+    { char:"讠", py:"(yán)", en:"speech radical", cat:"body", type:"affix", hsk:0, examples:"说、话、讲、读、记" },
+
+    // 二、自然天地 (21–40)
+    { char:"日", py:"rì", en:"sun, day", cat:"nature", type:"solid", hsk:2, examples:"今天、明天、日常" },
+    { char:"月", py:"yuè", en:"moon, month", cat:"nature", type:"solid", hsk:1, examples:"月亮、月份、一月" },
+    { char:"水", py:"shuǐ", en:"water, liquid", cat:"nature", type:"solid", hsk:1, examples:"喝水、水果、水平" },
+    { char:"氵", py:"(shuǐ)", en:"water radical", cat:"nature", type:"affix", hsk:0, examples:"江、河、海、洗、泪" },
+    { char:"火", py:"huǒ", en:"fire, heat", cat:"nature", type:"solid", hsk:2, examples:"火车、火热、大火" },
+    { char:"灬", py:"(huǒ)", en:"fire radical", cat:"nature", type:"affix", hsk:0, examples:"热、煮、照、点、熊" },
+    { char:"木", py:"mù", en:"tree, wood", cat:"nature", type:"solid", hsk:2, examples:"树木、木头、木材" },
+    { char:"土", py:"tǔ", en:"earth, soil", cat:"nature", type:"solid", hsk:2, examples:"土地、泥土、土豆" },
+    { char:"山", py:"shān", en:"mountain", cat:"nature", type:"solid", hsk:2, examples:"大山、山水、爬山" },
+    { char:"石", py:"shí", en:"stone, rock", cat:"nature", type:"solid", hsk:3, examples:"石头、宝石、石油" },
+    { char:"雨", py:"yǔ", en:"rain", cat:"nature", type:"solid", hsk:3, examples:"下雨、雨水、暴雨" },
+    { char:"风", py:"fēng", en:"wind, style", cat:"nature", type:"solid", hsk:2, examples:"大风、风筝、风俗" },
+    { char:"云", py:"yún", en:"cloud", cat:"nature", type:"solid", hsk:2, examples:"白云、云朵、云南" },
+    { char:"艹", py:"(cǎo)", en:"grass radical", cat:"nature", type:"affix", hsk:0, examples:"花、草、茶、菜、药" },
+    { char:"田", py:"tián", en:"field, farmland", cat:"nature", type:"solid", hsk:3, examples:"田地、农田、田野" },
+    { char:"光", py:"guāng", en:"light, shine", cat:"nature", type:"solid", hsk:2, examples:"阳光、月光、光明" },
+    { char:"星", py:"xīng", en:"star", cat:"nature", type:"solid", hsk:3, examples:"星星、明星、星空" },
+    { char:"冫", py:"(bīng)", en:"ice radical", cat:"nature", type:"affix", hsk:0, examples:"冰、冷、冻、凉、净" },
+    { char:"沙", py:"shā", en:"sand", cat:"nature", type:"solid", hsk:3, examples:"沙子、沙滩、沙漠" },
+    { char:"尘", py:"chén", en:"dust", cat:"nature", type:"solid", hsk:4, examples:"灰尘、尘土、沙尘" },
+
+    // 三、空间架构 (41–55)
+    { char:"宀", py:"(mián)", en:"roof/house radical", cat:"space", type:"affix", hsk:0, examples:"家、安、字、室、客" },
+    { char:"冖", py:"(mì)", en:"cover radical", cat:"space", type:"affix", hsk:0, examples:"写、军、冠、冗、冥" },
+    { char:"门", py:"mén", en:"door, gate", cat:"space", type:"solid", hsk:1, examples:"大门、门口、开门" },
+    { char:"户", py:"hù", en:"household, door", cat:"space", type:"solid", hsk:3, examples:"住户、户口、窗户" },
+    { char:"厂", py:"chǎng", en:"factory, shed", cat:"space", type:"solid", hsk:3, examples:"工厂、厂房、厂家" },
+    { char:"穴", py:"xué", en:"cave, hole", cat:"space", type:"solid", hsk:4, examples:"洞穴、穴位、巢穴" },
+    { char:"囗", py:"(wéi)", en:"enclosure radical", cat:"space", type:"affix", hsk:0, examples:"国、园、圆、因、图" },
+    { char:"阝(左)", py:"(fù)", en:"mound (left 阝)", cat:"space", type:"affix", hsk:0, examples:"阳、阴、队、陆、阵" },
+    { char:"⻏(右)", py:"(yì)", en:"city (right 阝)", cat:"space", type:"affix", hsk:0, examples:"都、部、那、邮、邻" },
+    { char:"辶", py:"(chuò)", en:"walk/move radical", cat:"space", type:"affix", hsk:0, examples:"过、远、近、进、送" },
+    { char:"彳", py:"(chì)", en:"step radical", cat:"space", type:"affix", hsk:0, examples:"行、很、得、往、街" },
+    { char:"尸", py:"shī", en:"body/corpse radical", cat:"space", type:"affix", hsk:0, examples:"屋、层、局、尾、展" },
+    { char:"冂", py:"(jiōng)", en:"border radical", cat:"space", type:"affix", hsk:0, examples:"用、周、同、网、内" },
+    { char:"匚", py:"(fāng)", en:"box/frame radical", cat:"space", type:"affix", hsk:0, examples:"区、医、匠、匹、匡" },
+    { char:"廴", py:"(yǐn)", en:"extend radical", cat:"space", type:"affix", hsk:0, examples:"建、延、廷" },
+
+    // 四、衣食器物 (56–70)
+    { char:"衣", py:"yī", en:"clothing", cat:"tools", type:"solid", hsk:2, examples:"衣服、毛衣、穿衣" },
+    { char:"衤", py:"(yī)", en:"clothing radical", cat:"tools", type:"affix", hsk:0, examples:"裙、裤、袜、被、补" },
+    { char:"食", py:"shí", en:"food, eat", cat:"tools", type:"solid", hsk:3, examples:"食物、食堂、零食" },
+    { char:"饣", py:"(shí)", en:"food radical", cat:"tools", type:"affix", hsk:0, examples:"饭、饿、饱、饺、饼" },
+    { char:"巾", py:"jīn", en:"towel, cloth", cat:"tools", type:"solid", hsk:4, examples:"毛巾、纸巾、头巾" },
+    { char:"车", py:"chē", en:"vehicle", cat:"tools", type:"solid", hsk:1, examples:"汽车、车子、火车" },
+    { char:"刀", py:"dāo", en:"knife", cat:"tools", type:"solid", hsk:2, examples:"小刀、剪刀、菜刀" },
+    { char:"刂", py:"(dāo)", en:"knife radical", cat:"tools", type:"affix", hsk:0, examples:"刻、到、别、刚、划" },
+    { char:"金", py:"jīn", en:"gold, metal, money", cat:"tools", type:"solid", hsk:3, examples:"金钱、金属、黄金" },
+    { char:"钅", py:"(jīn)", en:"metal radical", cat:"tools", type:"affix", hsk:0, examples:"铁、银、铜、针、钱" },
+    { char:"贝", py:"bèi", en:"shell, money", cat:"tools", type:"solid", hsk:3, examples:"宝贝、贝壳、珍贵" },
+    { char:"纟", py:"(sī)", en:"silk/thread radical", cat:"tools", type:"affix", hsk:0, examples:"红、绿、线、纸、细" },
+    { char:"皿", py:"mǐn", en:"dish, vessel", cat:"tools", type:"solid", hsk:4, examples:"器皿" },
+    { char:"竹", py:"zhú", en:"bamboo", cat:"tools", type:"solid", hsk:3, examples:"竹子、竹简、丝竹" },
+    { char:"米", py:"mǐ", en:"rice, grain", cat:"tools", type:"solid", hsk:2, examples:"米饭、大米、玉米" },
+
+    // 五、生灵情态 (71–85)
+    { char:"犭", py:"(quǎn)", en:"dog/animal radical", cat:"living", type:"affix", hsk:0, examples:"狗、猫、猪、狼、猴" },
+    { char:"虫", py:"chóng", en:"insect, worm", cat:"living", type:"solid", hsk:3, examples:"虫子、昆虫、害虫" },
+    { char:"疒", py:"(nè)", en:"sickness radical", cat:"living", type:"affix", hsk:0, examples:"病、疼、痛、疗、癌" },
+    { char:"禾", py:"hé", en:"grain, crops", cat:"living", type:"solid", hsk:3, examples:"禾苗、庄稼、和睦" },
+    { char:"弓", py:"gōng", en:"bow (weapon)", cat:"living", type:"solid", hsk:4, examples:"弓箭、弹弓、弓形" },
+    { char:"戈", py:"gē", en:"spear, weapon", cat:"living", type:"solid", hsk:5, examples:"干戈、戈壁" },
+    { char:"矛", py:"máo", en:"spear, lance", cat:"living", type:"solid", hsk:6, examples:"矛盾、长矛" },
+    { char:"酉", py:"yǒu", en:"wine jar radical", cat:"living", type:"affix", hsk:0, examples:"酒、醉、醋、酸、酱" },
+    { char:"一", py:"yī", en:"one", cat:"living", type:"solid", hsk:1, examples:"一、一个、第一" },
+    { char:"丨", py:"(gǔn)", en:"vertical stroke", cat:"living", type:"affix", hsk:0, examples:"中、丰、串、韦" },
+    { char:"丿", py:"(piě)", en:"slash stroke", cat:"living", type:"affix", hsk:0, examples:"人、八、义、乏" },
+    { char:"丶", py:"(zhǔ)", en:"dot stroke", cat:"living", type:"affix", hsk:0, examples:"主、义、之、为" },
+    { char:"乙", py:"yǐ", en:"second, hook stroke", cat:"living", type:"solid", hsk:0, examples:"乙、艺术、记忆" },
+    { char:"又", py:"yòu", en:"again, right hand", cat:"living", type:"solid", hsk:2, examples:"又见、又来、又一次" },
+    { char:"寸", py:"cùn", en:"inch, measure", cat:"living", type:"solid", hsk:3, examples:"尺寸、分寸、寸步" },
+
+    // 六、通用基础 (86–100)
+    { char:"工", py:"gōng", en:"work, labor", cat:"other", type:"solid", hsk:3, examples:"工作、工人、工厂" },
+    { char:"王", py:"wáng", en:"king, jade", cat:"other", type:"solid", hsk:3, examples:"国王、王子、王国" },
+    { char:"士", py:"shì", en:"scholar, soldier", cat:"other", type:"solid", hsk:4, examples:"博士、女士、战士" },
+    { char:"干", py:"gàn", en:"to do, dry", cat:"other", type:"solid", hsk:3, examples:"干活、干净、能干" },
+    { char:"七", py:"qī", en:"seven", cat:"other", type:"solid", hsk:1, examples:"七、七月、第七" },
+    { char:"九", py:"jiǔ", en:"nine", cat:"other", type:"solid", hsk:1, examples:"九、九月、第九" },
+    { char:"十", py:"shí", en:"ten", cat:"other", type:"solid", hsk:1, examples:"十、十月、十分" },
+    { char:"四", py:"sì", en:"four", cat:"other", type:"solid", hsk:1, examples:"四、四月、第四" },
+    { char:"五", py:"wǔ", en:"five", cat:"other", type:"solid", hsk:1, examples:"五、五月、第五" },
+    { char:"六", py:"liù", en:"six", cat:"other", type:"solid", hsk:1, examples:"六、六月、第六" },
+    { char:"八", py:"bā", en:"eight", cat:"other", type:"solid", hsk:1, examples:"八、八月、第八" },
+    { char:"匕", py:"bǐ", en:"dagger, spoon", cat:"other", type:"solid", hsk:0, examples:"匕首" },
+    { char:"止", py:"zhǐ", en:"stop, foot", cat:"other", type:"solid", hsk:4, examples:"停止、禁止、止步" },
+    { char:"卜", py:"bǔ", en:"divination", cat:"other", type:"solid", hsk:5, examples:"占卜、萝卜、预卜" },
+    { char:"文", py:"wén", en:"writing, culture", cat:"other", type:"solid", hsk:2, examples:"文化、中文、文字" },
+];
+
+const CAT_NAMES = {
+    'body':   '人体与人称 Body & Person',
+    'nature': '自然天地 Nature',
+    'space':  '空间架构 Space & Structure',
+    'tools':  '衣食器物 Tools & Objects',
+    'living': '生灵情态 Living & States',
+    'other':  '通用基础字基 Fundamentals'
+};
+const CAT_ICONS = {
+    'body': '🏃', 'nature': '🌿', 'space': '🏠',
+    'tools': '🍽️', 'living': '🐾', 'other': '📐'
+};
+
+const HSK_LABELS = {
+    0: '附形', 1: 'HSK 1', 2: 'HSK 2', 3: 'HSK 3',
+    4: 'HSK 4', 5: 'HSK 5', 6: 'HSK 6', 79: 'HSK 7-9'
+};
+const HSK_BADGE_CLASS = {
+    0: 'badge-radical', 1: 'badge-hsk1', 2: 'badge-hsk2', 3: 'badge-hsk3',
+    4: 'badge-hsk4', 5: 'badge-hsk5', 6: 'badge-hsk6', 79: 'badge-hsk79'
+};
+const HSK_LEVEL_COLORS = {
+    0: { bg: '#f0f0f0', text: '#8a8a8a' },
+    1: { bg: '#e8f5e9', text: '#2e7d32' },
+    2: { bg: '#e3f2fd', text: '#1565c0' },
+    3: { bg: '#fdf0ec', text: '#d4734a' },
+    4: { bg: '#fce4ec', text: '#b8587a' },
+    5: { bg: '#ede7f6', text: '#5c3d99' },
+    6: { bg: '#fdf0ec', text: '#c4523e' },
+    79:{ bg: '#e8e5df', text: '#3e3a34' }
+};
+
+let currentCat = 'all';
+let currentType = 'all';
+let currentHsk = 'all';
+
+function filterBasis() {
+    searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+    currentHsk = document.getElementById('hskSelect').value;
+    renderBasis();
+}
+
+function setCategory(cat, btn) {
+    currentCat = cat;
+    document.querySelectorAll('.filter-bar .cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderBasis();
+}
+
+function setType(type, btn) {
+    currentType = type;
+    const btns = document.querySelectorAll('.type-toggle button');
+    btns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderBasis();
+}
+
+function getFilteredBasis() {
+    return BASIS.filter(r => {
+        if (currentCat !== 'all' && r.cat !== currentCat) return false;
+        if (currentType === 'solid' && r.type !== 'solid') return false;
+        if (currentType === 'affix' && r.type !== 'affix') return false;
+        if (currentHsk !== 'all') {
+            if (currentHsk === '79' && (r.hsk === 7 || r.hsk === 79)) return true;
+            if (String(r.hsk) !== currentHsk) return false;
+        }
+        if (searchTerm) {
+            const text = (r.char + ' ' + r.py + ' ' + r.en + ' ' + r.examples).toLowerCase();
+            return text.includes(searchTerm);
+        }
+        return true;
+    });
+}
+
+function getHskDisplay(hsk) {
+    if (hsk === 0) return { label: '附形字基 (仅构字)', cls: 'badge-radical' };
+    if (hsk === 79) return { label: 'HSK 7-9 级', cls: 'badge-hsk79' };
+    return { label: 'HSK ' + hsk + ' 级', cls: 'badge-hsk' + hsk };
+}
+
+function openModal(basis) {
+    document.getElementById('modalChar').textContent = basis.char;
+    document.getElementById('modalPinyin').textContent = basis.py;
+    document.getElementById('modalMeaning').textContent = basis.en;
+    document.getElementById('modalExamples').textContent = '组词举例：' + basis.examples;
+
+    const hskInfo = getHskDisplay(basis.hsk);
+    document.getElementById('modalHsk').innerHTML = '<span class="badge ' + hskInfo.cls + '">' + hskInfo.label + '</span>';
+
+    const typeEl = document.getElementById('modalTypeBadge');
+    if (basis.type === 'solid') {
+        typeEl.innerHTML = '<span class="badge badge-solid">实体字基 Solid Basis</span>';
+    } else {
+        typeEl.innerHTML = '<span class="badge badge-affix">附形字基 Affix Basis</span>';
+    }
+
+    document.getElementById('basisModal').classList.add('show');
+}
+
+function closeModal(e) {
+    if (e && e.target !== document.getElementById('basisModal')) return;
+    document.getElementById('basisModal').classList.remove('show');
+}
+
+function renderBasis() {
+    const container = document.getElementById('basisContainer');
+    const filtered = getFilteredBasis();
+    document.getElementById('filterCount').textContent = `显示 ${filtered.length} 个字基`;
+
+    const grouped = {};
+    const catOrder = currentCat === 'all'
+        ? ['body', 'nature', 'space', 'tools', 'living', 'other']
+        : [currentCat];
+
+    filtered.forEach(r => {
+        if (!grouped[r.cat]) grouped[r.cat] = [];
+        grouped[r.cat].push(r);
+    });
+
+    let html = '';
+
+    for (const cat of catOrder) {
+        const items = grouped[cat];
+        if (!items || items.length === 0) continue;
+
+        html += `
+        <div class="category-section">
+            <div class="category-heading">
+                <div class="cat-icon">${CAT_ICONS[cat]}</div>
+                <h2>${CAT_NAMES[cat]}</h2>
+                <span class="cat-count">${items.length} 个</span>
+            </div>
+            <div class="basis-grid">
+        `;
+
+        items.forEach(r => {
+            const hskInfo = getHskDisplay(r.hsk);
+            const typeBadgeClass = r.type === 'solid' ? 'badge-solid' : 'badge-affix';
+            const typeBadgeText = r.type === 'solid' ? '实体' : '附形';
+
+            html += `
+                <div class="basis-card" onclick='openModal(${JSON.stringify(r)})'>
+                    <div class="char-lg">${r.char}</div>
+                    <div class="pinyin">${r.py}</div>
+                    <div class="meaning">${r.en}</div>
+                    <div class="card-badges">
+                        <span class="badge ${hskInfo.cls}">${hskInfo.label}</span>
+                        <span class="badge ${typeBadgeClass}">${typeBadgeText}</span>
+                    </div>
+                </div>
+            `;
+        });
+
+        html += `</div></div>`;
+    }
+
+    if (!html) {
+        html = '<div class="no-results"><p>没有匹配的字基，请调整筛选条件。</p></div>';
+    }
+
+    container.innerHTML = html;
+}
+
+// ==================== HSK Level Learning Path Summary ====================
+function renderHskPath() {
+    const levels = { 1:[], 2:[], 3:[], 4:[], 5:[], 6:[], 79:[] };
+
+    BASIS.forEach(b => {
+        if (b.hsk === 0) return;
+        const key = b.hsk === 7 ? 79 : b.hsk;
+        if (levels[key]) levels[key].push(b.char);
+    });
+
+    const levelMeta = [
+        { hsk:1, title:"HSK 1 字基入门", wordCount:"500词", desc:"最基础核心字基，直接覆盖 HSK1 90% 高频词", tagCls:"badge-hsk1" },
+        { hsk:2, title:"HSK 2 基础拓展", wordCount:"772词", desc:"基础字基全面覆盖，生活场景常用词", tagCls:"badge-hsk2" },
+        { hsk:3, title:"HSK 3 全面进阶", wordCount:"973词", desc:"字基深入扩展，日常交流全覆盖", tagCls:"badge-hsk3" },
+        { hsk:4, title:"HSK 4 高阶积累", wordCount:"1200词", desc:"抽象字基与书面常用词覆盖", tagCls:"badge-hsk4" },
+        { hsk:5, title:"HSK 5 商务书面", wordCount:"2500词", desc:"事务行为字基，职场学术词汇", tagCls:"badge-hsk5" },
+        { hsk:6, title:"HSK 6 高阶应试", wordCount:"5000词", desc:"书面文雅字根，阅读写作核心", tagCls:"badge-hsk6" },
+        { hsk:79, title:"HSK 7-9 母语级", wordCount:"11000词", desc:"高端学术书面词汇，母语级全面覆盖", tagCls:"badge-hsk79" },
+    ];
+
+    let html = '';
+    levelMeta.forEach(meta => {
+        const chars = levels[meta.hsk] || [];
+        html += `
+        <div class="hsk-level-card">
+            <span class="level-tag ${meta.tagCls}">${meta.wordCount}</span>
+            <h4>${meta.title}</h4>
+            <p>${meta.desc}</p>
+            <div class="basis-list">字基: ${chars.join('、')}</div>
+        </div>`;
+    });
+
+    document.getElementById('hskLevelsGrid').innerHTML = html;
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    renderBasis();
+    renderHskPath();
+});
+
+// Keyboard shortcut to close modal
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.getElementById('basisModal').classList.remove('show');
+});
+</script>
+
+<!-- Koalendar Popup Widget Start -->
+<script>window.Koalendar = window.Koalendar || function(){(Koalendar.props = Koalendar.props || []).push(arguments)};</script>
+<script async src="https://koalendar.com/assets/widget.js"></script>
+<script>
+  Koalendar('widget', {
+    "url": "https://koalendar.com/e/meet-with-sherwinlaoshi",
+    "text": "Schedule a meeting",
+    "shape": "rounded-full",
+    "backgroundColor": "#5145CD",
+    "textColor": "#FFFFFF",
+    "position": "bottom-right",
+    "icon": "calendar"
+  });
+</script>
+<!-- Koalendar Popup Widget End -->
+</body>
+</html>
